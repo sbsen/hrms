@@ -1,0 +1,165 @@
+﻿@model  MTSINHR.Models.AssetMaintenanceDetails
+<script src="~/Scripts/ValidationFunction.js"></script>
+<script src="~/Scripts/bootbox.min.js"></script>
+@System.Web.Optimization.Scripts.Render("~/bundles/datepicker")
+@System.Web.Optimization.Styles.Render("~/bundles/datepickercss")
+@{
+   // var AssetId = ViewBag.Asset;
+    List<SelectListItem> Vendor = new List<SelectListItem>();
+
+    Vendor.Add(new SelectListItem
+    {
+        Text = "Raja",
+        Value = "0",
+
+    });
+    Vendor.Add(new SelectListItem
+    {
+        Text = "Ram",
+        Value = "1"
+    });
+
+}
+<script>
+    $(document).ready(function () {
+       
+        $('#Dateofpurchase').datepicker({
+            format: 'dd/MM/yyyy',
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            endDate: '+0d',
+        });
+        $("#AssetTypeId").on('change', function () {
+            debugger
+            //var AssetName = ViewBag.Assetname;
+            // console.log(AssetName);
+            var getValue = $(this).val();
+            alert(getValue);
+        });
+    });      
+    function AssetsAddEdit() {
+        var url = '@Url.Content("~/AssetMaintenanceDetails/Add")';
+
+        if ($("#assetmaintenance").valid()) {
+
+
+            $.ajax({
+                type: "Post",
+                data: $("#assetmaintenance").serialize(),
+
+                url: url,
+                success: function (result) {
+                    if (result == "Failed") {
+
+                        $(".errorspan").show();
+                    }
+                    else {
+                        debugger
+                        toastr.success("Successfully Added");
+                    }
+                }
+            });
+        }
+    }
+</script>
+<form id="assetmaintenance" method="post">
+    <div class="panel">
+        <div class="card">
+            <div class="card-header p-b-0">
+                <h4>Maintenance Details</h4>
+                <div class="card-title text-center">
+                    <label id="addedit"></label>
+                </div>
+            </div>
+            <div class="card-block">
+                <div class="content-align p15">
+                    <div class="row">
+                
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    Date
+                                    <div class="editor-field">
+                                        @Html.TextBoxFor(model => model.Dateofpurchase, "{0:dd/MMM/yyyy}", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.Dateofpurchase)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.Vendor)
+                                    </div>
+                                    <div class="editor-field">
+                                        @Html.DropDownListFor(model => model.Vendor, new System.Web.Mvc.SelectList(Vendor, "value", "Text"), "---Select Vendor Name--", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.Vendor)
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="editor-label">
+                                        Maintenance Carried-out
+                                    </div>
+                                    <div class="editor-field">
+                                        @Html.TextAreaFor(model => model.Maintenance_Carried_out, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.Maintenance_Carried_out)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.Cost)
+                                    </div>
+                                    <div class="editor-field">
+                                        @Html.TextBoxFor(model => model.Cost, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.Cost)
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.Notes)
+                                    </div>
+                                    <div class="editor-field">
+                                        @Html.TextAreaFor(model => model.Notes, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.Notes)
+                                    </div>
+                                </div>
+                            </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.AssetTypeId)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.AssetTypeId, new System.Web.Mvc.SelectList(ViewBag.Asset, "Value", "Text"), new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.AssetTypeId)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    Asset Name
+                                </div>
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.AssetTypeId, new System.Web.Mvc.SelectList(ViewBag.Assetname, "Value", "Text"), new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.AssetTypeId)
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                </div>
+                <div class="pull-right p-b-10 p-r-10">
+                    <button type="button" id="cancel" onclick="back()" class="btn btn-light m-r-5">Close</button>
+                    <button type="button" id="add" class="btn btn-primary spanedit " onclick="AssetsAddEdit()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

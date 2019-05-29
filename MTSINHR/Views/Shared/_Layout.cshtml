@@ -1,0 +1,151 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MTS-HR</title>
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap-responsive.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/style.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/halflings.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/select2.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap_dataTable.css")" />
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/NewCalendar/css/jscal2.css")" />
+
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.10.2.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jquery-migrate-1.2.1.min.js")"></script>
+    <script type="text/ecmascript" src="@Url.Content("~/Scripts/select2.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/bootstrap-modal.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/bootstrap.min.js")"></script>
+    <script type="text/ecmascript" src="@Url.Content("~/Scripts/jquery.dataTables.min.js")"></script>
+    <script type="text/ecmascript" src="@Url.Content("~/Scripts/bootstrap_dataTable.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/queryLoader.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Content/NewCalendar/js/jscal2.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Content/NewCalendar/js/en.js")"></script>
+   
+   
+    <script type="text/javascript">
+        $(document).ready(function () {
+           
+            $(document).bind("ajaxSend", function () {
+                $("#divimgloading").show();
+            }).bind("ajaxComplete", function () {
+                $("#divimgloading").hide();
+            });
+
+            $('.errDiv').hide();
+
+
+            $(document).ajaxError(function (event, jqxhr, settings, exception) {
+                if (jqxhr.status == 403) {
+                    var childWindowName = "previewInvoice";
+                    var handle = window.open("", childWindowName);
+                    if (handle && handle.open && !handle.closed) {
+                        handle.close();
+                    }
+                    window.location = '@Url.Content("~/Account/Logon")';
+                }
+            });
+
+            FirstOrEmptyElementFocus('');
+        });
+
+        function showAlertMsg(title, msg) {
+            $('#divalert').find('div#errorContent').html(msg);
+            $('#divalert').find('span#alerttitle').html(title);
+            $('#divalert').modal('show');
+        }
+
+        function CheckSession(id) {
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Content("~/User/CheckSession")',
+                cache: false
+            });
+        }
+
+        function FirstOrEmptyElementFocus(container) {
+            var emptyInput = false;
+            $(container + ' input[type="text"]').each(function () {
+                if (this.value === '') {
+                    this.focus();
+                    emptyInput = true;
+                    return false;
+                }
+            });
+            if (!emptyInput) {
+                $(container + ' input:enabled:visible:first').focus();
+            }
+        }
+        $.fn.modal.Constructor.prototype.enforceFocus = function () { };
+    </script>
+
+</head>
+<body>
+    @using MTS.LoginModels;
+    @using MTSEntBlocks.UtilsBlock.Web;
+    @using MTS.Helpers;
+    @{
+        ViewBag.Title = "Index";
+        LogonUserSession logonUserSession = (LogonUserSession)SessionHelper.LogonUser;
+    }
+    <div class="hide" id="divimgloading">
+        <div class="loading" style="display: block;">
+        </div>
+    </div>
+    <div class="modal hide fade " style="width: 55%; margin-left: -380px" id="divComplexSearch">
+    </div>
+    <div class="modal hide fade " id="divmainpopup">
+    </div>
+    <div id="header">
+        <div class="logo">
+        </div>
+        @if (logonUserSession != null)
+        {
+            
+            <div class="brdcrm">
+                <div class="brdcrm_label">
+                    Role &nbsp;:
+                </div>
+                <div class="brdcrm_value">
+                    &nbsp; @logonUserSession.ROLENAME
+                </div>
+            </div>
+
+            <div class="brdcrm">
+                <div class="brdcrm_label">
+                    Welcome &nbsp;:
+                </div>
+                <div class="brdcrm_value">
+                    &nbsp; @logonUserSession.LASTNAME,@logonUserSession.FIRSTNAME
+                </div>
+            </div>
+        }
+    </div>
+    @Html.Action("Displaytopmenu", "Menu", new { area = "" })
+    <div id="content">
+        <div class="container-fluid">
+            <div class="row-fluid">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+    <div id="footer" align="center">
+        <span id="spn_footer">Powered by MTS Software Solutions Inc.</span>
+    </div>
+    <div class="errDiv">
+        <div class="errDiv_item" id="showError">
+            <div id="showOrHideMsg">
+                <b>Hide Error <i class="icon-white icon-chevron-up"></i></b>
+            </div>
+        </div>
+        <div id="errorList" class="errDiv_options span6">
+        </div>
+    </div>
+    <script type="text/javascript">
+        QueryLoader.selectorPreload = "body";
+        QueryLoader.init();
+    </script>
+</body>
+</html>

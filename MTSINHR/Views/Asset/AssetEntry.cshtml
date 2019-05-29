@@ -1,0 +1,616 @@
+﻿@model MTSINHR.Models.Assets
+
+@{
+    ViewBag.Title = "AssetDetails";
+}
+@{
+    List<SelectListItem> TypeItems = new List<SelectListItem>();
+
+    TypeItems.Add(new SelectListItem
+    {
+        Text = "Actual",
+        Value = "0",
+
+    });
+    TypeItems.Add(new SelectListItem
+    {
+        Text = "Approximate",
+        Value = "1"
+    });
+}
+
+
+@System.Web.Optimization.Scripts.Render("~/bundles/datepicker")
+@System.Web.Optimization.Styles.Render("~/bundles/datepickercss")
+<link href="~/Content/viewer.min.css" rel="stylesheet" />
+<link href="~/Scripts/jQuery-File-Upload-9.19.2/css/jquery.fileupload.css" rel="stylesheet" />
+<script src="~/Scripts/jQuery-File-Upload-9.19.2/js/vendor/jquery.ui.widget.js"></script>
+<script src="~/Scripts/jQuery-File-Upload-9.19.2/js/load-image.all.min.js"></script>
+<script src="~/Scripts/jQuery-File-Upload-9.19.2/js/canvas-to-blob.js"></script>
+<script src="~/Scripts/jQuery-File-Upload-9.19.2/js/jquery.iframe-transport.js"></script>
+<script src="~/Scripts/jQuery-File-Upload-9.19.2/js/jquery.fileupload.js"></script>
+<script src="~/Scripts/jQuery-File-Upload-9.19.2/js/jquery.fileupload-process.js"></script>
+<script src="~/Scripts/jQuery-File-Upload-9.19.2/js/jquery.fileupload-image.js"></script>
+<script src="~/Scripts/jQuery-File-Upload-9.19.2/js/jquery.fileupload-audio.js"></script>
+<script src="~/Scripts/jQuery-File-Upload-9.19.2/js/jquery.fileupload-video.js"></script>
+<script src="~/Scripts/jQuery-File-Upload-9.19.2/js/jquery.fileupload-validate.js"></script>
+<script src="~/Scripts/viewer.min.js"></script>
+<script src="~/Scripts/bootbox.min.js"></script>
+<script src="~/Scripts/ValidationFunction.js"></script>
+
+
+
+<h2>AssignAsset</h2>
+
+
+<form id="asset" method="post" enctype="multipart/form-data">
+    <div class="panel" id="assetdiv">
+        <div class="card">
+            <div class="card-header p-b-0">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <div class="editor-label">
+                            <label>UploadInvoice</label>
+                        </div>
+                        <div>
+                            <span class="btn btn-success fileinput-button header">
+                                <i class="fa fa-plus"></i>
+                                <span>Select File</span>
+                                <input type="file" id="invoicefile" name="files[]" value="pick" onchange=AutoUpload() accept=".pdf,.png,.jpg,.jpeg" />
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-title text-center">
+                    <label id="addedit"></label>
+                </div>
+            </div>
+            <div class="card-block">
+                <div class="content-align p15" style="background-color:#ecdcdc">
+
+
+                    <div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.VendorName)
+                                    </div>
+                                    <div class="editor-field ">
+                                        @Html.DropDownListFor(model => model.VendorName, new System.Web.Mvc.SelectList(ViewBag.VendorNames, "Value", "Text"), new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.VendorName)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.PurchaseOrderNumber)
+                                    </div>
+                                    <div class="editor-field ">
+                                        @Html.TextBoxFor(model => model.PurchaseOrderNumber, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.PurchaseOrderNumber)
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.PurchasedOn)
+                                    </div>
+                                    <div class="editor-field ">
+                                        @Html.TextBoxFor(model => model.PurchasedOn, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.PurchasedOn)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.BillNumber)
+                                    </div>
+                                    <div class="editor-field ">
+                                        @Html.TextBoxFor(model => model.BillNumber, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.BillNumber)
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.BillDate)
+                                    </div>
+                                    <div class="editor-field">
+                                        @Html.TextBoxFor(model => model.BillDate, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.BillDate)
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.AssetType)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.AssetType, new System.Web.Mvc.SelectList(ViewBag.CategoryNames, "Value", "Text"), new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.AssetType)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.AssetName)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.AssetName, new System.Web.Mvc.SelectList(ViewBag.AssetNames, "Value", "Text"), new { @class = "form-control" },new {disabled="disabled" })
+                                    @Html.ValidationMessageFor(model => model.AssetName)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.AssetDescription)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextAreaFor(model => model.AssetDescription, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.AssetDescription)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.CostInRs)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.CostInRs, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.CostInRs)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.CostType)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.CostType, new System.Web.Mvc.SelectList(TypeItems, "Value", "Text"), new { @class = "form-control" })
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Make)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.Make, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Make)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Model)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.Model, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Model)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.SerialNumber)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.SerialNumber, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.SerialNumber)
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.IdentificationCode)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.IdentificationCode, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.IdentificationCode)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.WarrantyMonths)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.WarrantyMonths, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.WarrantyMonths)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.WarrantyStartDate)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.WarrantyStartDate, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.WarrantyStartDate)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.WarrantyEndDate)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.WarrantyEndDate, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.WarrantyEndDate)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pull-right p-b-10 p-r-10">
+                    <button type="button" id="cancel" onclick="back()" class="btn btn-light m-r-5">Close</button>
+                    <button type="button" id="add" class="btn btn-primary spanedit " onclick="AssetsAddEdit()">Save</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</form>
+<div>
+    <div class="row m-t-15">
+        <div class="MTS_Table">
+            <table id="getallassets" class="table table-bordered table-hover tabel-sm" cellspacing="0" width="100%"></table>
+        </div>
+    </div>
+</div>
+<script>
+    var data = [];
+    $(document).ready(function () {
+        debugger;
+        loadTable();
+        var CurrentYear = (new Date).getFullYear();
+        var monthcount = '@System.Configuration.ConfigurationManager.AppSettings["Month_restrict_count"]';
+        var DOBlimit = '@System.Configuration.ConfigurationManager.AppSettings["Doblimit_count"]';
+        var monthlimit = "-" + monthcount + "m";
+        $('#PurchasedOn').datepicker({
+            format: 'dd/M/yyyy',
+
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            endDate: monthlimit
+        });
+
+        $('#WarrantyStartDate').datepicker({
+            format: 'dd/M/yyyy',
+
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            endDate: monthlimit
+        });
+        $('#WarrantyEndDate').datepicker({
+            format: 'dd/M/yyyy',
+
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+
+        });
+
+        $('#BillDate').datepicker({
+            format: 'dd/M/yyyy',
+
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            endDate: monthlimit
+        });
+
+
+
+
+
+    });
+
+    function loadTable() {
+        debugger;
+        groupTable = $("#getallassets").DataTable({
+            "dom": 'Bfrtip',
+            //"data": "",
+
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "iDisplayLength": 25,
+            "bFilter": true,
+            "bProcessing": true,
+            "order": [[1, "asc"]],
+            "ajax": {
+                type: 'Get',
+                url: '@Url.Content("~/Asset/ReadAllAssetEntries")',
+                dataSrc: function (data) {
+                    debugger;
+                    return JSON.parse(data.result);
+                }
+            },
+            "aoColumns": [
+                 // { "mData": "ID", "sTitle": "ID", "bVisible": false}
+                 { "mData": "VENDOR_NAME", "sTitle": "VendorName", "bVisible": false, "defaultContent": "<i>Not set</i>" }//0
+                 , { "mData": "VENDOR_ID", "sTitle": "ID", "bVisible": false }//1
+                , { "mData": "PURCHASE_ORDER_NUMBER", "sTitle": "PurchaseOrderNumber", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//2
+                , { "mData": "PURCHASED_ON", "sTitle": "PurchasedOn", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//3
+                , { "mData": "BILL_NUMBER", "sTitle": "Bill Number", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//4
+                , { "mData": "BILL_DATE", "sTitle": "Bill Date", "sClass": "text-left", "bVisible": false, "defaultContent": "<i>Not set</i>" }//5
+                , { "mData": "ASSET_TYPE", "sTitle": "Asset Type", "bVisible": false }//6
+                , { "mData": "ASSET_NAME", "sTitle": "Asset Name", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//7
+                , { "mData": "ASSET_DESCRIPTION", "sTitle": "Asset Description", "sClass": "text-center", "defaultContent": "<i>Not Set</i>" }//8
+                , { "mData": "COST", "sTitle": "Cost", "sClass": "text-center", "defaultContent": "<i>Not Set</i>" }//9
+                , { "mData": "COST_TYPE", "sTitle": "Cost Type", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//10
+                , { "mData": "MAKE", "sTitle": "Make", "sClass": "text-center", "bSortable": false, "sWidth": "1%", "orderable": false }//11
+                , { "mData": "MODEL", "sTitle": "Model", "sClass": "text-center", "bSortable": false, "sWidth": "1%", "orderable": false }//12
+                , { "mData": "SERIAL_NUMBER", "sTitle": "Serial Number", "sClass": "text-center", "bSortable": false, "bVisible": false, "sWidth": "1%", "orderable": false }//13
+                , { "mData": "IDENTIFICATION_CODE", "sTitle": "Identification Code", "sClass": "text-center", "bSortable": false, "bVisible": false, "orderable": false }//14
+                , { "mData": "WARRANTY_MONTHS", "sTitle": "Warranty Months", "sClass": "text-center", "bSortable": false, "bVisible": false, "orderable": false }//15
+                , { "mData": "WARRANTY_STARTDATE", "sTitle": "Warranty Start Date", "sClass": "text-center", "bSortable": false, "bVisible": false, "orderable": false }//16
+                , { "mData": "WARRANTY_ENDDATE", "sTitle": "Warranty End Date", "sClass": "text-center", "bSortable": false, "bVisible": false, "orderable": false }//17
+                , { "mData": "INVOICE_ID", "sTitle": "Invoice Id", "sClass": "text-center", "bSortable": false, "bVisible": false, "orderable": false }//18
+                , { "mData": "ASSETTYPE_ID", "sTitle": "Asset Type Id", "sClass": "text-center", "bSortable": false, "bVisible": false, "orderable": false }//19
+                , { "mData": "ASSETNAME_ID", "sTitle": "Asset Name Id", "sClass": "text-center", "bSortable": false, "bVisible": false, "orderable": false }//20
+                , { "mData": "ID", "sTitle": "Edit", "sClass": "text-center", "bSortable": false, "sWidth": "1%", "orderable": false }//21
+            ],
+            "aoColumnDefs": [
+
+   {
+       "aTargets": [21]
+       , "mRender": function (data, type, row) {
+           return '<button="" onclick=Edit($(this).closest("tr"))><i class="fa fa-edit"/></button>'
+       }
+   },
+    {
+        "aTargets": [3]
+       , "mRender": function (data, type, row) {
+           var date = new Date(data);
+           var month = date.toLocaleString('en-us', { month: 'short' });
+           var purchasedOn = (date.getDate()) + "/" + month + "/" + date.getFullYear();
+           return purchasedOn;
+       }
+    },
+            {
+                "aTargets": [5]
+       , "mRender": function (data, type, row) {
+           var date = new Date(data);
+           var month = date.toLocaleString('en-us', { month: 'long' });
+           var billDate = (date.getDate()) + "/" + month + "/" + date.getFullYear();
+           return billDate;
+       }
+            },
+             {
+                 "aTargets": [16]
+       , "mRender": function (data, type, row) {
+           var date = new Date(data);
+           var month = date.toLocaleString('en-us', { month: 'short' });
+           var warrantyStartDate = (date.getDate()) + "/" + month + "/" + date.getFullYear();
+           return warrantyStartDate;
+       }
+             },
+             {
+                 "aTargets": [17]
+       , "mRender": function (data, type, row) {
+           var date = new Date(data);
+           var month = date.toLocaleString('en-us', { month: 'short' });
+           var warrantyEndDate = (date.getDate()) + "/" + month + "/" + date.getFullYear();
+           return warrantyEndDate;
+       }
+             },
+            {
+                "aTargets": [10]
+       , "mRender": function (data, type, row) {
+           if (data == "0")
+               data = "Actual";
+           else if (data == "1")
+               data = "Approximate";
+           return data;
+       }
+            }]
+
+        });
+    }
+
+    function Edit(selectedRowIndex) {
+        debugger;
+        data = groupTable.row(selectedRowIndex).data();
+        $("#VendorName").val(data.VENDOR_ID);
+        $("#PurchaseOrderNumber").val(data.PURCHASE_ORDER_NUMBER);
+        var date = new Date(data.PURCHASED_ON);
+        var month = date.toLocaleString('en-us', { month: 'short' });
+        var purchasedOn = (date.getDate()) + "/" + month + "/" + date.getFullYear();
+
+        $("#PurchasedOn").val(purchasedOn);
+        $("#BillNumber").val(data.BILL_NUMBER);
+
+        var date = new Date(data.BILL_DATE);
+        var month = date.toLocaleString('en-us', { month: 'short' });
+        var billDate = (date.getDate()) + "/" + month + "/" + date.getFullYear();
+        $("#BillDate").val(billDate);
+        $("#AssetType").val(data.ASSETTYPE_ID);
+        $("#AssetName").val(data.ASSETNAME_ID);
+        $("#AssetDescription").val(data.ASSET_DESCRIPTION);
+        $("#CostInRs").val(data.COST);
+        $("#CostType").val(data.COST_TYPE);
+        $("#Make").val(data.MAKE);
+        $("#Model").val(data.MODEL);
+        $("#SerialNumber").val(data.SERIAL_NUMBER);
+        $("#IdentificationCode").val(data.IDENTIFICATION_CODE);
+        $("#WarrantyMonths").val(data.WARRANTY_MONTHS);
+
+        var date = new Date(data.WARRANTY_STARTDATE);
+        var month = date.toLocaleString('en-us', { month: 'short' });
+        var warrantyStartDate = (date.getDate()) + "/" + month + "/" + date.getFullYear();
+        $("#WarrantyStartDate").val(warrantyStartDate);
+
+        var date = new Date(data.WARRANTY_ENDDATE);
+        var month = date.toLocaleString('en-us', { month: 'short' });
+        var warrantyEndDate = (date.getDate()) + "/" + month + "/" + date.getFullYear();
+        $("#WarrantyEndDate").val(warrantyEndDate);
+        $("#assetdiv").scrollTop();
+    }
+    $("#AssetType").on('change', function () {
+
+        var assetTypeId = $("#AssetType").val();
+        $.ajax({
+            url: '@Url.Content("~/Asset/GetAllAssetNames")',
+            type: "POST",
+            data: assetTypeId,
+            success: $.each(AssetList, function (Text, Value) {
+                $("AssetName").prop("disabled", false);
+                mySelect.append(
+                    $('<option></option>').val(Value).html(Text)
+                );
+              
+            })
+        });
+
+
+
+        function AutoUpload() {
+            debugger;
+            var formData = new FormData();
+            var fileInput = document.getElementById('invoicefile');
+            formData.append(fileInput.files[0].name, fileInput.files[0]);
+
+            //formData.append("#file",File)
+            $.ajax({
+                url: '@Url.Content("~/Asset/GetFormData")',
+                type: "POST",
+                data: formData,
+
+                success: function (result) {
+
+                    if (result == "Failed") {
+                        $(".errorspan").show();
+                    }
+                    else if (result == "Success") {
+
+                        toastr.success("Invoice Added successfully");
+                    }
+
+                },
+                cache: false,
+                contentType: false,
+                processData: false
+            })
+        }
+
+        function AssetsAddEdit() {
+
+            debugger
+
+            var assetDetails = [];
+            var id = data.ID;
+            var vendorName = $("#VendorName").val();
+            var assetType = $("#AssetType").val();
+            var assetName = $("#AssetName").val();
+            var costType = $("#CostType").val();
+            var purchaseOrderNumber = $("#PurchaseOrderNumber").val();
+            var purchasedOn = $("#PurchasedOn").val();
+            var billNumber = $("#BillNumber").val();
+            var billDate = $("#BillDate").val();
+            var assetDescription = $("#AssetDescription").val();
+            var costInRs = $("#CostInRs").val();
+            var make = $("#Make").val();
+            var model = $("#Model").val();
+            var serialNumber = $("#SerialNumber").val();
+            var identificationCode = $("#IdentificationCode").val();
+            var warrantyMonths = $("#WarrantyMonths").val();
+            var warrantyStartDate = $("#WarrantyStartDate").val();
+            var warrantyEndDate = $("#WarrantyEndDate").val();
+            var assetTypeId = $("#AssetType").val();
+            var assetNameId = $("#AssetName").val();
+
+            assetDetails = {
+                Id: id,
+                VendorName: vendorName,
+                PurchaseOrderNumber: purchaseOrderNumber,
+                PurchasedOn: purchasedOn,
+                BillNumber: billNumber,
+                BillDate: billDate,
+                AssetType: assetType,
+                AssetName: assetName,
+                AssetDescription: assetDescription,
+                CostInRs: costInRs,
+                CostType: costType,
+                Make: make,
+                Model: model,
+                SerialNumber: serialNumber,
+                IdentificationCode: identificationCode,
+                WarrantyMonths: warrantyMonths,
+                WarrantyStartDate: warrantyStartDate,
+                WarrantyEndDate: warrantyEndDate,
+                AssetTypeId: assetTypeId,
+                AssetNameId: assetNameId
+
+            }
+
+            //var url = '@Url.Content("~/Asset/AddAssetDetails")';
+            // var formData = new FormData($('#asset')[0]);
+
+
+
+            $.ajax({
+                type: "POST",
+                data: { '_asset': assetDetails },
+                url: '@Url.Content("~/Asset/AddAssetDetails")',
+                success: function (data) {
+
+                    if (data == 0) {
+                        $(".errorspan").show();
+                    }
+                    else if (data == 1) {
+                        if ($.fn.DataTable.isDataTable('#getallassets')) {
+                            $('#getallassets').dataTable().fnDestroy();
+                            loadTable();
+                        }
+
+
+
+                    }
+                }
+
+            })
+
+
+        }
+    })
+</script>

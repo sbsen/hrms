@@ -1,0 +1,285 @@
+﻿@{
+    ViewBag.Title = "EmployeeList";
+}
+@System.Web.Optimization.Scripts.Render("~/bundles/jquery")
+<script src="~/Scripts/moment.min.js"></script>
+@System.Web.Optimization.Styles.Render("~/bundles/bootstrapdt")
+@System.Web.Optimization.Scripts.Render("~/bundles/datatable")
+
+<script src="~/Scripts/ValidationFunction.js"></script>
+<script src="~/Scripts/DataTables/dataTables.buttons.min.js"></script>
+<script src="~/Scripts/DataTables/excel.min.js"></script>
+<script src="~/Scripts/daterangepicker.min.js"></script>
+
+<script src="~/Scripts/DataTables/buttons.html5.min.js"></script>
+<link href="~/Content/DataTables/css/buttons.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/daterangepicker.css" rel="stylesheet" />
+
+<script>
+    var groupTable;
+    $(document).ready(function () {
+        
+        $('input[name="daterange"]').daterangepicker({
+            opens: 'left'
+        })
+        $('#FilterEmployees').on('click', function () {
+
+            var StartDate = $('input[name="daterange"]').val().split("-")[0];
+            var EndDate = $('input[name="daterange"]').val().split("-")[1];
+            {
+                $.ajax({
+                    type: "POST",
+                    data: { StartDate: StartDate, EndDate: EndDate },
+                    url: '@Url.Content("~/EmployeeList/FilterEmployees")',
+                    success: function (data) {
+                        groupTable.clear();
+                        groupTable.rows.add(JSON.parse(data));
+                        groupTable.draw();
+                    },
+                });
+            }
+            
+        });
+
+        $('#addbankdetails').prop('disabled', true);
+        loadTable();
+        var table = $('#getallemployee').DataTable();
+        $('#getallemployee tbody').on('click', 'tr', function () {
+
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+                $('#addbankdetails').prop('disabled', true);
+            }
+            else {
+                table.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+                $('#addbankdetails').prop('disabled', false);
+            }
+        });
+
+        $('#addbankdetails').click(function () {
+            
+            var count = table.row('.selected');
+            if (count[0].length > 0) {
+                var data = table.row('.selected').data();
+                var id = data.id;
+                $.ajax({
+                    type: 'POST',
+                    data: {
+                        id: id
+                    },
+                    url: '@Url.Action("BankDetails", "BankDetails")',
+                    success: function (result) {
+                        
+                        $('.changeName').text('Add Bank Details');
+                        $(".card-body").html(result)
+                    }
+                });
+            }
+            else {
+
+                $('#addbankdetails').hide();
+            }
+        });
+        $('#addEmployee').click(function () {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Employee/SetEmployeeid")',
+                success: function (result) {
+                    if (result == "success") {
+                        window.location.href = '@Url.Action("Employee", "Employee")';
+                    }
+                }
+            });
+        });
+
+    });
+    function loadTable() {
+        groupTable = $("#getallemployee").DataTable({
+            "dom": 'Bfrtip',
+            "data": "",
+            buttons: [
+               {
+                   extend: 'excelHtml5',
+                   exportOptions: {
+                       columns: [1, 2, 3, 5, 6, 7, 8, 9, 11]
+                   }
+               }
+            ],
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "iDisplayLength": 25,
+            "bFilter": true,
+            "bProcessing": true,
+            "order": [[1, "asc"]],
+            "ajax": {
+                type: 'Get',
+                url: '@Url.Content("~/EmployeeList/Read")',
+                dataSrc: function (data) {
+                    return JSON.parse(data);
+                }
+            },
+
+            "aoColumns": [
+                { "mData": "id", "bVisible": false, "defaultContent": "<i>Not set</i>" }//0
+                , { "mData": "Employee_Id", "sTitle": "Emp. Id", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//1
+                , { "mData": "Firstname", "sTitle": "First Name", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//2
+                , { "mData": "Lastname", "sTitle": "Last Name", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//3
+                , { "mData": "Skills", "sTitle": "Skills", "sClass": "text-left", "bVisible": false, "defaultContent": "<i>Not set</i>" }//4
+                , { "mData": "ROLEID", "sTitle": "Role", "bVisible": false }//5
+                , { "mData": "Designation", "sTitle": "Designation", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//6
+                , { "mData": "Dateofjoin", "sTitle": "Date Of Join", "sClass": "text-center", "defaultContent": "<i>Not Set</i>" }//7
+                , { "mData": "ResignedOn", "sTitle": "ResignedOn", "sClass": "text-center", "defaultContent": "<i>Not Set</i>" }//8
+                , { "mData": "Languages", "sTitle": "Language", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//9
+                , { "mData": "id", "sTitle": "View", "sClass": "text-center", "bSortable": false, "sWidth": "1%", "orderable": false }
+                , { "mData": "Active", "sTitle": "Status", "sClass": "text-center", "bSortable": false, "sWidth": "1%", "orderable": false }
+                , { "mData": "Active", "sTitle": "Status", "sClass": "text-center", "bSortable": false, "bVisible": false, "sWidth": "1%", "orderable": false }//12
+                , { "mData": "Gender", "sTitle": "Gender", "sClass": "text-center", "bSortable": false, "bVisible": false, "orderable": false }//13
+               //  , { "mData": "Gender", "sTitle": "Gender", "sClass": "text-center", "bSortable": false,"bVisible":false, "orderable": false }//14
+            ],
+            "aoColumnDefs": [
+
+   {
+       "aTargets": [10]
+       , "mRender": function (data, type, row) {
+           return '<button="" onclick="showEmployee(' + data + ')"><i class="fa fa-list"/></button>'
+       }
+   }
+   ,
+   {
+       "aTargets": 11,
+       "mRender": function (row, type, data) {
+
+           if (row) {
+
+
+               return "<span class='badge badge-success badge-lg'>Active</span>"
+           }
+           else {
+
+
+               return "<span class='badge badge-danger badge-lg' style='width:85%' value='InActive'>InActive</span>"
+           }
+       }
+   }
+            ]
+        });
+        loadEmployeeTable();
+        // alert($('#activestatus_filter'));
+
+        $('#activestatus_filter').on('change', function () {
+            debugger
+            var cmbSelected = parseInt($('#activestatus_filter').val());
+
+            if (cmbSelected == 0) {
+                groupTable.column(12).search('').draw();
+            }
+            else if (cmbSelected == 1) {
+                groupTable.column(12).search('true').draw();
+            }
+            else if (cmbSelected == 2) {
+                groupTable.column(12).search('false').draw();
+            }
+            else if (cmbSelected == 3) {
+                groupTable.column(13).search(0).draw();
+            }
+            else if (cmbSelected == 4) {
+                groupTable.column(13).search(1).draw(true);
+            }
+        });
+
+        @*      $('#FilterEmployees').on('click', function () {
+
+            groupTable.column(7).search(DateRange).draw();
+        });*@
+    }
+    function loadEmployeeTable() {
+        $.ajax({
+
+            type: "POST",
+            url: '@Url.Content("~/EmployeeList/Read")',
+            
+
+            success: function (data) {
+                groupTable.clear();
+                groupTable.rows.add(JSON.parse(data));
+                groupTable.draw();
+            }
+
+
+
+        });
+    }
+
+
+    function showEmployee(data) {
+
+            var RoleId = "@Session["RoleId"].ToString()";
+
+            if (RoleId == 1 || RoleId == 4) {
+                $.ajax({
+                    type: 'POST',
+                    data: { id: data },
+                    url: '@Url.Action("SetPrimaryid", "Employee")',
+                    success: function (result) {
+                        if (result == "success") {
+                            window.location.href = '@Url.Action("ReadEmployeeDetails", "Employee")';
+                        }
+                        else {
+                            var url = '@Url.Action("GetUserDetails", "UserInformation")';
+                            window.location.href = url;
+                        }
+                    }
+                });
+            }
+        }
+       
+</script>
+<style>
+    i {
+        cursor: pointer !important;
+    }
+
+    #activestatus_filter {
+        position: relative;
+        top: 3px;
+        right: 5px;
+        width: 100px;
+        height: 33px;
+        border-radius: 4px;
+    }
+</style>
+<div class="card">
+    <div class="card-header ">
+        <div class="p-t-5 changeName">Employee List </div>
+    </div>
+    <div class="card-body">
+        <div>
+            <div class="text-right">
+                <select name="activestatus_filter" id="activestatus_filter">
+                    <option value="1">Active</option>
+                    <option value="2">InActive</option>
+                    <option value="0">All</option>
+                    <option value="3">Male</option>
+                    <option value="4">Female</option>
+                </select>
+                <button type="button" class="btn btn-primary btn-sm m-r-5" id="addbankdetails">Add BankDetails </button>
+                <button type="button" class="btn btn-primary btn-sm" id="addEmployee">Add Employee</button>
+                <div class="col-sm-5 col-md-6 text-right">
+                    <div style="display:inline-block">
+                        <input type="text" name="daterange" class="form-control form-control-sm m-r-5" />
+                    </div>
+                    <div style="display:inline-block" class="m-l-15">
+                        <button type="button" class="btn btn-primary btn-sm" id="FilterEmployees">Search</button>
+                    </div>
+
+                </div>
+            </div>
+            <div class="row m-t-15">
+                <div class="MTS_Table">
+                    <table id="getallemployee" class="table table-bordered table-hover tabel-sm table-responsive" cellspacing="0" width="100%"></table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

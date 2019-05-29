@@ -1,0 +1,97 @@
+﻿@model MTS.LoginModels.GridModel
+@using MTS.ResourceExtension;
+@{
+    ViewBag.Title = "SecurityQuestion";
+    Layout = @Url.Content("~/Views/Shared/_Layout.cshtml"); 
+}
+<script src="@Url.Content("~/Scripts/LoginGendral.js")" type="text/javascript"></script>
+<script type="text/javascript">
+    //Global variables
+    var alertMsg;
+    var oTable;
+    var oButtons;
+    $(document).ready(function () {
+        oButtons = [$("#btnEditQuestion")]
+    });
+
+    //Function to load partial view
+    function getPartial(_id, _type) {
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Content("~/MTS.Login/QA/_PartialViewLoad")',
+            data: { id: _id, type: _type },
+            success: function (data) {
+                $('div#divmainpopup').html(data);
+                $('#divmainpopup').modal('show');
+            },
+            cache: false
+        });
+    }
+
+
+    //Function to fill grid
+    function GetData() {
+        ShowAlertMsg(msgLookup[alertMsg]);
+        DisableButtons(oButtons);
+        $("#HQAID").val("0")
+
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Content("~/MTS.Login/QA/GetData")',
+            success: function (data) {
+                $('div#TableDiv').html(data);
+            },
+            cache: false
+        });
+    }
+
+</script>
+<script type="text/javascript">
+    function AddQuestionDetails() {        
+        getPartial(0, 1);
+    }
+    function EditQuestionDetails() {
+        getPartial($("#HQAID").val(), 2);
+    }
+</script>
+<div class="span12 gap-left0 boxshade">
+    <div class="boxhead">
+        Security Question</div>
+    <div class="span12 boxbody">
+        <div id="alertDiv" style="display: none" class="alert alert-success">
+        </div>
+        <div class="span12 gap-left0 gap-bottom5">
+            <button id="btnEditQuestion" disabled="disabled" value="cancel" class="btn btn-info pull-right gap-right10"
+                onclick="EditQuestionDetails();">
+                <i class="icon-edit icon-white"></i>Edit Security Question</button>
+            <button id="btnAddQuestion" value="Ok" onclick="AddQuestionDetails();" class="btn btn-info pull-right gap-right10">
+                <i class="icon-plus-sign icon-white"></i>Add Security Question</button>
+        </div>
+        <div id="TableDiv">
+            @Html.Partial("_PVQAData")
+        </div>
+    </div>
+    <div class="boxfoot clear">
+    </div>
+</div>
+<!--Hidden variable -->
+<input type="hidden" id="HQAID" />
+<input type="hidden" id="extValue" />
+
+@{    
+    string MsgKeys = this.LocalResources("~/Areas/MTS.Login/Views/SecurityQuestion.cshtml", "MSG_KEYS");
+    String[] keys = MsgKeys.Split(',');
+    string msgCollection = "";
+    for (int i = 0; i < keys.Length; i++)
+    {
+        string msg = this.LocalResources("~/Areas/MTS.Login/Views/SecurityQuestion.cshtml", keys[i]);
+        msgCollection += msgCollection != "" ? "," : "";
+        msgCollection = msgCollection + "'" + keys[i] + "':'" + msg + "'";
+    }
+}
+<!-- Messages -->
+<script type="text/javascript">
+        var msgLookup = {    
+            @Html.Raw(msgCollection)
+        }
+</script>

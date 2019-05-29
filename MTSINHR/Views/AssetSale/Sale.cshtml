@@ -1,0 +1,203 @@
+﻿@model MTSINHR.Models.AssetSale
+<script src="~/Scripts/ValidationFunction.js"></script>
+<script src="~/Scripts/bootbox.min.js"></script>
+@System.Web.Optimization.Scripts.Render("~/bundles/datepicker")
+@System.Web.Optimization.Styles.Render("~/bundles/datepickercss")
+@{
+    List<SelectListItem> TypeOfSale = new List<SelectListItem>();
+
+    TypeOfSale.Add(new SelectListItem
+    {
+        Text = "Outside Sale",
+        Value = "0",
+
+    });
+    TypeOfSale.Add(new SelectListItem
+    {
+        Text = "Retails Sale",
+        Value = "1"
+    });
+
+}
+<script>
+    $(document).ready(function () {
+        debugger
+        $('#Date').datepicker({
+
+            format: 'dd/MM/yyyy',
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            endDate: '+0d',
+        });
+        $('#ApprovedDate').datepicker({
+
+            format: 'dd/MM/yyyy',
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            endDate: '+0d',
+        });
+    });
+
+    function AssetSale() {
+        var url = '@Url.Content("~/AssetSale/Add")';
+
+        if ($("#sale").valid()) {
+            $.ajax({
+                type: "Post",
+                data: $("#sale").serialize(),
+                url: url,
+                success: function (result) {
+
+                    if (result == "Failed") {
+                        $(".errorspan").show();
+                    }
+                    else {
+                        toastr.success("Successfully Added");
+                    }
+                }
+            });
+        }
+    }
+</script>
+<form id="sale" method="post">
+    <div class="panel">
+        <div class="card">
+
+            <div class="card-header p-b-0">
+                <h4>Asset Sale/Disposal</h4>
+                <div class="card-title text-center">
+                    <label id="addedit"></label>
+                </div>
+            </div>
+
+            <div class="card-block">
+                <div class="content-align p15">
+                    <div class="row">
+                        <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.AssetTypeId)
+                                    </div>
+                                    <div class="editor-field">
+                                        @Html.DropDownListFor(model => model.AssetTypeId, new System.Web.Mvc.SelectList(ViewBag.Asset, "Value", "Text"), new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.AssetTypeId)
+                                    </div>
+                                </div>
+                            </div>
+                        <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.AssetName)
+                                    </div>
+                                    <div class="editor-field">
+                                        @Html.DropDownListFor(model => model.AssetName, new System.Web.Mvc.SelectList(ViewBag.Assetname, "Value", "Text"), new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.AssetName)
+                                    </div>
+                                </div>
+                            </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Date)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.Date, "{0:dd/MMM/yyyy}", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Date)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    Type Of Sale
+                                </div>
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.TypeOfSale, new System.Web.Mvc.SelectList(TypeOfSale, "value", "Text"), "---Select Payment Type--", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.TypeOfSale)
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    Sale Price
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.SalePrice, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.SalePrice)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    Sold To
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.SoldTo, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.SoldTo)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    Approved Date
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.ApprovedDate, "{0:dd/MMM/yyyy}", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.ApprovedDate)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    Approved Reference
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.ApprovedRef, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.ApprovedRef)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    Approved By
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.ApprovedBy, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.ApprovedBy)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Notes)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextAreaFor(model => model.Notes, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Notes)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pull-right p-b-10 p-r-10">
+                    <button type="button" id="cancel" onclick="back()" class="btn btn-light m-r-5">Close</button>
+                    <button type="button" id="add" class="btn btn-primary spanedit " onclick="AssetSale()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+

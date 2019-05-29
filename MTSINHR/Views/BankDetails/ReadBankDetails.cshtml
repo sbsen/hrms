@@ -1,0 +1,126 @@
+﻿@model MTSINHR.Models.BankDetails
+@{
+    ViewBag.Title = "BankDetails";
+}
+@System.Web.Optimization.Scripts.Render("~/bundles/jquery")
+@System.Web.Optimization.Styles.Render("~/bundles/bootstrapdt")
+@System.Web.Optimization.Scripts.Render("~/bundles/datatable")
+<script src="~/Scripts/ValidationFunction.js"></script>
+
+<script src="~/Scripts/DataTables/dataTables.buttons.min.js"></script>
+<script src="~/Scripts/DataTables/excel.min.js"></script>
+<script src="~/Scripts/DataTables/buttons.html5.min.js"></script>
+<link href="~/Content/DataTables/css/buttons.dataTables.min.css" rel="stylesheet" />
+<style>
+    .optRadio input[type=radio] {
+        position: absolute;
+        visibility: hidden;
+        display: none;
+    }
+
+    .optRadio label {
+        color: #9a929e;
+        display: inline-block;
+        cursor: pointer;
+        font-weight: 400;
+        padding: 5px;
+        margin: 0;
+        width: 95px;
+        text-align: center;
+        font-size: 14px;
+    }
+
+    .optRadio input[type=radio]:checked + label {
+        background-color: #1976d2;
+        color: #fff;
+    }
+
+    .optRadio.radio-group {
+        border: solid 1px #ddd;
+        display: inline-block;
+        margin: 0px;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+</style>
+<div class="card">
+    <div class="card-header">
+        Bank Details
+    </div>
+    <div class="card-body">
+        <div class="clearfix"></div>
+        <div class="row">
+            <div class="col-md-12 text-right m-b-15">
+                <div class="radio-group optRadio tc">
+                    <input type="radio" id="option-one" onclick="ActiveStatus('')" checked name="selector">
+                    <label for="option-one">All</label>
+                    <input type="radio" id="option-two" onclick="ActiveStatus(true)" name="selector">
+                    <label for="option-two">Active</label>
+                    <input type="radio" id="option-three" onclick="ActiveStatus(false)" name="selector">
+                    <label for="option-three">InActive</label>
+                </div>
+            </div>
+            <div class="MTS_Table">
+                <table id="getbankdetails" class="table table-bordered table-hover tabel-sm table-responsive" cellspacing="0" width="100%"></table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var groupTable;
+    $(document).ready(function () {
+        LoadDatatable();
+        LoadHolidayTable();
+    });
+    function LoadDatatable() {
+
+        groupTable = $("#getbankdetails").DataTable({
+            "dom": 'Bfrtip',
+            buttons: [
+
+        'excel',
+
+            ],
+            "data": "",
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "iDisplayLength": 10,
+            "bFilter": true,
+            "bProcessing": true,
+
+            "aoColumns": [
+                 { "mData": "id", "bVisible": false, "defaultContent": "<i>Not set</i>" }
+               , { "mData": "Employee_Id", "bVisible": false, "sTitle": "Emp. Id", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }
+               , { "mData": "Name", "sTitle": "Employee Name", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }
+                , { "mData": "Accountnumber", "sTitle": "Account Number", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }
+                 , { "mData": "Ifsc", "sTitle": "IFSC", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }
+               , { "mData": "Bankname", "sTitle": " Bank Name", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }
+               , { "mData": "Branchname", "sTitle": "Branch Name", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }
+               , { "mData": "Pancard", "sTitle": "PAN Card" }
+               , { "mData": "ACTIVE", "sTitle": "Active Status", "bVisible": false, "defaultContent": "<i>Not set</i>" }
+            ],
+
+        });
+    }
+
+    function LoadHolidayTable() {
+        $.ajax({
+
+            type: "GET",
+            url: '@Url.Content("~/BankDetails/Read")',
+            success: function (data) {
+                groupTable.clear();
+                groupTable.rows.add(JSON.parse(data));
+                groupTable.draw();
+            }
+
+        });
+
+    }
+
+    function ActiveStatus(status) {
+
+        groupTable.search(status).draw();
+
+    }
+</script>

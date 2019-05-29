@@ -1,0 +1,227 @@
+﻿@model LeaveApply.Models.Leave
+
+@{
+    ViewBag.Title = "LeavePending";
+}
+
+
+@System.Web.Optimization.Styles.Render("~/bundles/fontawesome")
+@System.Web.Optimization.Styles.Render("~/bundles/bootstrapdt")
+@System.Web.Optimization.Scripts.Render("~/bundles/datatable")
+
+<script src="~/Scripts/bootbox.min.js"></script>
+
+
+<div class="container">
+    <ul class="nav nav-tabs">
+        <li class="active col-md-6"><a class="nav-link text-center" href='@Url.Content("~/EmployeeLeavePending/LeavePending")'>Pending</a></li>
+        <li class="col-md-6"><a class="nav-link text-center" href='@Url.Content("~/EmployeeLeaveApproval/LeaveApproval")'>Approved</a></li>
+    </ul>
+</div>
+
+<script>
+    var leavelisttable;
+    var dt;
+    $(document).ready(function () {
+
+        loadleavependinglist();
+
+
+    });
+
+    function loadleavependinglist() {
+        leavelisttable = $("#pendinglist").DataTable({
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "iDisplayLength": 5,
+            "ajax": {
+                "url": '@Url.Content("~/EmployeeLeavePending/GetAllPendingLeaveList")',
+                "dataSrc": function (data) {
+                    
+                    return data;
+                }
+            },
+            "aoColumns": [{ "mData": "Empid", "sTitle": "Employee ID" },
+                            { "mData": "EmployeeName", "sTitle": "Employee Name" },
+                            { "mData": "FromDate", "sTitle": "From Date" },
+                            { "mData": "ToDate", "sTitle": "To Date" },
+                            { "mData": "NumberOfDays", "sTitle": "Number of Days" },
+                            { "mData": "LeaveType", "sTitle": "Leave Type" },
+                            { "mData": "Reason", "sTitle": "Reason" },
+                            { "mData": "Employee_Id", "sTitle": "Approve", "sClass": "text-center", "bSortable": true, "sWidth": "1%", "orderable": false },
+                            { "mData": "Employee_Id", "sTitle": "Reject", "sClass": "text-center", "bSortable": true, "sWidth": "1%", "orderable": false },
+                            { "mData": "primaryid", "sTitle": "id", "bVisible": false },
+                            { "mData": "LeaveFromSession", "sTitle": "LeaveFromSession", "bVisible": false },
+                            { "mData": "LeaveToSession", "sTitle": "LeaveToSession", "bVisible": false }],
+            "aoColumnDefs": [{
+                "aTargets": [7],
+                "mRender": function (data) {
+                    return '<span onclick= approveleave($(this).closest("tr")) class="fa fa-check spanedit"></span>';
+                }
+            },
+            {
+                "aTargets": [8],
+                "mRender": function (data) {
+                    return '<span onclick= rejectleave($(this).closest("tr")) class="fa fa-times spanedit"></span>';
+                }
+            }]
+        });
+
+    }
+
+</script>
+
+
+<script>
+    function monthDiff(d1, d2) {
+        var months;
+        months = (d2.getFullYear() - d1.getFullYear()) * 12;
+        months -= d1.getMonth() + 1;
+        months += d2.getMonth();
+        return months <= 0 ? 0 : months;
+    }
+
+
+    function approveleave(curTr) {
+
+        var data = leavelisttable.row(curTr).data();
+        var Fromdate = new Date(data.FromDate);
+        var Todate = new Date(data.ToDate);
+        var approval;
+        var LeaveFromSession = data.LeaveFromSession;
+        var LeaveToSession = data.LeaveToSession;
+
+
+
+        bootbox.confirm({
+            title: "Leave Approval",
+            message: "Are you sure Want to approve this leave?",
+            buttons: {
+                cancel: {
+                    label: '<i class="fa fa-times"></i> Cancel',
+
+                },
+                confirm: {
+                    label: '<i class="fa fa-check"></i> Approve',
+
+                }
+            },
+
+            callback: function (result) {
+                if (result) {
+
+                    ajaxfunction(2);
+                }
+
+            }
+        });
+
+        function ajaxfunction(approval) {
+            $.ajax({
+
+                type: "POST",
+                url: '@Url.Content("~/EmployeeLeavePending/Approve_Leave")',
+                data: {
+                    id: data.primaryid,
+                    Approval: approval,
+                    Employee_Id: data.Employee_Id,
+                    FromDate: data.FromDate,
+                    ToDate: data.ToDate,
+                    LeaveFromSession: LeaveFromSession,
+                    LeaveToSession: LeaveToSession,
+                    LeaveType: data.id,
+                    Reason: data.Reason,
+                    NumberOfDays: data.NumberOfDays,
+
+                },
+
+                success: function (response) {
+                    
+                    if (response == 1) {
+                        bootbox.hideAll;
+                        toastr.success("Leave Approved Successfully");
+                        leavelisttable.ajax.reload();
+                    }
+                },
+                cache: false
+            });
+        }
+    }
+
+
+</script>
+
+
+<script>
+    function rejectleave(curTr) {
+        var data = leavelisttable.row(curTr).data();
+        var approval;
+        bootbox.confirm({
+            title: "Leave Reject",
+            message: "Are you sure Want to reject this leave. ?",
+            buttons: {
+                cancel: {
+                    label: '<i class="fa fa-times"></i> Cancel',
+
+                },
+                confirm: {
+                    label: '<i class="fa fa-check"></i> Reject',
+
+                }
+            },
+
+            callback: function (result) {
+                if (result == true) {
+                    ajaxfunction(3);
+                }
+
+                function ajaxfunction(approval) {
+
+                    $.ajax({
+                        type: "POST",
+                        url:  '@Url.Content("~/EmployeeLeavePending/Cancel_Leave")',
+                        data: {
+                            Approval: approval,
+                            Employee_Id: data.Employee_Id,
+                            FromDate: data.FromDate,
+                            ToDate: data.ToDate,
+                            LeaveType: data.id,
+                            Reason: data.Reason
+                        },
+                        success: function (response) {
+                            if (response == 1) {
+                                toastr.success("Leave Rejected Successfully");
+                                leavelisttable.ajax.reload();
+
+                            }
+                        },
+                        cache: false
+                    });
+                }
+            }
+        });
+    };
+</script>
+
+
+
+<div class="card">
+    <div class="card-body">
+        <div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <h4>Pending Leaves</h4>
+                </div>
+
+            </div>
+            <div class="clearfix"></div>
+            <div class="row m-t-15">
+
+                <div class="MTS_Table">
+                    <table id="pendinglist" class="table table-bordered table-hover tabel-sm table-responsive" cellspacing="0" width="100%">
+                    </table>
+                </div>
+
+            </div>
+    </div>
+</div>
+</div>

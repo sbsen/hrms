@@ -1,0 +1,511 @@
+﻿@{
+    ViewBag.Title = "Read_Employeedetails";
+}
+
+<h4>Employee Details</h4>
+ <script src="~/Scripts/ValidationFunction.js"></script>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+<style>
+    .iceLabel
+    {
+        color: #3c8dbc;
+    }
+
+    #file
+    {
+        width: 300px;
+    }
+
+    .card-block
+    {
+        padding-bottom: 20px;
+        padding-top: 20px;
+    }
+
+    .card-header
+    {
+        height: 40px;
+    }
+
+    .text-left
+    {
+        display: inline-block;
+    }
+
+    .text-right
+    {
+        display: inline-block;
+        float: right;
+        margin-top: -7px;
+    }
+</style>
+
+<script>
+
+    $(document).ready(function () {
+        var EmployeeData = '@Html.Raw(ViewBag.EmployeeData)';
+        EmployeeData = JSON.parse(EmployeeData);
+        $("#Employeeid").text(EmployeeData[0].Employee_Id).text;
+        $("#Firstname").text(EmployeeData[0].Firstname).text;
+        $("#Lastname").text(EmployeeData[0].Lastname).text;
+        $("#Designation").text(EmployeeData[0].Designation).text;
+        $("#Skills").text(EmployeeData[0].Skills).text;
+        $("#Certification").text(EmployeeData[0].Certificationname).text;
+        $("#Joineddate").text(EmployeeData[0].Dateofjoin).text;
+        $("#Gender").text(EmployeeData[0].Gender).text;
+        $("#Aadhar").text(EmployeeData[0].Aadhar).text;
+        $("#Pancard").text(EmployeeData[0].Pancard).text;
+        $("#Qualification").text(EmployeeData[0].Qualification).text;
+        $("#KnownLanguages").text(EmployeeData[0].LanguageDetails).text;
+        $("#Address_Line1").text(EmployeeData[0].current_address).text;
+        $("#Line2").text(EmployeeData[0].currentLine1).text;
+        $("#State").text(EmployeeData[0].currentState).text;
+        $("#Pincode").text(EmployeeData[0].currentpincode).text;
+        $("#permanent_address").text(EmployeeData[0].permanent_address).text;
+        $("#permanentLine1").text(EmployeeData[0].permanentLine1).text;
+        $("#permanentstate").text(EmployeeData[0].permanentState).text;
+        $("#permanentpincode").text(EmployeeData[0].permanentpincode).text;
+        $("#Fathername").text(EmployeeData[0].Fathername).text;
+        $("#Spousename").text(EmployeeData[0].Spousename).text;
+        $("#Marital_Status").text(EmployeeData[0].Marital_status).text;
+        $("#Mobile").text(EmployeeData[0].Mobile).text;
+        $("#FatherMobile").text(EmployeeData[0].FatherMobile).text;
+        $("#DateofBirth").text(EmployeeData[0].Dateofbirth).text;
+        $("#Officialmail").text(EmployeeData[0].Officialmail).text;
+        $("#Personalmail").text(EmployeeData[0].Email).text;
+        $("#Alternate_mobile").text(EmployeeData[0].Emp_Alternate_Mobile).text;
+        $("#Age").text(EmployeeData[0].Emp_Age).text;
+        $("#Bloodgroup").text(EmployeeData[0].Blood_group).text;
+        $("#Nationality").text(EmployeeData[0].Nationality).text;
+        $("#BankName").text(EmployeeData[0].Bankname).text;
+        $("#BranchName").text(EmployeeData[0].Branchname).text;
+        $("#AccountNumber").text(EmployeeData[0].Accountnumber).text;
+        $("#Ifsc").text(EmployeeData[0].Ifsc).text;
+
+   
+
+    });
+    //function checkFrom() {
+  
+    //    var rslt = false;
+    //    $('#editbank' + ' :input').each(function () {
+    //        alert($(this));
+    //        $('.field-validation-valid').hide();
+    //        var str = $(this).val();
+    //        str = str.replace(/^\s+/, "");
+    //        $(this).val(str);
+    //        var reg = new RegExp($(this).attr('data-val-regex-data-val-regex-pattern'));
+    //        if (!reg.test(str)) {
+    //            $('.field-validation-valid').text("Please use character only");
+    //            $('.field-validation-valid').show();
+    //            return false;
+    //        } else {
+    //            rslt = true;
+    //        }
+    //    });
+    //    return rslt;
+    //}
+
+
+    function Edit() {
+       
+        var empid = $("#Employeeid").text();
+        var url = '@Url.Action("EditEmployee", "Employee", new { empid = "empId" })';
+        url = url.replace("empId", empid)
+        window.location.href = url;
+
+    }
+    function EditBankdetails() {
+        
+        var empid = $("#Employeeid").text();
+        $("#Employee_Id").val(empid),
+        $("#Bank_Name").val($("#BankName").text()),
+        $("#Branch_Name").val($("#BranchName").text()),
+        $("#Account_Number").val($("#AccountNumber").text()),
+        $("#Ifsc_Code").val($("#Ifsc").text());
+        $("#EditaBankdetails").modal('show');
+        $('.field-validation-valid').hide();
+    }
+    function UpdateBankdetails() {
+       
+        
+        if (checkForm()) {
+         
+            alert("into check Form");
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Employee/EditBankDetails")',
+                async:false,
+                data:
+                    {
+                        Employee_Id: $("#Employee_Id").val(),
+                        BankName: $("#Bank_Name").val(),
+                        Branchname: $("#Branch_Name").val(),
+                        Accountnumber: $("#Account_Number").val(),
+                        Ifsccode: $("#Ifsc_Code").val()
+                    },
+                //$("#editbank").serialize(),
+                success: function (response) {
+                    
+                    if (parseInt(response.success) == 1) {
+                        $("#EditaBankdetails").modal('hide');
+
+                    } else {
+                        $('#errorSpan').text("Failed To Update, Already Exists");
+                        $('#errorSpan').show();
+                    }
+                },
+                error: function (a, b, c) {
+                }
+            });
+
+        }
+    }
+
+    </script>
+    
+<div class="content-body">
+<div class="card">
+    <div class="card-header">
+        <div>
+        <div class="text-left">
+        <h6 class="card-title">Primary</h6></div>
+             <div class="text-right">
+        <button type="button" class="btn btn-primary btn-sm" onclick="Edit()"><i class ="fa fa-edit"></i> &nbsp Edit</button>
+</div></div>
+    </div>
+    <div class="card-block">
+        <div class="row" >
+        <div class="col-12 col-lg-2" style="text-align: center;">
+        <img id="profile_image_3" src="~/Images/Usericon.png" alt="W3Schools.com" class="img-polaroid img-thumbnail" style="max-width: 140px; max-height: 140px; border: solid black">
+        </div>
+               <div class="col-lg-10">
+        <div class="col-12 col-md-3 col-lg-10" style="font-size: 16px;">
+        <label style="font-size: 13px;">Employee Id :</label>
+        <label style="font-size: 13px;color:red; font-weight: bold;" id="Employeeid"></label>
+        </div>
+        <div class="col-12 col-md-3 col-lg-10" style="font-size: 16px;">
+        <label  style="font-size: 13px;">First Name :</label>
+        <label  class="control-label col-xs-12 iceLabel"   style="font-size: 13px; font-weight: bold;" id="Firstname"></label>
+        </div>
+        <div class="col-12 col-md-3 col-lg-10" style="font-size: 16px;">
+        <label style="font-size: 13px";>Last Name :</label>
+        <label  class="control-label col-xs-12 iceLabel"  style="font-size: 13px; font-weight: bold;" id="Lastname"></label>
+        </div>
+        <div class="col-12 col-md-3 col-lg-10" style="font-size: 16px;">
+        <label style="font-size: 13px";>Designation :</label>
+        <label  class="control-label col-xs-12 iceLabel"  style="font-size: 13px; font-weight: bold;" id="Designation"></label>
+        </div>
+        
+        <div class="col-12 col-md-3 col-lg-10" style="font-size: 16px;">
+        <label  style="font-size: 13px;">Skills :</label>
+        <label  class="control-label col-xs-12 iceLabel"  style="font-size: 13px; font-weight: bold;" id="Skills"></label>
+        </div>
+        <div class="col-12 col-md-3 col-lg-10" style="font-size: 16px;">
+        <label  style="font-size: 13px;">Certification :</label>
+        <label  class="control-label col-xs-12 iceLabel"   style="font-size: 13px; font-weight: bold;" id="Certification"></label>
+        </div>
+                   </div>
+                        
+        </div>    
+</div>
+        </div>
+
+
+<br />
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                   <h6 class="card-title">Personal </h6>
+                </div>
+                <div class="card-block">
+                    <div class="container">
+                        
+                    <div class="row">
+
+                       <div class="col-12 col-md-3 col-lg-3" style="font-size: 16px;">
+                            <label  style="font-size: 13px;">Date of Join :</label>
+                            <label  class="control-label col-xs-12 iceLabel"  style="font-size: 13px; font-weight: bold;" id="Joineddate"></label>
+                        </div>
+                         <div class="col-12 col-md-3 col-lg-3" style="font-size: 16px;">
+                            <label style="font-size: 13px;">Gender :</label>
+                            <label  class="control-label col-xs-12 iceLabel"  style="font-size: 13px; font-weight: bold;" id="Gender"></label>
+                        </div>
+                        <div class="col-12 col-md-3" style="font-size: 16px;">
+                            <label class="control-label col-xs-12" style="font-size: 13px;">Aadhar :</label>
+                            <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="Aadhar"></label>
+                        </div>
+                        <div class="col-12 col-md-3" style="font-size: 16px;">
+                            <label class="control-label col-xs-12" style="font-size: 13px;">Pancard :</label>
+                            <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="Pancard"></label>
+                        </div>
+                    </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<br />
+    <div class="row" >
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="card-title">Contact</h6>
+                </div>
+                <div class="card-block">
+                    <div class="container">
+                   
+                    
+                    <div class="row">
+                        <div class="col-12 col-md-3 col-lg-3" style="font-size: 16px;">
+                           <label  style="font-size: 13px;">Father Name :</label>
+                            <label  class="control-label col-xs-12 iceLabel"   style="font-size: 13px; font-weight: bold;" id="Fathername"></label>
+                        </div>
+                        <div class="col-12 col-md-3 col-lg-3" style="font-size: 16px;">
+                          <label style="font-size: 13px";>Father Mobile :</label>
+                          <label    class="control-label col-xs-12 iceLabel"  style="font-size: 13px; font-weight: bold;" id="FatherMobile"></label>
+                        </div>
+
+                        <div class="col-12 col-md-3 col-lg-3" style="font-size: 16px;">
+                            <label  style="font-size: 13px;">Marital Status :</label>
+                            <label   class="control-label col-xs-12 iceLabel"  style="font-size: 13px; font-weight: bold;" id="Marital_Status"></label>
+                        </div>
+                        <div class="col-12 col-md-3 col-lg-3" style="font-size: 16px;">
+                            <label style="font-size: 13px;">Spouse Name :</label>
+                            <label  class="control-label col-xs-12 iceLabel"  style="font-size: 13px; font-weight: bold;" id="Spousename"></label>
+                        </div>
+                    </div>
+                        
+                    <hr>
+                    <div class="row">
+
+                        <div class="col-12 col-md-3" style="font-size: 16px;">
+                            <label class="control-label col-xs-12" style="font-size: 13px;">Employee Mobile :</label>
+                            <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="Mobile"></label>
+                        </div>
+                       <div class="col-12 col-md-3" style="font-size: 16px;">
+                            <label class="control-label col-xs-12" style="font-size: 13px;">Alternate Mobile :</label>
+                            <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="Alternate_mobile"></label>
+                        </div>
+                        <div class="col-12 col-md-3" style="font-size: 16px;">
+                            <label class="control-label col-xs-12" style="font-size: 13px;">Official mail :</label>
+                            <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="Officialmail"></label>
+                        </div>
+                        <div class="col-12 col-md-3" style="font-size: 16px;">
+                            <label class="control-label col-xs-12" style="font-size: 13px;">Personal mail :</label>
+                            <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="Personalmail"></label>
+                        </div>
+                    </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<br />
+  <div class="row" >
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="card-title">User</h6>
+                </div>
+                <div class="card-block">
+                    <div class="container">
+                   
+                    
+                    <div class="row">
+                        <div class="col-12 col-md-3 col-lg-3" style="font-size: 16px;">
+                           <label  style="font-size: 13px;">Age :</label>
+                            <label  class="control-label col-xs-12 iceLabel"   style="font-size: 13px; font-weight: bold;" id="Age"></label>
+                        </div>
+                        <div class="col-12 col-md-3 col-lg-3" style="font-size: 16px;">
+                          <label style="font-size: 13px";>Blood Group : </label>
+                          <label  class="control-label col-xs-12 iceLabel"  style="font-size: 13px; font-weight: bold;" id="Bloodgroup"></label>
+                        </div>
+
+                        <div class="col-12 col-md-3 col-lg-3" style="font-size: 16px;">
+                            <label  style="font-size: 13px;">Date of Birth :</label>
+                            <label  class="control-label col-xs-12 iceLabel"  style="font-size: 13px; font-weight: bold;" id="DateofBirth"></label>
+                        </div>
+                        <div class="col-12 col-md-3 col-lg-3" style="font-size: 16px;">
+                            <label style="font-size: 13px;">Nationality :</label>
+                            <label  class="control-label col-xs-12 iceLabel"  style="font-size: 13px; font-weight: bold;" id="Nationality"></label>
+                        </div>
+                    </div>
+                        
+                    <hr>
+                    <div class="row">
+
+                        <div class="col-12 col-md-3" style="font-size: 16px;">
+                            <label class="control-label col-xs-12" style="font-size: 13px;">Qualification : </label>
+                            <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="Qualification"></label>
+                        </div>
+                     
+                        <div class="col-12 col-md-3" style="font-size: 16px;">
+                            <label class="control-label col-xs-12" style="font-size: 13px;">Known Languages :</label>
+                            <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="KnownLanguages"></label>
+                        </div>
+                    </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<br />
+
+
+<div class="row" >
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="card-title">Address</h6>
+                </div>
+                <div class="card-block">
+                    <div class="container">
+                    <div class="row">
+                        <div class="col-12 col-md-3 col-lg-3" style="font-size: 16px;">
+                           <label  style="font-size: 13px;">Current Address :</label>
+                            <label   class="control-label col-xs-12 iceLabel"  style="font-size: 13px; font-weight: bold;" id="Address_Line1"></label>
+                        </div>
+                        <div class="col-12 col-md-3 col-lg-3" style="font-size: 16px;">
+                          <label style="font-size: 13px";>Line1 : </label>
+                          <label  class="control-label col-xs-12 iceLabel"  style="font-size: 13px; font-weight: bold;" id="Line2"></label>
+                        </div>
+
+                        <div class="col-12 col-md-3 col-lg-3" style="font-size: 16px;">
+                            <label  style="font-size: 13px;">State :</label>
+                            <label  class="control-label col-xs-12 iceLabel"  style="font-size: 13px; font-weight: bold;" id="State"></label>
+                        </div>
+                        <div class="col-12 col-md-3 col-lg-3" style="font-size: 16px;">
+                            <label style="font-size: 13px;">Pincode :</label>
+                            <label  class="control-label col-xs-12 iceLabel"  style="font-size: 13px; font-weight: bold;" id="Pincode"></label>
+                        </div>
+                    </div>
+                        
+                    <hr>
+                    <div class="row">
+
+                        <div class="col-12 col-md-3" style="font-size: 16px;">
+                            <label class="control-label col-xs-12" style="font-size: 13px;">Permanent Address : </label>
+                            <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="permanent_address"></label>
+                        </div>
+                        <div class="col-12 col-md-3" style="font-size: 16px;">
+                            <label class="control-label col-xs-12" style="font-size: 13px;"> Line1 :</label>
+                            <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="permanentLine1"></label>
+                        </div>
+                        <div class="col-12 col-md-3" style="font-size: 16px;">
+                            <label class="control-label col-xs-12" style="font-size: 13px;">State :</label>
+                            <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="permanentstate"></label>
+                        </div>
+                        <div class="col-12 col-md-3" style="font-size: 16px;">
+                            <label class="control-label col-xs-12" style="font-size: 13px;"> Pincode:</label>
+                            <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="permanentpincode"></label>
+                        </div>
+                    </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                     <div>
+        <div class="text-left">
+        <h6 class="card-title">Bank Account</h6></div>
+             <div class="text-right">
+        <button type="button" class="btn btn-primary btn-sm" onclick="EditBankdetails()"><i class ="fa fa-edit"></i> &nbsp Edit</button>
+         </div></div>
+                </div>
+                <div class="card-block">
+                    <div class="container">
+                        
+                    <div class="row">
+
+                       <div class="col-12 col-md-3 col-lg-3" style="font-size: 16px;">
+                            <label  style="font-size: 13px;">Bank Name :</label>
+                            <label  class="control-label col-xs-12 iceLabel"  style="font-size: 13px; font-weight: bold;" id="BankName"></label>
+                        </div>
+                         <div class="col-12 col-md-3 col-lg-3" style="font-size: 16px;">
+                            <label style="font-size: 13px;">Branch Name :</label>
+                            <label  class="control-label col-xs-12 iceLabel"  style="font-size: 13px; font-weight: bold;" id="BranchName"></label>
+                        </div>
+                        <div class="col-12 col-md-3" style="font-size: 16px;">
+                            <label class="control-label col-xs-12" style="font-size: 13px;">Account Number :</label>
+                            <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="AccountNumber"></label>
+                        </div>
+                        <div class="col-12 col-md-3" style="font-size: 16px;">
+                            <label class="control-label col-xs-12" style="font-size: 13px;">IFSC Code :</label>
+                            <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="Ifsc"></label>
+                        </div>
+                    </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+
+
+
+<div class="modal fade" id="EditaBankdetails" data-backdrop="static" keyboard="false">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Edit BankDetails</h4>
+            </div>
+            <div class="modal-body">
+                <form id="editbank">
+                        @*<div class="form-group">*@
+                              @*  <input type="hidden" id="id" value="">*@
+                        @*</div>*@
+
+                        <div class="form-group">
+                            <label>Employee Id</label>
+                                <input type="text" class="form-control" id="Employee_Id" readonly value="">
+                        </div>
+                    
+                       <div class="form-group">
+                            <label>Bank Name</label>
+                                    <input class="form-control" data-val="true"  data-val-regex-data-val-regex-pattern="^([a-zA-Z ]+)$" id="Bank_Name" name="Bank_Name"  type="text" value="" />
+                                  
+                                </div>
+                 
+                        <div class="form-group">
+                            <label>Branch Name</label>
+                                    <input class="form-control" data-val="true" data-val-regex-data-val-regex-pattern="^([a-zA-Z ]+)$"  name="Branch_Name"   id="Branch_Name" type="text" value="" />
+                                  
+                                </div>
+                       <div class="form-group">
+                            <label>Account Number</label>
+                               <input class="form-control"  data-val-regex-data-val-regex-pattern="^([0-9]+)$"  id="Account_Number"  name="Account_Number"   type="text" value="" />
+                                   
+                        </div>
+                        <div class="form-group">
+                            <label>IFSC Code</label>
+                                <input class="form-control" data-val-regex-data-val-regex-pattern="^([0-9 a-zA-Z]+)$"  id="Ifsc_Code"  name="Ifsc_Code"   type="text" value="" />
+                                  
+                        </div>
+                                           
+                    <div><span class="field-validation-valid" class="field-validation-valid" style="color: red; font: bold; display: none"></span></div>
+                 <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="UpdateBankdetails()">Save</button>
+            </div>
+                </form>
+            </div>
+           
+        </div>
+    </div>
+    </div>
+
+
+
+

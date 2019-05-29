@@ -1,0 +1,440 @@
+﻿@{
+    ViewBag.Title = "UserDetails";
+}
+
+<h4>EmployeeDetails</h4>
+
+
+<script>
+    $(document).ready(function () {
+
+        var EmployeeData = '@Html.Raw(ViewBag.EmployeeData)';
+        ds = JSON.parse(EmployeeData);
+        var FinalLang = "";
+        for (var i = 0; i < ds.Table1.length; i++) {
+            FinalLang += ds.Table1[i].Languagename1 + ", ";
+        }
+        FinalLang = FinalLang.slice(0, -2);
+
+
+        var FinalSkill = "";
+        for (var i = 0; i < ds.Table2.length; i++) {
+            FinalSkill += ds.Table2[i].Skills + ", ";
+        }
+        FinalSkill = FinalSkill.slice(0, -2);
+
+        var dt = ds.Table[0];
+
+        var st = ds.Table2[0];
+
+        $(".Employee_Id").val(dt.id);
+        $("#EmployeeidLabel").text(dt.Employee_Id).text;
+        $("#FirstnameLabel").text(dt.Firstname).text;
+        $("#LastnameLabel").text(dt.Lastname).text;
+        $("#MobileLabel").text(dt.Mobile).text;
+        $("#OfficialEmailLabel").text(dt.Email).text;
+        $("#DesignationLabel").text(dt.Designation).text;
+        $("#DateofjoinLabel").text(dt.Dateofjoin).text;
+        $("#GenderLabel").text(dt.Gender).text;
+
+        if (dt.Dateofbirth != null) {
+            $("#EmployeeDateofbirthLabel").text(formatDate(new Date(dt.Dateofbirth))).text;
+        }
+        
+        $("#SkillsLabel").text(FinalSkill).text;
+        $("#SkillsLabel").attr('data-skill-id', dt.Skills.substring(1, dt.Skills.length));
+        $("#CertificatenameLabel").text(dt.Certificationname).text;
+        $("#IssuedateLabel").text(dt.Issueddate).text;
+        $("#CurrentBuildingLabel").text(dt.CurrentBuilding_Plot).text;
+        $("#CurrentCityLabel").text(dt.CurrentCity).text;
+        $("#CurrentStateLabel").text(dt.CurrentState).text;
+        $("#CurrentPincodeLabel").text(dt.CurrentPincode).text;
+        $("#PermanentBuildingLabel").text(dt.PermanentBuilding_Plot).text;
+        $("#PermanentCityLabel").text(dt.PermanentCity).text;
+        $("#PermanentStateLabel").text(dt.PermanentState).text;
+        $("#PermanentPincodeLabel").text(dt.PermanentPincode).text;
+        $("#SchoolnameLabel").text(dt.Schoolname).text;
+        if (dt.Schoolpassedoutyear != null)
+        {
+            $("#SchoolpassoutLabel").text(formatDate(new Date(dt.Schoolpassedoutyear))).text;
+        }
+
+        $("#CollegenameLabel").text(dt.Collegename).text;
+        if (dt.Collegepassedoutyear != null)
+        {
+            $("#CollegepassoutLabel").text(formatDate(new Date(dt.Collegepassedoutyear))).text;
+        }
+
+        $("#QualificationLabel").text(dt.Qualification).text;
+        $("#DependentnameLabel").text(dt.Dependentname).text;
+        $("#RelationshipLabel").text(dt.Relationship).text;
+        if (dt.RelDateofbirth != null)
+        {
+            $("#DateofbirthLabel").text(formatDate(new Date(dt.RelDateofbirth))).text;
+        }
+        $("#AgeLabel").text(dt.Employee_Age).text;
+        $("#BloodgroupLabel").text(dt.BloodGroup).text;
+        $("#NationalityLabel").text(dt.Nationality).text;
+
+        $("#LanguagenameLabel").text(FinalLang).text;
+        $("#AlternateMobileLabel").text(dt.Employee_Alternate_Mobile).text;
+        $("#PersonalMailIdLabel").text(dt.PersonalMail).text;
+        $("#EmergencyContactNameLabel").text(dt.Emergency_ContactName).text;
+        $("#EmergencycontactNumberLabel").text(dt.Emergency_ContactNumber).text;
+        $("#ContactRelationshipLabel").text(dt.ContactRelationship).text;
+
+
+        function formatDate(date) {
+            
+            var monthNames = [
+              "Jan", "Feb", "Mar",
+              "Apr", "May", "Jun", "Jul",
+              "Aug", "Sep", "Oct",
+              "Nov", "Dec"
+            ];
+
+            var day = date.getDate();
+            var monthIndex = date.getMonth();
+            var year = date.getFullYear();
+
+            return day + '/' + monthNames[monthIndex] + '/' + year;
+        }
+
+    });
+
+
+</script>
+<div class="employeedetails">
+    <div class="card">
+        <div class="card-header">
+            <h6 class="card-title">Primary</h6>
+        </div>
+        <div class="card-block">
+            <div class="row">
+                <div class="col-12 col-lg-2" style="text-align: center;">
+                    <img id="profile_image" src='data:image/png;base64,@ViewBag.Image' alt="mtsin.com" class="img-polaroid img-thumbnail" style="width: 145px; height: 170px; border: solid black">
+                </div>
+                <div class="col-lg-10">
+                    <div class="col-12 col-md-3 col-sm-6" style="font-size: 16px;">
+                        <label style="font-size: 13px;">Employee Id :</label>
+                        <label style="font-size: 13px; color: red; font-weight: bold;" id="EmployeeidLabel"></label>
+                    </div>
+                    <div class="col-12 col-md-3 col-sm-6" style="font-size: 16px;">
+                        <label style="font-size: 13px;">First Name :</label>
+                        <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="FirstnameLabel"></label>
+                    </div>
+                    <div class="col-12 col-md-3 col-sm-6" style="font-size: 16px;">
+                        <label style="font-size: 13px";>Last Name :</label>
+                        <label  class="control-label col-xs-12 iceLabel"  style="font-size: 13px; font-weight: bold;" id="LastnameLabel"></label>
+                    </div>
+                    <div class="col-12 col-md-6" style="font-size: 16px;">
+                        <label class="control-label col-xs-12" style="font-size: 13px;">Date of Birth :</label>
+                        <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="EmployeeDateofbirthLabel"></label>
+                    </div>
+                    <div class="col-12 col-md-6" style="font-size: 16px;">
+                        <label class="control-label col-xs-12" style="font-size: 13px;">Mobile :</label>
+                        <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="MobileLabel"></label>
+                    </div>
+                    <div class="col-12 col-md-6" style="font-size: 16px;">
+                        <label class="control-label col-xs-12" style="font-size: 13px;">Official Email :</label>
+                        <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="OfficialEmailLabel"></label>
+                    </div>
+                    <div class="col-12 col-md-3 col-sm-6" style="font-size: 16px;">
+                        <label style="font-size: 13px";>Designation :</label>
+                        <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="DesignationLabel"></label>
+                    </div>
+                    <div class="col-12 col-md-3" style="font-size: 16px;">
+                        <label class="control-label col-xs-12" style="font-size: 13px;">Nationality :</label>
+                        <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="NationalityLabel"></label>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br />
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="text-left">
+                            <h6 class="card-title">Personal Details</h6>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="card-block">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-12 col-md-3 col-lg-3" style="font-size: 16px;">
+                                <label style="font-size: 13px;">Age :</label>
+                                <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="AgeLabel"></label>
+                            </div>
+                            <div class="col-12 col-md-3 col-lg-3" style="font-size: 16px;">
+                                <label style="font-size: 13px;">Blood Group :</label>
+                                <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="BloodgroupLabel"></label>
+                            </div>
+
+                            <div class="col-12 col-md-3" style="font-size: 16px;">
+                                <label class="control-label col-xs-12" style="font-size: 13px;">Known Languagenames :</label>
+                                <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="LanguagenameLabel"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br />
+
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="text-left">
+                            <h6 class="card-title">Contact Details</h6>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="card-block">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-12 col-md-3 col-lg-4" style="font-size: 16px;">
+                                <label class="control-label col-xs-12" style="font-size: 13px;">Emergency Contact Name :</label>
+                                <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="EmergencyContactNameLabel"></label>
+                            </div>
+                            <div class="col-12 col-md-3 col-lg-4" style="font-size: 16px;">
+                                <label class="control-label col-xs-12" style="font-size: 13px;">Emergency Contact Number :</label>
+                                <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="EmergencycontactNumberLabel"></label>
+                            </div>
+                            <div class="col-12 col-md-3 col-lg-4" style="font-size: 16px;">
+                                <label class="control-label col-xs-12" style="font-size: 13px;">Relationship :</label>
+                                <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="ContactRelationshipLabel"></label>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row">
+                            <div class="col-12 col-md-3 col-lg-4" style="font-size: 16px;">
+                                <label style="font-size: 13px;">Alternate Mobile :</label>
+                                <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="AlternateMobileLabel"></label>
+                            </div>
+                            <div class="col-12 col-md-3 col-lg-4" style="font-size: 16px;">
+                                <label style="font-size: 13px;">Personal Email :</label>
+                                <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="PersonalMailIdLabel"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <br />
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="text-left">
+                            <h6 class="card-title">Skills and Certifications </h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-block">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-12 col-md-3 col-lg-10" style="font-size: 16px;">
+                                <label style="font-size: 13px;">Skills :</label>
+                                <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="SkillsLabel"></label>
+                            </div>
+                            <div class="col-12 col-md-3 col-lg-10" style="font-size: 16px;">
+                                <label style="font-size: 13px;">Certification Name :</label>
+                                <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="CertificatenameLabel"></label>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <br />
+
+
+    <div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <div class="text-left">
+                        <h6 class="card-title">Current Address </h6>
+                    </div>
+                   
+                </div>
+            </div>
+            <div class="card-block">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12 col-md-3 col-lg-3" style="font-size: 16px;">
+                            <label style="font-size: 13px;"> Building/Plot/No/Street :</label>
+                            <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="CurrentBuildingLabel"></label>
+                        </div>
+                        <div class="col-12 col-md-3 col-lg-3" style="font-size: 16px;">
+                          <label style="font-size: 13px";>City : </label>
+                          <label  class="control-label col-xs-12 iceLabel"  style="font-size: 13px; font-weight: bold;" id="CurrentCityLabel"></label>
+                        </div>
+
+                        <div class="col-12 col-md-3 col-lg-3" style="font-size: 16px;">
+                            <label style="font-size: 13px;">State :</label>
+                            <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="CurrentStateLabel"></label>
+                        </div>
+                        <div class="col-12 col-md-3 col-lg-3" style="font-size: 16px;">
+                            <label style="font-size: 13px;">Pincode :</label>
+                            <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="CurrentPincodeLabel"></label>
+                        </div>
+                    </div>
+                    </div>
+                     <div class="card-header">
+                         <div class="text-left">
+                        <h6 class="card-title">Permanent Address </h6>
+                    </div>
+                         </div>
+                    <div class="card-block">
+                <div class="container">
+                        <div class="row">
+
+                            <div class="col-12 col-md-3" style="font-size: 16px;">
+                                <label class="control-label col-xs-12" style="font-size: 13px;"> Building/Plot/No/Street : </label>
+                                <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="PermanentBuildingLabel"></label>
+                            </div>
+                            <div class="col-12 col-md-3" style="font-size: 16px;">
+                                <label class="control-label col-xs-12" style="font-size: 13px;">City :</label>
+                                <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="PermanentCityLabel"></label>
+                            </div>
+                            <div class="col-12 col-md-3" style="font-size: 16px;">
+                                <label class="control-label col-xs-12" style="font-size: 13px;">State :</label>
+                                <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="PermanentStateLabel"></label>
+                            </div>
+                            <div class="col-12 col-md-3" style="font-size: 16px;">
+                                <label class="control-label col-xs-12" style="font-size: 13px;">Pincode:</label>
+                                <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="PermanentPincodeLabel"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+        </div>
+</div>
+        </div>
+    </div>
+
+
+
+<br />
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="text-left">
+                            <h6 class="card-title">Education</h6>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="card-block">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-12 col-md-3 col-lg-3" style="font-size: 16px;">
+                                <label style="font-size: 13px;">School Name :</label>
+                                <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="SchoolnameLabel"></label>
+                            </div>
+                            <div class="col-12 col-md-3 col-lg-3" style="font-size: 16px;">
+                                <label style="font-size: 13px;">School passed out year :</label>
+                                <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="SchoolpassoutLabel"></label>
+                            </div>
+                            <div class="col-12 col-md-3" style="font-size: 16px;">
+                                <label class="control-label col-xs-12" style="font-size: 13px;">College Name :</label>
+                                <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="CollegenameLabel"></label>
+                            </div>
+                            <div class="col-12 col-md-3" style="font-size: 16px;">
+                                <label class="control-label col-xs-12" style="font-size: 13px;">College passed out year :</label>
+                                <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="CollegepassoutLabel"></label>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row">
+                            <div class="col-12 col-md-3" style="font-size: 16px;">
+                                <label class="control-label col-xs-12" style="font-size: 13px;">Qualification :</label>
+                                <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="QualificationLabel"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <br />
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="text-left">
+                            <h6 class="card-title">Dependents </h6>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="card-block">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-12 col-md-3 col-lg-3" style="font-size: 16px;">
+                                <label style="font-size: 13px;">Dependent Name :</label>
+                                <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="DependentnameLabel"></label>
+                            </div>
+                            <div class="col-12 col-md-3 col-lg-3" style="font-size: 16px;">
+                                <label style="font-size: 13px;">Relationship :</label>
+                                <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="RelationshipLabel"></label>
+                            </div>
+                            <div class="col-12 col-md-3" style="font-size: 16px;">
+                                <label class="control-label col-xs-12" style="font-size: 13px;">Date of Birth :</label>
+                                <label class="control-label col-xs-12 iceLabel" style="font-size: 13px; font-weight: bold;" id="DateofbirthLabel"></label>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+

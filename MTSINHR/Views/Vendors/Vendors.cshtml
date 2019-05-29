@@ -1,0 +1,180 @@
+﻿@model MTSINHR.Models.Vendors
+
+@{
+    ViewBag.Title = "Vendors";
+}
+
+<h2> Add Vendor Details</h2>
+@{
+
+    List<SelectListItem> TypeItems = new List<SelectListItem>();
+
+    TypeItems.Add(new SelectListItem
+    {
+        Text = "Service provider",
+        Value = "0",
+
+    });
+    TypeItems.Add(new SelectListItem
+    {
+        Text = "Supplier",
+        Value = "1"
+    });
+}
+
+
+
+
+
+<form id="vendor" method="post">
+    <div class="panel">
+        <div class="card">
+            <div class="card-header p-b-0">
+                <div class="card-title text-center">
+                    <label id="addedit"></label>
+                </div>
+            </div>
+            <div class="card-block">
+                <div class="content-align p15">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Name)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Name)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Type)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.Type, new System.Web.Mvc.SelectList(TypeItems, "value", "Text"), "Select Type ", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Type)
+                                </div>                            
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Address)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextAreaFor(model => model.Address, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Address)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.City)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.City, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.City)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Phone)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.Phone, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Phone)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.ContactPerson)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.ContactPerson, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.ContactPerson)
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.MobileNo)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.MobileNo, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.MobileNo)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Email)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.Email, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Email)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pull-right p-b-10 p-r-10">
+                    <button type="button" id="cancel" onclick="back()" class="btn btn-light m-r-5">Close</button>
+                    <button type="button" id="add" class="btn btn-primary spanedit " onclick="AssetsAddEdit()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+<script>
+    function AssetsAddEdit() {
+
+        @*//var actionname = "@ViewBag.actionURL";*@
+
+
+        var url = '@Url.Content("~/Vendors/AddVendorDetails")';
+
+        if ($("#vendor").valid()) {
+
+
+            $.ajax({
+                type: "Post",
+                data: $("#vendor").serialize(),
+
+                url: url,
+                success: function (result) {
+                    debugger;
+                    if (result == "Failed") {
+                        toastr.error("Sorry,we couldn't add these details!");
+                       
+                    }
+                    else if (result == "Success") {
+
+                        toastr.success("Added successfully");
+                        $('#vendor').clear();
+                    }
+                    
+                }
+            });
+        }
+    }
+</script>
+

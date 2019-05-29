@@ -1,0 +1,55 @@
+﻿@{
+    Layout = null;
+}
+
+<email>
+   <To>@ViewBag.Email</To>  
+  <Subject>Leave Approved</Subject>
+  <From>noreply.mtsin@zoho.com</From>
+  <Cc />
+  <BCc />
+  <Body>
+  <![CDATA[
+     <div>
+         <table>
+             <tr>
+                 <td>Employee Name</td>
+                 <td>@ViewBag.Employeename</td>
+             </tr>
+             
+             <tr>
+                 <td>Date Of Join</td>
+                 <td>@ViewBag.Dateofjoin</td>
+             </tr>
+             <tr>
+                 <td>From Date</td>
+                 <td>@ViewBag.Fromdate</td>
+             </tr>
+             <tr>
+                 <td>To Date</td>
+                 <td>@ViewBag.Todate</td>
+             </tr>
+              
+             <tr>
+                 <td>Reason</td>
+                 <td>@ViewBag.Reason</td>
+             </tr>
+            
+             <tr>
+                 <td>Manager Id</td>
+                 <td>@ViewBag.Managerid</td>
+             </tr>
+             <tr>
+                 <td>Manager Name</td>
+                 <td>@ViewBag.Managername</td>
+             </tr>
+             
+         </table>  
+          <br />
+		 		
+  </div>
+       Follow us At,<br />
+      @ViewBag.Url<br />
+  ]]>
+  </Body>
+</email>

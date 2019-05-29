@@ -1,0 +1,369 @@
+﻿
+@model MTSINHR.Models.AMC_Insurance
+<script src="~/Scripts/ValidationFunction.js"></script>
+<script src="~/Scripts/bootbox.min.js"></script>
+@System.Web.Optimization.Scripts.Render("~/bundles/datepicker")
+@System.Web.Optimization.Styles.Render("~/bundles/datepickercss")
+@{
+    List<SelectListItem> VendorName = new List<SelectListItem>();
+
+    VendorName.Add(new SelectListItem
+    {
+        Text = "Raja",
+        Value = "1",
+
+    });
+    VendorName.Add(new SelectListItem
+    {
+        Text = "Ram",
+        Value = "2"
+    });
+
+}
+@{
+    List<SelectListItem> PaymentType = new List<SelectListItem>();
+
+    PaymentType.Add(new SelectListItem
+    {
+        Text = "Cheque",
+        Value = "1",
+
+    });
+    PaymentType.Add(new SelectListItem
+    {
+        Text = "RTGS",
+        Value = "2"
+    });
+
+}
+@{
+    List<SelectListItem> Category = new List<SelectListItem>();
+
+    Category.Add(new SelectListItem
+    {
+        Text = "AMC",
+        Value = "1",
+
+    });
+    Category.Add(new SelectListItem
+    {
+        Text = "Insurance",
+        Value = "2"
+    });
+
+}
+@{
+    List<SelectListItem> AmcType = new List<SelectListItem>();
+
+    AmcType.Add(new SelectListItem
+    {
+        Text = "Labour",
+        Value = "1",
+
+    });
+    AmcType.Add(new SelectListItem
+    {
+        Text = "Labour and spare",
+        Value = "2"
+    });
+    AmcType.Add(new SelectListItem
+    {
+        Text = "Comprehensive",
+        Value = "3"
+    });
+
+}
+@{
+    List<SelectListItem> InsuranceType = new List<SelectListItem>();
+
+    InsuranceType.Add(new SelectListItem
+    {
+        Text = "Insurance type 1",
+        Value = "1",
+
+    });
+    InsuranceType.Add(new SelectListItem
+    {
+        Text = "Insurance type 2",
+        Value = "2"
+    });
+
+}
+<script>
+    var todayDate = new Date();
+    var end = new Date().getDate();
+    var yearrestrict = '@System.Configuration.ConfigurationManager.AppSettings["Year_restrict_count"]';
+    $(document).ready(function () {
+        $('#FromDate').datepicker({
+            startDate: "-" + yearrestrict + "y",
+            endDate: '+0d',
+            autoclose: true
+        }).on('changeDate', function () {
+
+            $("#ToDate").val(this.value);
+            $('#ToDate').datepicker('setStartDate', new Date($(this).val()));
+        });
+        $('#ToDate').datepicker({
+            startDate: "-" + yearrestrict + "y",
+           autoclose: true
+        }).on('changeDate', function () {
+            $('#FromDate').datepicker('setEndDate', new Date($(this).val()));
+        });
+        $('#PaymentRefDate').datepicker({
+
+            format: 'dd/MM/yyyy',
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            endDate: '+0d',
+        });
+        $("#Category").on("change", function () {
+            var s = $("#Category").val();
+            if ((s == "1")) {
+                debugger
+                $("#InsuranceType").prop('disabled', true);
+                $("#PremiumCharges").prop('disabled', true);
+            }
+            else {
+                $("#AmcType").prop('disabled', true);
+                $("#AmcCharges").prop('disabled', true);
+            }
+        });
+    //    $("#AssetTypeId").on('change', function () {
+    //        debugger
+    //        //var AssetName = ViewBag.Assetname;
+    //        console.log(AssetName);
+    //        var getValue = $(this).val();
+    //        alert(getValue);
+    //    });
+    });
+    function Amc_Insurance() {
+        @*var actionname = "@ViewBag.actionURL";*@
+        var url = '@Url.Content("~/AMC_Insurance/Add")';
+
+        if ($("#insurance").valid()) {
+            $.ajax({
+                type: "Post",
+                data: $("#insurance").serialize(),
+
+                url: url,
+                success: function (result) {
+
+                    if (result == "Failed") {
+                        $(".errorspan").show();
+                    }
+                    else {
+
+                         toastr.success("Successfully Added");
+                    }
+                }
+            });
+        }
+    }
+</script>
+<form id="insurance" method="post">
+    <div class="panel">
+        <div class="card">
+           
+            <div class="card-header p-b-0">
+                <h4>Asset Insurance</h4>
+                <div class="card-title text-center">
+                    <label id="addedit"></label>
+                </div>
+            </div>
+           
+            <div class="card-block">
+                <div class="content-align p15">                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                   Asset Type
+                                </div>
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.AssetTypeId, new System.Web.Mvc.SelectList(ViewBag.Asset, "Value", "Text"), new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.AssetTypeId)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                   Asset Name
+                                </div>
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.AssetName, new System.Web.Mvc.SelectList(ViewBag.AssetName, "Value", "Text"), new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.AssetName)
+                                </div>
+                            </div>
+                        </div>
+
+                      <div class="col-md-4">
+                                    <div class="form-group">
+                                        <div class="editor-label">
+                                            @Html.LabelFor(model => model.Category)
+                                        </div>
+                                        <div class="editor-field">
+                                            @Html.DropDownListFor(model => model.Category, new System.Web.Mvc.SelectList(Category, "value", "Text"), "---Select Category--", new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.Category)
+                                        </div>
+                                    </div>
+                                </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                   Vendor Name
+                                </div>
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.VendorName, new System.Web.Mvc.SelectList(VendorName, "value", "Text"), "---Select Vendor Name--", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.VendorName)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                   AMC Type
+                                </div>
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.AmcType, new System.Web.Mvc.SelectList(AmcType, "value", "Text"), "---Select AMC Type--", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.AmcType)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                  Insurance Type
+                                </div>
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.InsuranceType, new System.Web.Mvc.SelectList(InsuranceType, "value", "Text"), "---Select Insurance Type--", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.InsuranceType)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                   AMC Charge
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.AmcCharges, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.AmcCharges)
+                                </div>
+                            </div>
+                        </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <div class="editor-label">
+                                            Premium Charges
+                                        </div>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(model => model.PremiumCharges, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.PremiumCharges)
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <div class="editor-label">
+                                            Payment Type
+                                        </div>
+                                        <div class="editor-field">
+                                            @Html.DropDownListFor(model => model.PaymentType, new System.Web.Mvc.SelectList(PaymentType, "value", "Text"), "---Select Payment Type--", new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.PaymentType)
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <div class="editor-label">
+                                            Payment Ref Date                                          
+                                        </div>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(model => model.PaymentRefDate, "{0:dd/MMM/yyyy}", new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.PaymentRefDate)
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <div class="editor-label">
+                                            Payment Ref Number
+                                        </div>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(model => model.PaymentRefNumber, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.PaymentRefNumber)
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <div class="editor-label">
+                                           Valid From Date
+                                        </div>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(model => model.FromDate, "{0:dd/MMM/yyyy}", new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.FromDate)
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <div class="editor-label">
+                                           Valid To Date
+                                        </div>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(model => model.ToDate, "{0:dd/MMM/yyyy}", new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.ToDate)
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <div class="editor-label">
+                                            Contact Person
+                                        </div>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(model => model.ContactPerson, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.ContactPerson)
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <div class="editor-label">
+                                            Contact Phone
+                                        </div>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(model => model.ContactPhone, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.ContactPhone)
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <div class="editor-label">
+                                            @Html.LabelFor(model => model.Notes)
+                                        </div>
+                                        <div class="editor-field">
+                                            @Html.TextAreaFor(model => model.Notes, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.Notes)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pull-right p-b-10 p-r-10">
+                            <button type="button" id="cancel" onclick="back()" class="btn btn-light m-r-5">Close</button>
+                            <button type="button" id="add" class="btn btn-primary spanedit " onclick="Amc_Insurance()">Save</button>
+                        </div>
+                    </div>
+        </div>
+    </div>
+</form>
+

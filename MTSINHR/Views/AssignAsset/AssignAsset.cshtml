@@ -1,0 +1,143 @@
+﻿
+@{
+    ViewBag.Title = "AssignAsset";
+}
+
+<form id="asset" method="post" enctype="multipart/form-data">
+    <div class="panel" id="assetdiv">
+        <div class="card">
+            <div class="card-header p-b-0">
+                <div class="card-title text-center">
+                    <label id="addedit">AssignAsset</label>
+                </div>
+            </div>
+            <div class="card-block">
+                <div class="content-align p15" style="background-color:#ecdcdc">
+
+
+                    <div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.AssetId)
+                                    </div>
+                                    <div class="editor-field ">
+                                        @Html.DropDownListFor(model => model.AssetId, new System.Web.Mvc.SelectList(ViewBag.AssetId, "Value", "Text"), new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.AssetId)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.AssetType)
+                                    </div>
+                                    <div class="editor-field ">
+                                        @Html.DropDownListFor(model => model.AssetType, new System.Web.Mvc.SelectList(ViewBag.AssetType, "Value", "Text"), new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.AssetType)
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.AssetName)
+                                    </div>
+                                    <div class="editor-field ">
+                                        @Html.DropDownListFor(model => model.AssetName, new System.Web.Mvc.SelectList(ViewBag.AssetName, "Value", "Text"), new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.AssetName)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.EmployeeName)
+                                    </div>
+                                    <div class="editor-field ">
+                                        @Html.DropDownListFor(model => model.EmployeeName, new System.Web.Mvc.SelectList(ViewBag.EmployeeName, "Value", "Text"), new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.EmployeeName)
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.CurrentlyAssignedTo)
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.DepartmentName)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.DepartmentName, new System.Web.Mvc.SelectList(ViewBag.DepartmentName, "Value", "Text"), new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.DepartmentName)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.LocationName)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.AssetType, new System.Web.Mvc.SelectList(ViewBag.LocationName, "Value", "Text"), new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.LocationName)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.LocationDetails)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.AssetType, new System.Web.Mvc.SelectList(ViewBag.LocationDetails, "Value", "Text"), new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.LocationDetails)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.ActionDate)
+                            </div>
+                            <div class="editor-field">
+                                @Html.TextBoxFor(model => model.ActionDate, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.ActionDate)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <div class="editor-label">
+                                @Html.LabelFor(model => model.Notes)
+                            </div>
+                            <div class="editor-field">
+                                @Html.TextBoxFor(model => model.Notes, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Notes)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

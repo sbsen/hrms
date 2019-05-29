@@ -1,0 +1,407 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>MTS-HR</title>
+    <meta http-equiv="x-ua-compatible" content="IE=10;IE=11;IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    
+     <link href="~/Content/toastr.min.css" rel="stylesheet" />
+    @System.Web.Optimization.Styles.Render("~/bundles/bootstrapcss")
+    @System.Web.Optimization.Styles.Render("~/bundles/bootstrapdt")
+    @System.Web.Optimization.Styles.Render("~/bundles/fontawesome")
+    @System.Web.Optimization.Styles.Render("~/bundles/main")
+    @System.Web.Optimization.Scripts.Render("~/bundles/jquery")
+    @System.Web.Optimization.Scripts.Render("~/bundles/bootstrap")
+    @System.Web.Optimization.Scripts.Render("~/bundles/datatable")
+    @System.Web.Optimization.Scripts.Render("~/bundles/datepicker")
+   
+    <script src="~/Scripts/toastr.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:200,300,400,500,600,700|Open+Sans:600,700" rel="stylesheet">
+
+    <meta charset="utf-8" />
+    <link rel="icon" href="~/Images/fav.png" type="image/png" sizes="16x16">
+    <style>
+        .usernamediv
+        {
+      height: 20px;
+      background-color: #bbe0ef;
+       margin-top: -40px;
+       position: fixed;
+     width: 100%;
+     z-index: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-xl navbar-dark fixed-top bg-dark p-t-0 p-b-0">
+        <a class="navbar-brand" href="http://www.mtsin.com/" target="_blank">
+            <img style="width: 90px" src="~/Images/logo-inner.png" /></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".menu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        @if (Session["RoleId"].ToString() == "1")
+        {
+            <div class="collapse navbar-collapse menu">
+                <ul class="navbar-nav ml-auto">
+
+
+                    <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/Messages/AdminMessages")'>Messages <span class="sr-only">(current)</span></a>
+                    </li>
+
+                    <li class="nav-item">
+
+                        <a class="nav-link" href='@Url.Content("~/EmployeeList/EmployeeList")'>Employee</a>
+
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Masters</a>
+                        <div class="dropdown-menu" aria-labelledby="dropdown01">
+                            <a class="dropdown-item" href='@Url.Content("~/HolidaysList/HolidaysList")'>Holidays List</a>
+                            <a class="dropdown-item" href='@Url.Content("~/Designation/Designation")'>Designation</a>
+                            <a class="dropdown-item" href='@Url.Content("~/Language/Language")'>Language</a>
+                            <a class="dropdown-item" href='@Url.Content("~/LeaveType/LeaveType")'>Leave Type</a>
+                            <a class="dropdown-item" href='@Url.Content("~/MaritalStatus/MaritalStatus")'>Marital Status</a>
+                            <a class="dropdown-item" href='@Url.Content("~/Nationality/Nationality")'>Nationality</a>
+                            <a class="dropdown-item" href='@Url.Content("~/Policies/AddPolicy")'>Policies</a>
+                            <a class="dropdown-item" href='@Url.Content("~/Qualification/Qualification")'>Qualification</a>
+                            <a class="dropdown-item" href='@Url.Content("~/Relationship/Relationship")'>Relationship</a>
+                            <a class="dropdown-item" href='@Url.Content("~/Session/Session")'>Session</a>
+                            <a class="dropdown-item" href='@Url.Content("~/Skills/Skills")'>Skills</a>
+                            <a class="dropdown-item" href='@Url.Content("~/BloodGroup/BloodGroup")'>Blood Groups</a>
+                            <a class="dropdown-item" href='@Url.Content("~/Location/Location")'>Location</a>
+                            <a class="dropdown-item" href='@Url.Content("~/Department/Department")'>Department</a>
+
+                            <a class="dropdown-item" href='@Url.Content("~/AssetsMaster/Assets")'>Asset</a>
+
+
+                            <a class="dropdown-item" href='@Url.Content("~/Vendors/vendors")'>Vendor</a>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/UserInformation/GetUserDetails")'>Edit Profile</a>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="dropdown02" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Leave</a>
+                        <div class="dropdown-menu" aria-labelledby="dropdown01">
+                            <a class="dropdown-item" href='@Url.Content("~/EmployeeLeaveList/LeaveList")'>Leave List</a>
+                            <a class="dropdown-item" href='@Url.Content("~/EmployeeLeavePending/LeavePending")'>Leave Requests</a>
+                             <a class="dropdown-item" href='@Url.Content("~/EmployeeLeaveList/LossOfPayDays")'>LOP Days</a>
+                        </div>
+                    </li>
+
+                  @*  <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/EmployeeLeaveList/LeaveList")'>Leave List</a>
+                    </li>*@
+
+
+                    <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/ShowHolidays/ShowHolidays")'>Holidays</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/EmployeeDocuments/ShowAllEmployeeDocuments")'>Documents</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/Policies/UploadPolicy")'>Upload Policy</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/MTS.Login/Account/ChangePassword")'>Change Password </a>
+                    </li>
+
+                      <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/PaySlip_Form16/PaySlip_Form16")'>PaySlip/Form16</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/ImportExcel/Import")'>Import</a>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="dropdown03" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Asset</a>
+                        <div class="dropdown-menu" aria-labelledby="dropdown01">
+                            <a class="dropdown-item" href='@Url.Content("~/AssetDetails/AssetDetail")'>Assets Details</a>
+                            <a class="dropdown-item" href='@Url.Content("~/Asset/AssignAsset")'>Assign Assets</a>
+                            <a class="dropdown-item" href='@Url.Content("~/AssetMaintenanceDetails/AssetMaintenance")'>Maintenance Details</a>
+                            <a class="dropdown-item" href='@Url.Content("~/AMC_Insurance/AMC_Insurance")'>AMC/Insurance</a>
+                            <a class="dropdown-item" href='@Url.Content("~/AssetSale/Sale")'>Sale</a>
+                        </div>
+                    </li>
+                    <li class="nav_item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="dropdown04" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Export</a>
+                        <div class="dropdown-menu" aria-labelledby="dropdown01">
+                            <a class="dropdown-item" href='@Url.Content("~/EmployeeLeaveList/Export")'>Leave-List </a>
+                            <a class="dropdown-item" href='@Url.Content("~/BankDetails/ReadBankDetails")'>Bank Details</a>
+                        </div>
+                    </li>
+                    @*<li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/EmployeeLeaveList/Export")'>Export LeaveList </a>
+                    </li>*@
+                    <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/MTS.Login/Account/LogOff")'>Log Out</a>
+                    </li>
+
+                </ul>
+            </div>
+        }
+        else if (Session["RoleId"].ToString() == "2")
+        {
+            <div class="collapse navbar-collapse menu">
+
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item ">
+
+                        <a class="nav-link" href='@Url.Content("~/Messages/ShowMessages")'>Messages  <span class="sr-only">(current)</span></a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/UserList/UserList")'>Employee</a>
+                    </li>
+
+
+                    <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/UserInformation/GetUserDetails")'>Edit Profile</a>
+                    </li>
+                    @{
+                        if (Session["DepartmentId"].ToString() == "2")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href='@Url.Content("~/LeaveApply/BPOLeaveApply")'>Leave</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href='@Url.Content("~/LeaveApply/LeaveApply")'>Leave</a>
+                            </li>
+                        }
+                        }                     
+                    <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/PaySlip_Form16/PaySlip_Form16")'>PaySlip/Form16</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/EmployeeDocuments/EmployeeDocuments")'>Documents</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/Policies/UploadPolicy")'>Upload Policy</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/ShowHolidays/ShowHolidays")'>Holidays</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/MTS.Login/Account/ChangePassword")'>Change Password </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/MTS.Login/Account/LogOff")'>Log Out</a>
+                    </li>
+
+
+                </ul>
+            </div>
+        }
+        else if (Session["RoleId"].ToString() == "4")
+        {
+            <div class="collapse navbar-collapse menu">
+                <ul class="navbar-nav ml-auto">
+
+
+                    <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/Messages/ShowMessages")'>Messages <span class="sr-only">(current)</span></a>
+                    </li>
+
+                    <li class="nav-item">
+
+                        <a class="nav-link" href='@Url.Content("~/EmployeeList/EmployeeList")'>Employee</a>
+
+                    </li>
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Masters</a>
+                                <div class="dropdown-menu" aria-labelledby="dropdown01">
+                                    <a class="dropdown-item" href='@Url.Content("~/HolidaysList/HolidaysList")'>Holidays List</a>
+                                    <a class="dropdown-item" href='@Url.Content("~/Designation/Designation")'>Designation</a>
+                                    <a class="dropdown-item" href='@Url.Content("~/Language/Language")'>Language</a>
+                                    <a class="dropdown-item" href='@Url.Content("~/LeaveType/LeaveType")'>Leave Type</a>
+                                    <a class="dropdown-item" href='@Url.Content("~/MaritalStatus/MaritalStatus")'>Marital Status</a>
+                                    <a class="dropdown-item" href='@Url.Content("~/Nationality/Nationality")'>Nationality</a>
+                                    <a class="dropdown-item" href='@Url.Content("~/Qualification/Qualification")'>Qualification</a>
+                                    <a class="dropdown-item" href='@Url.Content("~/Relationship/Relationship")'>Relationship</a>
+                                    <a class="dropdown-item" href='@Url.Content("~/Session/Session")'>Session</a>
+                                    <a class="dropdown-item" href='@Url.Content("~/Skills/Skills")'>Skills</a>
+                                    <a class="dropdown-item" href='@Url.Content("~/BloodGroup/BloodGroup")'>Blood Groups</a>
+                                    <a class="dropdown-item" href='@Url.Content("~/Location/Location")'>Location</a>87
+                                    <a class="dropdown-item" href='@Url.Content("~/Department/Department")'>Department</a>
+                                    <a class="dropdown-item" href='@Url.Content("~/AssetsMaster/Assets")'>Asset</a>
+                                </div>
+                            </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/UserInformation/GetUserDetails")'>Edit Profile</a>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="dropdown02" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Leave</a>
+                        <div class="dropdown-menu" aria-labelledby="dropdown01">
+                            <a class="dropdown-item" href='@Url.Content("~/EmployeeLeaveList/LeaveList")'>Leave List</a>
+                            <a class="dropdown-item" href='@Url.Content("~/EmployeeLeaveList/LossOfPayDays")'>LOP Days</a>
+                        </div>
+                    </li>
+
+                  @*  <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/EmployeeLeaveList/LeaveList")'>Leave List</a>
+                    </li>*@
+
+
+                    <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/ShowHolidays/ShowHolidays")'>Holidays</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/EmployeeDocuments/ShowAllEmployeeDocuments")'>Documents</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/MTS.Login/Account/ChangePassword")'>Change Password </a>
+                    </li>
+
+                      <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/PaySlip_Form16/PaySlip_Form16")'>PaySlip/Form16</a>
+                    </li>
+
+                            <li class="nav_item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="dropdown04" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Export</a>
+                                <div class="dropdown-menu" aria-labelledby="dropdown01">
+                                    <a class="dropdown-item" href='@Url.Content("~/EmployeeLeaveList/Export")'>Leave-List </a>
+                                    <a class="dropdown-item" href='@Url.Content("~/BankDetails/ReadBankDetails")'>Bank Details</a>
+                                </div>
+                            </li>
+                            @*<li class="nav-item">
+                                    <a class="nav-link" href='@Url.Content("~/EmployeeLeaveList/Export")'>Export LeaveList </a>
+                                </li>*@
+                            <li class="nav-item">
+                                <a class="nav-link" href='@Url.Content("~/MTS.Login/Account/LogOff")'>Log Out</a>
+                            </li>
+
+                </ul>
+            </div>
+        }
+        else
+        {
+            <div class="collapse navbar-collapse menu">
+
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/Messages/ShowMessages")'>Messages <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/UserList/UserList")'>Employee</a>
+                    </li>
+
+
+                    <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/UserInformation/GetUserDetails")'>Edit Profile</a>
+                    </li>
+
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="dropdown02" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Leave</a>
+                        <div class="dropdown-menu" aria-labelledby="dropdown01">
+                            <a class="dropdown-item" href='@Url.Content("~/LeaveApply/LeaveApply")'>Leave Apply</a>
+                            <a class="dropdown-item" href='@Url.Content("~/EmployeeLeaveList/LeaveList")'>Leave List</a>
+                            <a class="dropdown-item" href='@Url.Content("~/EmployeeLeavePending/LeavePending")'>Leave Requests</a>
+                        </div>
+                    </li>
+
+
+                    <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/PaySlip_Form16/PaySlip_Form16")'>PaySlip/Form16</a>
+                    </li>
+
+                     <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/EmployeeDocuments/EmployeeDocuments")'>Documents</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/Policies/ShowAllPolicies")'>View HR Policies</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/ShowHolidays/ShowHolidays")'>Holidays</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/MTS.Login/Account/ChangePassword")'>Change Password </a>
+                    </li>
+
+
+                    <li class="nav-item">
+                        <a class="nav-link" href='@Url.Content("~/MTS.Login/Account/LogOff")'>Log Out</a>
+                    </li>
+
+                </ul>
+            </div>
+        }
+    </nav>
+    <div class="usernamediv text-right">
+        <p style="font-size:12px"> Welcome @Session["Username"].ToString() !! &nbsp &nbsp</p>
+    </div>
+
+    <div class="container">
+        <!-- Example row of columns -->
+        <div class="content_wrapper">
+            <div class="div-scroll">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+    <!-- /container -->
+    <footer class="footer">
+
+        <div class="container">
+
+            <span class="text-muted">Powered by MTS Software Solutions Inc.</span>
+        </div>
+
+    </footer>
+
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip({
+                container: 'body'
+            })
+            toastr.options = {
+                "closeButton": false,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": false,
+                "positionClass": "toast-bottom-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+        })
+
+        $(document).ajaxError(function (event, request, settings, exception) {
+
+            if (request.status == 403) {
+                window.location.href = '@Url.Content("~/MTS.Login/Account/LogOn")'
+            }
+            if (request.status == 500) {
+                window.location.href = '@Url.Content("~/MTS.Login/Account/LogOn")'
+            }
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,54 @@
+﻿@model MTS.LoginModels.QA              
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
+@using (Html.BeginForm("/AddData", "QA", FormMethod.Post, new { id = "QAUpdateForm" }))
+{    
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+            <i class="icon-remove"></i>
+        </button>
+        <h3>
+            Add New Security Question
+        </h3>
+    </div>
+
+    <div class="modal-body" style="height: 100px;">
+        <div class="row-fluid">
+            <div class="span12 gap-bottom5">
+                <div class="span5 gap-top5 text-right">
+                    <b>Question <span class="requi">*</span></b></div>
+                <div class="span7">
+                    @Html.TextAreaFor(m => m.SecurityQuestionName, 1, 55, new { @class = "required" })
+                    <div>@Html.ValidationMessageFor(m => m.SecurityQuestionName)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+   
+    <div class="modal-footer clear">
+        <button type="submit" onclick="return Validation()" class="btn btn-primary">
+            Add</button>
+        <button type="button" onclick=" $('#divmainpopup').modal('hide')" class="btn btn-primary">
+            Close</button>
+    </div>
+}
+<script type="text/javascript">
+    function Validation() {
+        var validation = $('#QAUpdateForm').valid('#QAUpdateForm');
+        return validation;
+    }
+    $('#QAUpdateForm').submit(function () {
+        $.ajax({
+            url: '@Url.Content("~/MTS.Login/QA/AddData")',
+            type: 'POST',
+            data: $('#QAUpdateForm').serialize(),
+            success: function (data) {
+                alertMsg = data;
+                $('#divmainpopup').modal('hide');
+                GetData();
+            },
+            cache: false
+        });
+        return false;
+    });
+</script>

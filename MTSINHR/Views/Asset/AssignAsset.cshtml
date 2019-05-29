@@ -1,0 +1,242 @@
+﻿@model MTSINHR.Models.Assets
+
+@{
+    ViewBag.Title = "AssignAsset";
+}
+
+<h2>AssignAsset</h2>
+
+
+
+<form id="asset" method="post">
+    <div class="panel">
+        <div class="card">
+            <div class="card-header p-b-0">
+                <div class="card-title text-center">
+                    <label id="addedit"></label>
+                </div>
+            </div>
+            <div class="card-block">
+                <div class="content-align p15">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Name)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Name)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Product)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.Product, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Product)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.CategoryId)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.CategoryId, new System.Web.Mvc.SelectList(ViewBag.CategoryNames, "Value", "Text"), new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.CategoryId)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Make)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.Make, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Make)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Model)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.Model, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Model)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.SerialNumber)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.SerialNumber, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.SerialNumber)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.PurchasedOn)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.PurchasedOn, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.PurchasedOn)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.LocationId)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.LocationId,new System.Web.Mvc.SelectList(ViewBag.LocationNames, "Value", "Text"), new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.LocationId)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.AssignedTo)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.AssignedTo, new System.Web.Mvc.SelectList(ViewBag.EmployeeNames, "Value", "Text"), new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.AssignedTo)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.DiscardedOn)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.DiscardedOn, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.DiscardedOn)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Notes)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.Notes, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Notes)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.InUse)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.InUse, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.InUse)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.BillDate)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.BillDate, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.BillDate)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.BillNumber)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.BillNumber, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.BillNumber)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.SaleCompany)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.SaleCompany, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.SaleCompany)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="pull-right p-b-10 p-r-10">
+                    <button type="button" id="cancel" onclick="back()" class="btn btn-light m-r-5">Close</button>
+                    <button type="button" id="add" class="btn btn-primary spanedit " onclick="AssetsAddEdit()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+function AssetsAddEdit() {
+        
+        //var actionname = "@ViewBag.actionURL";
+      
+        
+       var url = '@Url.Content("~/Asset/AddAssetDetails")';
+
+    if ($("#asset").valid()) {
+           
+           
+            $.ajax({
+                type: "Post",
+                data: $("#asset").serialize(),
+
+                url: url,
+                success: function (result) {
+
+                    if (result == "Failed") {
+                        $(".errorspan").show();
+                    }
+                    else if (result == "Success") {
+                        window.location.href = '@Url.Action("EmployeeList", "EmployeeList")';
+                    }
+                    else if (result == "EditSuccess") {
+
+                        window.location.href = '@Url.Action("ReadEmployeeDetails", "Employee")';
+                    }
+                }
+            });
+}
+}
+</script>

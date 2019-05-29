@@ -1,0 +1,486 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>MTS-HR</title>
+    <meta http-equiv="x-ua-compatible" content="IE=10;IE=11;IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="~/Content/toastr.min.css" rel="stylesheet" />
+    @System.Web.Optimization.Styles.Render("~/bundles/bootstrapcss")
+    @System.Web.Optimization.Styles.Render("~/bundles/bootstrapdt")
+    @System.Web.Optimization.Styles.Render("~/bundles/fontawesome")
+    @System.Web.Optimization.Styles.Render("~/bundles/main")
+    @System.Web.Optimization.Scripts.Render("~/bundles/jquery")
+    @System.Web.Optimization.Scripts.Render("~/bundles/bootstrap")
+    @System.Web.Optimization.Scripts.Render("~/bundles/datatable")
+    @System.Web.Optimization.Scripts.Render("~/bundles/datepicker")
+    <script src="~/Scripts/jquery.scrollbar.js"></script>
+    <script src="~/Scripts/toastr.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:200,300,400,500,600,700|Open+Sans:300,400,600,700" rel="stylesheet">
+
+    <meta charset="utf-8" />
+    <link rel="icon" href="~/Images/fav.png" type="image/png" sizes="16x16">
+    <style>
+        .usernamediv {
+            height: 20px;
+            background-color: #bbe0ef;
+            margin-top: -40px;
+            position: fixed;
+            width: 100%;
+            z-index: 1;
+        }
+    </style>
+</head>
+
+<body class="sidebar-mini fixed">
+    <div class="appWarp">
+        <div class="appHeader">
+            <nav class="navbar p-0 topnavbar">
+                <div class="navbar-header">
+                    <a class="navbar-brand p0 m0" href="#">
+                        <div class="brand-logo">
+                            <img src="~/Images/logo.png" height="45">
+                        </div>
+                    </a>
+                </div>
+                <ul class="navbar-nav mr-auto flex-row">
+                    <li class="nav-item">
+                        <a class="nav-link d-none d-md-block d-lg-block d-xl-block sidebar-toggle pull-right" href="#" data-toggle="offcanvas">
+                            <em class="fa fa-bars bars"></em>
+                        </a>
+                    </li>
+
+                </ul>
+                <ul class="navbar-nav flex-row">
+                    <li class="nav-item dropdown">
+                        
+                            <a class="nav-link ur-profile dropdown-toggle" href="#" data-search-open="" data-toggle="dropdown">
+                                <span class="avatar"></span>
+                                <span class="user-name">@Session["Username"].ToString()</span>
+                            </a>
+                        <div class="custom-dropdown dropdown-menu" aria-labelledby="dropdownMenuLink">
+                           
+                            <a class="dropdown-item" href='@Url.Content("~/UserInformation/GetUserDetails")'><i class="fa fa-pencil"></i>&nbsp;&nbsp;<span>Edit Profile</span></a>
+                            
+                            <a class="dropdown-item" href='@Url.Content("~/MTS.Login/Account/LogOff")'><i class="fa fa-sign-out"></i>&nbsp;&nbsp;<span>Log Out</span></a>
+                        </div>
+                        
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div class="appContainer">
+            <aside class="main-sidebar hidden-print">
+                <section class="sidebar">
+                    <!-- Sidebar Menu-->
+                    <ul class="sidebar-menu">
+                        @if (Session["RoleId"].ToString() == "1")
+                        {
+                            <li class="active"><a href='@Url.Content("~/Messages/AdminMessages")'><i class="fa fa-envelope"></i><span>Messages</span></a> </li>
+                            <li><a href='@Url.Content("~/EmployeeList/EmployeeList")'><i class="fa fa-dashboard"></i><span>Employee</span></a></li>
+                            <li class="treeview">
+                                <a href="#"><i class="fa fa-laptop"></i><span>Masters</span><i class="fa fa-caret-right pull-right"></i></a>
+                                <ul class="treeview-menu">
+                                    <li><a href='@Url.Content("~/HolidaysList/HolidaysList")' class="border0"><i class="fa fa-angle-right"></i><span>Holidays List</span></a></li>
+                                    <li><a href='@Url.Content("~/Designation/Designation")'><i class="fa fa-angle-right"></i><span>Designation</span></a></li>
+                                    <li><a href='@Url.Content("~/Language/Language")'><i class="fa fa-angle-right"></i><span>Language</span></a></li>
+                                    <li><a href='@Url.Content("~/LeaveType/LeaveType")'><i class="fa fa-angle-right"></i><span>Leave Type</span></a></li>
+                                    <li><a href='@Url.Content("~/MaritalStatus/MaritalStatus")'><i class="fa fa-angle-right"></i><span>Marital Status</span></a></li>
+                                    <li><a href='@Url.Content("~/Nationality/Nationality")'><i class="fa fa-angle-right"></i><span>Nationality</span></a></li>
+                                    <li><a href='@Url.Content("~/Qualification/Qualification")'><i class="fa fa-angle-right"></i><span>Qualification</span></a></li>
+                                    <li><a href='@Url.Content("~/Relationship/Relationship")'><i class="fa fa-angle-right"></i><span>Relationship</span></a></li>
+                                    <li><a href='@Url.Content("~/Session/Session")'><i class="fa fa-angle-right"></i><span>Session</span></a></li>
+                                    <li><a href='@Url.Content("~/Skills/Skills")'><i class="fa fa-angle-right"></i><span>Skills</span></a></li>
+                                    <li><a href='@Url.Content("~/BloodGroup/BloodGroup")'><i class="fa fa-angle-right"></i><span>Blood Groups</span></a></li>
+                                    <li><a href='@Url.Content("~/Location/Location")'><i class="fa fa-angle-right"></i><span>Location</span></a></li>
+                                    <li><a href='@Url.Content("~/Department/Department")'><i class="fa fa-angle-right"></i><span>Department</span></a></li>
+                                    <li><a href='@Url.Content("~/AssetsMaster/Assets")'><i class="fa fa-angle-right"></i><span>Asset</span></a></li>
+                                    <li><a href='@Url.Content("~/Vendors/vendors")'><i class="fa fa-angle-right"></i><span>Vendor</span></a></li>
+                                </ul>
+                            </li>
+                            <li class="treeview">
+                                <a href='@Url.Content("~/UserInformation/GetUserDetails")'><i class="fa fa-edit"></i><span>Edit Profile</span></a>
+                            </li>
+
+                            <li class="treeview">
+                                <a href="#"><i class="fa fa-vcard-o"></i><span>Leave</span><i class="fa fa-caret-right pull-right"></i></a>
+                                <ul class="treeview-menu">
+                                    <li><a href='@Url.Content("~/EmployeeLeaveList/LeaveList")' class="border0"><i class="fa fa-angle-right"></i><span>Leave List</span></a></li>
+                                    <li><a href='@Url.Content("~/EmployeeLeavePending/LeavePending")' class="border0"><i class="fa fa-angle-right"></i><span>Leave Requests</span></a></li>
+                                    <li><a href='@Url.Content("~/EmployeeLeaveList/LossOfPayDays")' class="border0"><i class="fa fa-angle-right"></i><span>LOP Days</span></a></li>
+                                </ul>
+                            </li>
+
+                            <li class="treeview">
+                                <a href='@Url.Content("~/ShowHolidays/ShowHolidays")'><i class="fa fa-calendar"></i><span>Holidays</span></a>
+                            </li>
+                            <li class="treeview">
+                                <a href='@Url.Content("~/EmployeeDocuments/ShowAllEmployeeDocuments")'><i class="fa fa-book"></i><span>Documents</span></a>
+                            </li>
+                            <li class="treeview">
+                                <a href='@Url.Content("~/Policies/UploadPolicy")'><i class="fa fa-upload"></i><span>Upload Policy</span></a>
+                            </li>
+                            <li class="treeview">
+                                <a href='@Url.Content("~/MTS.Login/Account/ChangePassword")'><i class="fa fa-user-o"></i><span>Change Password </span></a>
+                            </li>
+                            <li class="treeview">
+                                <a href='@Url.Content("~/PaySlip_Form16/PaySlip_Form16")'><i class="fa fa-institution"></i><span>PaySlip/Form16</span></a>
+                            </li>
+                            <li class="treeview">
+                                <a href='@Url.Content("~/ImportExcel/Import")'><i class="fa fa-download"></i><span>Import</span></a>
+                            </li>
+
+                            <li class="treeview">
+                                <a href="#"><i class="fa fa-bar-chart"></i><span>Asset</span><i class="fa fa-caret-right pull-right"></i></a>
+                                <ul class="treeview-menu">
+                                    <li><a href='@Url.Content("~/AssetDetails/AssetDetail")' class="border0"><i class="fa fa-angle-right"></i><span>Assets Details</span></a></li>
+                                    <li><a href='@Url.Content("~/Asset/AssignAsset")' class="border0"><i class="fa fa-angle-right"></i><span>Assign Assets</span></a></li>
+                                    <li><a href='@Url.Content("~/AssetMaintenanceDetails/AssetMaintenance")' class="border0"><i class="fa fa-angle-right"></i><span>Maintenance Details</span></a></li>
+                                    <li><a href='@Url.Content("~/AMC_Insurance/AMC_Insurance")' class="border0"><i class="fa fa-angle-right"></i><span>AMC/Insurance</span></a></li>
+                                    <li><a href='@Url.Content("~/AssetSale/Sale")' class="border0"><i class="fa fa-angle-right"></i><span>Sale</span></a></li>
+                                </ul>
+                            </li>
+
+                            <li class="treeview">
+                                <a href="#"><i class="fa fa-folder-open-o"></i><span>Export</span><i class="fa fa-caret-right pull-right"></i></a>
+                                <ul class="treeview-menu">
+                                    <li><a href='@Url.Content("~/EmployeeLeaveList/Export")' class="border0"><i class="fa fa-angle-right"></i><span>Leave-List</span></a></li>
+                                    <li><a href='@Url.Content("~/BankDetails/ReadBankDetails")' class="border0"><i class="fa fa-angle-right"></i><span>Bank Details</span></a></li>
+                                </ul>
+                            </li>
+
+                            <li class="treeview">
+                                <a href='@Url.Content("~/MTS.Login/Account/LogOff")'><i class="fa fa-sign-out"></i><span>Log Out</span></a>
+                            </li>
+                            @*<li class="treeview">
+                                    <a href="#"><i class="fa fa-share"></i><span>MultiLavel Menu</span><i class="fa fa-caret-right  pull-right"></i></a>
+                                    <ul class="treeview-menu">
+                                        <li><a href="blank-page.html"><i class="fa fa-angle-right"></i>Level One</a></li>
+                                        <li class="treeview">
+                                            <a href="#"><i class="fa fa-angle-right"></i><span>Level One</span><i class="fa fa-caret-right  pull-right"></i></a>
+                                            <ul class="treeview-menu">
+                                                <li><a href="blank-page.html"><i class="fa fa-angle-right"></i>Level Two</a></li>
+                                                <li><a href="#"><i class="fa fa-angle-right"></i><span>Level Two</span></a></li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>*@
+                        }
+                        else if (Session["RoleId"].ToString() == "2")
+                        {
+                            <li>
+                                <a href='@Url.Content("~/Messages/ShowMessages")'><i class="fa fa-envelope"></i><span>Messages</span></a>
+                            </li>
+                            <li>
+                                <a href='@Url.Content("~/UserList/UserList")'><i class="fa fa-dashboard"></i><span>Employee</span></a>
+                            </li>
+                            <li>
+                                <a href='@Url.Content("~/UserInformation/GetUserDetails")'><i class="fa fa-edit"></i><span>Edit Profile</span></a>
+                            </li>
+
+
+                            if (Session["DepartmentId"].ToString() == "2")
+                            {
+                                <li>
+                                    <a href='@Url.Content("~/LeaveApply/BPOLeaveApply")'><i class="fa fa-vcard-o"></i><span>Leave</span></a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li>
+                                    <a href='@Url.Content("~/LeaveApply/LeaveApply")'><i class="fa fa-vcard-o"></i><span>Leave</span></a>
+                                </li>
+                            }
+
+                            <li>
+                                <a href='@Url.Content("~/PaySlip_Form16/PaySlip_Form16")'><i class="fa fa-institution"></i><span>PaySlip/Form16</span></a>
+                            </li>
+                            <li>
+                                <a href='@Url.Content("~/EmployeeDocuments/EmployeeDocuments")'><i class="fa fa-book"></i><span>Documents</span></a>
+                            </li>
+                            <li>
+                                <a href='@Url.Content("~/Policies/UploadPolicy")'><i class="fa fa-upload"></i><span>Upload Policy</span></a>
+                            </li>
+                            <li>
+                                <a href='@Url.Content("~/ShowHolidays/ShowHolidays")'><i class="fa fa-calendar"></i><span>Holidays</span></a>
+                            </li>
+                            <li>
+                                <a href='@Url.Content("~/MTS.Login/Account/ChangePassword")'><i class="fa fa-user"></i><span>Change Password</span></a>
+                            </li>
+                            <li>
+                                <a href='@Url.Content("~/MTS.Login/Account/LogOff")'><i class="fa fa-sign-out"></i><span>Log Out</span></a>
+                            </li>
+                        }
+
+                        else if (Session["RoleId"].ToString() == "4")
+                        {
+                            <li class="active"><a href='@Url.Content("~/Messages/ShowMessages")'><i class="fa fa-envelope"></i><span>Messages</span></a> </li>
+                            <li><a href='@Url.Content("~/EmployeeList/EmployeeList")'><i class="fa fa-dashboard"></i><span>Employee</span></a></li>
+                            <li class="treeview">
+                                <a href="#"><i class="fa fa-laptop"></i><span>Masters</span><i class="fa fa-caret-right pull-right"></i></a>
+                                <ul class="treeview-menu">
+                                    <li><a href='@Url.Content("~/HolidaysList/HolidaysList")' class="border0"><i class="fa fa-angle-right"></i><span>Holidays List</span></a></li>
+                                    <li><a href='@Url.Content("~/Designation/Designation")'><i class="fa fa-angle-right"></i><span>Designation</span></a></li>
+                                    <li><a href='@Url.Content("~/Language/Language")'><i class="fa fa-angle-right"></i><span>Language</span></a></li>
+                                    <li><a href='@Url.Content("~/LeaveType/LeaveType")'><i class="fa fa-angle-right"></i><span>Leave Type</span></a></li>
+                                    <li><a href='@Url.Content("~/MaritalStatus/MaritalStatus")'><i class="fa fa-angle-right"></i><span>Marital Status</span></a></li>
+                                    <li><a href='@Url.Content("~/Nationality/Nationality")'><i class="fa fa-angle-right"></i><span>Nationality</span></a></li>
+                                    <li><a href='@Url.Content("~/Qualification/Qualification")'><i class="fa fa-angle-right"></i><span>Qualification</span></a></li>
+                                    <li><a href='@Url.Content("~/Relationship/Relationship")'><i class="fa fa-angle-right"></i><span>Relationship</span></a></li>
+                                    <li><a href='@Url.Content("~/Session/Session")'><i class="fa fa-angle-right"></i><span>Session</span></a></li>
+                                    <li><a href='@Url.Content("~/Skills/Skills")'><i class="fa fa-angle-right"></i><span>Skills</span></a></li>
+                                    <li><a href='@Url.Content("~/BloodGroup/BloodGroup")'><i class="fa fa-angle-right"></i><span>Blood Groups</span></a></li>
+                                    <li><a href='@Url.Content("~/Location/Location")'><i class="fa fa-angle-right"></i><span>Location</span></a></li>
+                                    <li><a href='@Url.Content("~/Department/Department")'><i class="fa fa-angle-right"></i><span>Department</span></a></li>
+                                    <li><a href='@Url.Content("~/AssetsMaster/Assets")'><i class="fa fa-angle-right"></i><span>Asset</span></a></li>
+                                    <li><a href='@Url.Content("~/Vendors/vendors")'><i class="fa fa-angle-right"></i><span>Vendor</span></a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href='@Url.Content("~/UserInformation/GetUserDetails")'><i class="fa fa-edit"></i><span>Edit Profile</span></a>
+                            </li>
+
+                            <li class="treeview">
+                                <a href="#"><i class="fa fa-vcard-o"></i><span>Leave</span><i class="fa fa-caret-right pull-right"></i></a>
+                                <ul class="treeview-menu">
+                                    <li><a href='@Url.Content("~/EmployeeLeaveList/LeaveList")' class="border0"><i class="fa fa-angle-right"></i><span>Leave List</span></a></li>
+                                    <li><a href='@Url.Content("~/EmployeeLeavePending/LeavePending")' class="border0"><i class="fa fa-angle-right"></i><span>Leave Requests</span></a></li>
+                                    <li><a href='@Url.Content("~/EmployeeLeaveList/LossOfPayDays")' class="border0"><i class="fa fa-angle-right"></i><span>LOP Days</span></a></li>
+                                </ul>
+                            </li>
+
+                            <li>
+                                <a href='@Url.Content("~/ShowHolidays/ShowHolidays")'><i class="fa fa-calendar"></i><span>Holidays</span></a>
+                            </li>
+                            <li>
+                                <a href='@Url.Content("~/EmployeeDocuments/ShowAllEmployeeDocuments")'><i class="fa fa-book"></i><span>Documents</span></a>
+                            </li>
+                            <li>
+                                <a href='@Url.Content("~/Policies/UploadPolicy")'><i class="fa fa-upload"></i><span>Upload Policy</span></a>
+                            </li>
+                            <li>
+                                <a href='@Url.Content("~/MTS.Login/Account/ChangePassword")'><i class="fa fa-user"></i><span>Change Password </span></a>
+                            </li>
+                            <li>
+                                <a href='@Url.Content("~/PaySlip_Form16/PaySlip_Form16")'><i class="fa fa-institution"></i><span>PaySlip/Form16</span></a>
+                            </li>
+
+                            <li class="treeview">
+                                <a href="#"><i class="fa fa-bar-chart"></i><span>Asset</span><i class="fa fa-caret-right pull-right"></i></a>
+                                <ul class="treeview-menu">
+                                    <li><a href='@Url.Content("~/AssetDetails/AssetDetail")' class="border0"><i class="fa fa-angle-right"></i><span>Assets Details</span></a></li>
+                                    <li><a href='@Url.Content("~/Asset/AssignAsset")' class="border0"><i class="fa fa-angle-right"></i><span>Assign Assets</span></a></li>
+                                    <li><a href='@Url.Content("~/AssetMaintenanceDetails/AssetMaintenance")' class="border0"><i class="fa fa-angle-right"></i><span>Maintenance Details</span></a></li>
+                                    <li><a href='@Url.Content("~/AMC_Insurance/AMC_Insurance")' class="border0"><i class="fa fa-angle-right"></i><span>AMC/Insurance</span></a></li>
+                                    <li><a href='@Url.Content("~/AssetSale/Sale")' class="border0"><i class="fa fa-angle-right"></i><span>Sale</span></a></li>
+                                </ul>
+                            </li>
+
+                            <li class="treeview">
+                                <a href="#"><i class="fa fa-folder-open-o"></i><span>Export</span><i class="fa fa-caret-right pull-right"></i></a>
+                                <ul class="treeview-menu">
+                                    <li><a href='@Url.Content("~/EmployeeLeaveList/Export")' class="border0"><i class="fa fa-angle-right"></i><span>Leave-List</span></a></li>
+                                    <li><a href='@Url.Content("~/BankDetails/ReadBankDetails")' class="border0"><i class="fa fa-angle-right"></i><span>Bank Details</span></a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href='@Url.Content("~/MTS.Login/Account/LogOff")'><i class="fa fa-sign-out"></i><span>Log Out</span></a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li>
+                                <a href='@Url.Content("~/Messages/ShowMessages")'><i class="fa fa-envelope"></i><span>Messages</span></a>
+                            </li>
+                            <li>
+                                <a href='@Url.Content("~/UserList/UserList")'><i class="fa fa-dashboard"></i><span>Employee</span></a>
+                            </li>
+                            <li>
+                                <a href='@Url.Content("~/UserInformation/GetUserDetails")'><i class="fa fa-edit"></i><span>Edit Profile</span></a>
+                            </li>
+
+                            <li class="treeview">
+                                <a href="#"><i class="fa fa-vcard-o"></i><span>Leave</span><i class="fa fa-caret-right pull-right"></i></a>
+                                <ul class="treeview-menu">
+                                    <li><a href='@Url.Content("~/LeaveApply/LeaveApply")' class="border0"><i class="fa fa-angle-right"></i><span>Leave Apply</span></a></li>
+                                    <li><a href='@Url.Content("~/EmployeeLeaveList/LeaveList")' class="border0"><i class="fa fa-angle-right"></i><span>Leave List</span></a></li>
+                                    <li><a href='@Url.Content("~/EmployeeLeavePending/LeavePending")' class="border0"><i class="fa fa-angle-right"></i><span>Leave Requests</span></a></li>
+
+                                </ul>
+                            </li>
+
+                            <li>
+                                <a href='@Url.Content("~/ShowHolidays/ShowHolidays")'><i class="fa fa-calendar"></i><span>Holidays</span></a>
+                            </li>
+                            <li>
+                                <a href='@Url.Content("~/EmployeeDocuments/EmployeeDocuments")'><i class="fa fa-book"></i><span>Documents</span></a>
+                            </li>
+                            <li>
+                                <a href='@Url.Content("~/Policies/ShowAllPolicies")'><i class="fa fa-eye"></i><span>View Policies</span></a>
+                            </li>
+                            <li>
+                                <a href='@Url.Content("~/MTS.Login/Account/ChangePassword")'><i class="fa fa-user"></i><span>Change Password </span></a>
+                            </li>
+                            <li>
+                                <a href='@Url.Content("~/PaySlip_Form16/PaySlip_Form16")'><i class="fa fa-institution"></i><span>PaySlip/Form16</span></a>
+                            </li>
+
+                            <li>
+                                <a href='@Url.Content("~/MTS.Login/Account/LogOff")'><i class="fa fa-sign-out"></i><span>Log Out</span></a>
+                            </li>
+                        }
+
+                    </ul>
+
+
+                </section>
+            </aside>
+            <div class="appMain">
+                <div class="mainContent">
+                    @RenderBody()
+                </div>
+            </div>
+        </div>
+
+    </div>
+  
+
+    <script>
+        $(function () {
+            debugger
+            var userName = "";
+            userName =  @Session["Username"].ToString()
+            $('[data-toggle="tooltip"]').tooltip({
+                container: 'body'
+            })
+            toastr.options = {
+                "closeButton": false,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": false,
+                "positionClass": "toast-bottom-right",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            }
+            
+        })
+
+        $(document).ajaxError(function (event, request, settings, exception) {
+
+            if (request.status == 403) {
+                window.location.href = '@Url.Content("~/MTS.Login/Account/LogOn")'
+            }
+            if (request.status == 500) {
+                window.location.href = '@Url.Content("~/MTS.Login/Account/LogOn")'
+            }
+        });
+        jQuery(document).ready(function () {
+            jQuery('.scrollbar-macosx').scrollbar();
+        });
+    </script>
+
+    <script>
+        $.pushMenu = {
+            activate: function (toggleBtn) {
+
+                //Enable sidebar toggle
+                $(toggleBtn).on('click', function (e) {
+                    e.preventDefault();
+
+                    //Enable sidebar push menu
+                    if ($(window).width() > (767)) {
+                        if ($("body").hasClass('sidebar-collapse')) {
+                            $("body").removeClass('sidebar-collapse').trigger('expanded.pushMenu');
+                        } else {
+                            $("body").addClass('sidebar-collapse').trigger('collapsed.pushMenu');
+                        }
+                    }
+                        //Handle sidebar push menu for small screens
+                    else {
+                        if ($("body").hasClass('sidebar-open')) {
+                            $("body").removeClass('sidebar-open').removeClass('sidebar-collapse').trigger('collapsed.pushMenu');
+                        } else {
+                            $("body").addClass('sidebar-open').trigger('expanded.pushMenu');
+                        }
+                    }
+                    if ($('body').hasClass('fixed') && $('body').hasClass('sidebar-mini') && $('body').hasClass('sidebar-collapse')) {
+                        $('.sidebar').css("overflow", "visible");
+                        $('.main-sidebar').find(".slimScrollDiv").css("overflow", "visible");
+                    }
+                    if ($('body').hasClass('only-sidebar')) {
+                        $('.sidebar').css("overflow", "visible");
+                        $('.main-sidebar').find(".slimScrollDiv").css("overflow", "visible");
+                    };
+                });
+
+                $(".content-wrapper").click(function () {
+                    //Enable hide menu when clicking on the content-wrapper on small screens
+                    if ($(window).width() <= (767) && $("body").hasClass("sidebar-open")) {
+                        $("body").removeClass('sidebar-open');
+                    }
+                });
+            }
+        };
+        $.tree = function (menu) {
+            var _this = this;
+            var animationSpeed = 200;
+            $(document).on('click', menu + ' li a', function (e) {
+                //Get the clicked link and the next element
+                var $this = $(this);
+                var checkElement = $this.next();
+
+                //Check if the next element is a menu and is visible
+                if ((checkElement.is('.treeview-menu')) && (checkElement.is(':visible'))) {
+                    //Close the menu
+                    checkElement.slideUp(animationSpeed, function () {
+                        checkElement.removeClass('menu-open');
+                        //Fix the layout in case the sidebar stretches over the height of the window
+                        //_this.layout.fix();
+                    });
+                    checkElement.parent("li").removeClass("active");
+                }
+                    //If the menu is not visible
+                else if ((checkElement.is('.treeview-menu')) && (!checkElement.is(':visible'))) {
+                    //Get the parent menu
+                    var parent = $this.parents('ul').first();
+                    //Close all open menus within the parent
+                    var ul = parent.find('ul:visible').slideUp(animationSpeed);
+                    //Remove the menu-open class from the parent
+                    ul.removeClass('menu-open');
+                    //Get the parent li
+                    var parent_li = $this.parent("li");
+
+                    //Open the target menu and add the menu-open class
+                    checkElement.slideDown(animationSpeed, function () {
+                        //Add the class active to the parent li
+                        checkElement.addClass('menu-open');
+                        parent.find('li.active').removeClass('active');
+                        parent_li.addClass('active');
+                    });
+                }
+                //if this isn't a link, prevent the page from being redirected
+                if (checkElement.is('.treeview-menu')) {
+                    e.preventDefault();
+                }
+            });
+        };
+        $.tree('.sidebar');
+        $.pushMenu.activate("[data-toggle='offcanvas']");
+
+
+        $(document).ready(function () {
+            debugger
+            var userName = document.getElementsByClassName("user-name")[0].innerText;
+            userName = userName.substring(0, 2).toUpperCase();
+            document.getElementsByClassName("avatar")[0].innerHTML = userName;
+        });
+    </script>
+</body>
+</html>

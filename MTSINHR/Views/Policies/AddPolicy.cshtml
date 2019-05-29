@@ -1,0 +1,155 @@
+﻿@model MTSINHR.Models.Policies
+
+@{
+    ViewBag.Title = "AddPolicy";
+}
+
+@System.Web.Optimization.Scripts.Render("~/bundles/datatable")
+<script src="~/Scripts/ValidationFunction.js"></script>
+<script>
+    var groupTable;
+    $(document).ready(function () {
+
+        groupTable = $("#getpolicynames").DataTable({
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "iDisplayLength": 5,
+            "bFilter": true,
+            "bProcessing": true,
+            "ajax": {
+                type: 'Get',
+                async: true,
+                url: '@Url.Content("~/Policies/ReadPolicy")',
+                dataSrc: function (data) {
+                    debugger;
+                    var tempData = JSON.parse(data);
+                    return tempData.Table;
+                }
+            },
+
+            "aoColumns":
+                [{ "mData": "ID", "sTitle": "ID", "sClass": "text-right", "sWidth": "80px", "bVisible": false }
+                , { "mData": "POLICYNAME", "sTitle": "PolicyName", "sClass": "text-left" }
+                ,{ "mData": "ID", "sTitle": "Edit", "sClass": "text-center", "sWidth": "1%", "orderable": false }
+                ],
+            "aoColumnDefs":
+                [{
+                    "aTargets": [2]
+                    , "mRender": function (data, type, row) {
+                        return '<span onclick= editPolicyName($(this).closest("tr"))  class="fa fa-edit"></span>';
+                    }
+                }],
+        });
+    });
+
+    function AddEdit(actionurl, formid) {
+        debugger;
+        if (checkForm(formid)) {
+            $.ajax({
+                type: 'POST',
+                url: actionurl,
+                data: {
+                    id: $("#rowId").val(),
+                    policyname: $("#editpolicy").val().trim()
+                },
+                success: function (response) {
+
+                    if (parseInt(response.success) == 1) {
+
+                        $("#policy").modal('hide');
+                        groupTable.ajax.reload();
+                    } else {
+                        $('.field-validation-valid').text("Failed To Update, Already Exists");
+                        $('.field-validation-valid').show();
+                    }
+                },
+                error: function (a, b, c) {
+                }
+            });
+        }
+
+    };
+
+    function editPolicyName(curTr) {
+        debugger;
+        var data = groupTable.row(curTr).data();
+        $("#url").val('@Url.Content("~/Policies/Edit")');
+        $(".field-validation-valid").text("");
+        $("#rowId").val(data.ID);
+        $("#editpolicy").val(data.POLICYNAME);
+        $("#actiontitle").text("Edit Policy");
+        $("#policy").modal('show');
+    };
+
+    function addPolicy() {
+        debugger;
+        $("#url").val('@Url.Content("~/Policies/AddPolicy")');
+        $(".field-validation-valid").text("");
+        $("#editpolicy").val("");
+        $("#actiontitle").text("Add Policy");
+        $("#policy").modal('show');
+    };
+
+
+</script>
+
+<div class="card">
+    <div class="card-header text-center ">
+        Policies
+    </div>
+    <div class="card-body">
+        <div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="text-right ">
+                        <button type="button" onclick="addPolicy()" class="btn btn-primary btn-sm" id="create"><span class="fa fa-plus-circle"></span>&nbsp;&nbsp;Add</button>
+                    </div>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="row m-t-15">
+
+                <div class="MTS_Table">
+                    <table id="getpolicynames" class="table table-bordered table-hover tabel-sm table-responsive" cellspacing="0" width="100%"></table>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="policy" data-backdrop="static" keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="actiontitle" class="modal-title"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+            </div>
+
+            <div class="modal-body">
+                <form id="PolicyList">
+                    <input type="hidden" id="rowId" value="">
+                    <input type="hidden" class="form-control" id="url" value="">
+
+                    <div class="form-group">
+                        <label>AddPolicy</label>
+                        <input type="text" class="form-control" name="Policy" id="editpolicy" data-val-regex-pattern="^[a-zA-Z ]+$" />
+                        <span class="field-validation-valid" style="color: red; font: bold; display: none"></span>
+                    </div>
+
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <div class="dataurl">
+                    <div>
+                        <button type="button" id="save" class="btn btn-success" onclick="AddEdit($('#url').val(), 'PolicyList')">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

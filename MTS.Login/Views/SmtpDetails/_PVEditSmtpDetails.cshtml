@@ -1,0 +1,195 @@
+﻿@model MTS.LoginModels.SmtpDetails 
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
+@using (Html.BeginForm("UpdateSmtpDetails", "SmtpDetails", FormMethod.Post, new { id = "SmtpDetails" }))
+{
+    object css = new { @class = "required" };
+    object disabledHtmlOptions = ViewBag.button != null ? new { disabled = "disabled" } : css;
+    object disabledHtmlWithoutReq = ViewBag.button != null ? new { disabled = "disabled" } : null;
+    string isrequired = ViewBag.button != null ? " " : "*";
+    string ishide = ViewBag.button == null ? "block" : "none";
+
+    if (ViewBag.button != null)
+    { 
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#smtpname").attr('disabled', true);
+            $("#SmtpHostName").attr('disabled', true);
+            $("#SmtpPort").attr("disabled", true);
+            $("#username").attr('disabled', true);
+            $("#Domain").attr('disabled', true);
+            $("#TimeOut").attr('disabled', true);
+            $("#DeliveryMethod").attr('disabled', true);
+            $("#EnableSSL").attr('disabled', true);
+            $("#DefaultCredentials").attr('disabled', true);
+            $("#submitBtn").hide();
+            $("#DIVPassword").hide();
+            $("#DIVConfirmPassword").hide();
+        });
+    </script>
+    }
+    
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">
+            <i class="icon-remove"></i>
+        </button>
+        @if (ViewBag.button == null)
+        {
+            <h3>
+                Edit SMTP Details
+            </h3>
+        }
+        else
+        { 
+            <h3>
+                View SMTP Details
+            </h3>
+        }
+    </div>
+    <div class="modal-body" style="max-height: 455px;">
+        <div class="row-fluid">
+            <div class="span12 gap-bottom5 gap-left0">
+                <div class="span3 gap-top5 text-right">
+                    <b>SMTP Name <span class="requi">@isrequired</span></b>
+                </div>
+                <div class="span4">
+                    @Html.TextBoxFor(m => m.smtpname, disabledHtmlOptions)
+                </div>
+                <div class="span5">
+                    @Html.ValidationMessageFor(m => m.smtpname)
+                </div>
+            </div>
+            <div class="span12 gap-bottom5 gap-left0">
+                <div class="span3 gap-top5 text-right">
+                    <b>SMTP Host Name <span class="requi">@isrequired</span></b>
+                </div>
+                <div class="span4">
+                    @Html.TextBoxFor(m => m.SmtpHostName, disabledHtmlOptions)
+                </div>
+                <div class="span5">
+                    @Html.ValidationMessageFor(m => m.SmtpHostName)
+                </div>
+            </div>
+            <div class="span12 gap-bottom5 gap-left0">
+                <div class="span3 gap-top5 text-right">
+                    <b>SMTP Port <span class="requi">@isrequired</span></b>
+                </div>
+                <div class="span4">
+                    @Html.TextBoxFor(m => m.SmtpPort, disabledHtmlOptions)
+                </div>
+                <div class="span5">
+                    @Html.ValidationMessageFor(m => m.SmtpPort)
+                </div>
+            </div>
+            <div class="span12 gap-bottom5 gap-left0">
+                <div class="span3 gap-top5 text-right">
+                    <b>User Name <span class="requi">@isrequired</span></b>
+                </div>
+                <div class="span4">
+                    @Html.TextBoxFor(m => m.username, disabledHtmlOptions)
+                </div>
+                <div class="span5">
+                    @Html.ValidationMessageFor(m => m.username)
+                </div>
+            </div>
+            <div class="span12 gap-bottom5 gap-left0">
+                <div class="span3 gap-top5 text-right">
+                    <b>Domain &nbsp;&nbsp;</b>
+                </div>
+                <div class="span4">
+                    @Html.TextBoxFor(m => m.Domain)
+                </div>
+                <div class="span5">
+                    @Html.ValidationMessageFor(m => m.Domain)
+                </div>
+            </div>
+            <div class="span12 gap-bottom5 gap-left0">
+                <div class="span3 gap-top5 text-right">
+                    <b>Time Out <span class="requi">@isrequired</span></b>
+                </div>
+                <div class="span4">
+                    @Html.TextBoxFor(m => m.TimeOut, disabledHtmlOptions)
+                </div>
+                <div class="span5">
+                    @Html.ValidationMessageFor(m => m.TimeOut)
+                </div>
+            </div>
+            <div class="span12 gap-bottom5 gap-left0">
+                <div class="span3 gap-top5 text-right">
+                    <b>Delivery Method <span class="requi">@isrequired</span></b>
+                </div>
+                <div class="span4">
+                    @Html.TextBoxFor(m => m.DeliveryMethod, disabledHtmlOptions)
+                </div>
+                <div class="span5">
+                    @Html.ValidationMessageFor(m => m.DeliveryMethod)
+                </div>
+            </div>
+            <div class="span12 gap-bottom5 gap-left0" style="display:@ishide" id="DIVPassword">
+                <div class="span3 gap-top5 text-right">
+                    <b>Password <span class="requi">@isrequired</span></b>
+                </div>
+                <div class="span4">
+                    @Html.TextBoxFor(m => m.Password, new { @class = "required", @type = "Password", @name = "Password" })
+                </div>
+                <div class="span5">
+                    @Html.ValidationMessageFor(m => m.Password)
+                </div>
+            </div>
+            <div class="span12 gap-bottom5 gap-left0" style="display:@ishide" id="DIVConfirmPassword">
+                <div class="span3 gap-top5 text-right">
+                    <b>Confirm Password <span class="requi">@isrequired</span></b>
+                </div>
+                <div class="span4">
+                    @Html.TextBoxFor(m => m.ConfirmPassword, new { @class = "required", @type = "password", @name = "ConfirmPassword" })
+                </div>
+                <div class="span5">
+                    @Html.ValidationMessageFor(m => m.ConfirmPassword)
+                </div>
+            </div>
+            <div class="span12 gap-bottom5 gap-left0">
+                <div class="span3 gap-top5 text-right">
+                    <b>Enable SSL &nbsp;&nbsp;</b>
+                </div>
+                <div class="span4">
+                    @Html.CheckBoxFor(m => m.EnableSSL)
+                </div>
+            </div>
+            <div class="span12 gap-bottom5 gap-left0">
+                <div class="span3 gap-top5 text-right">
+                    <b>Default Credentials &nbsp;&nbsp;</b>
+                </div>
+                <div class="span4">
+                    @Html.CheckBoxFor(m => m.DefaultCredentials)
+                </div>
+            </div>
+        </div>
+    </div> 
+    <div class="modal-footer clear">
+        <input type="submit" name="btn" id="submitBtn" onclick="return Validation()" value="Save"
+            class="btn btn-info" />
+        <a href="#" class="btn btn-info" data-dismiss="modal">Close</a>
+    </div>
+    @Html.HiddenFor(m => m.SmtpID)  
+}
+<script type="text/javascript">
+    function Validation() {
+        var validation = $('#SmtpDetails').valid('#SmtpDetails');
+        return validation;
+    }
+    $('#SmtpDetails').submit(function () {
+        $.ajax({
+            url: '@Url.Content("~/SmtpDetails/UpdateSmtpDetails")',
+            type: 'POST',
+            data: $('#SmtpDetails').serialize(),
+            success: function (data) {
+                alertMsg = data;
+                $('#divmainpopup').modal('hide');
+                GetData();
+            },
+            cache: false
+        });
+        return false;
+    });
+</script>
+

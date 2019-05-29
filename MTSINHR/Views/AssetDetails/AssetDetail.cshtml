@@ -1,0 +1,51 @@
+﻿@System.Web.Optimization.Scripts.Render("~/bundles/datatable")
+<script src="~/Scripts/ValidationFunction.js"></script>
+
+
+<script>
+    var groupTable;
+    $(document).ready(function () {
+        groupTable = $("#getasset").DataTable({
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "iDisplayLength": 5,
+            "bFilter": true,
+            "bProcessing": true,
+            "ajax": {
+                type: "GET",
+                url: '@Url.Content("~/AssetsDetails/Read")',
+                dataSrc: function (data) {
+                    return JSON.parse(data);
+
+                }
+            },
+            "aoColumns":
+      [{ "mData": "Id", "sTitle": "SI.No", "sClass": "text-right", "sWidth": "80px" }
+      , { "mData": "Assetname", "sTitle": "Item Name", "sClass": "text-left" }
+      , { "mData": "AssignedTo", "sTitle": "Assign To", "sClass": "text-center" }
+      , { "mData": "Depreciation", "sTitle": "Depreciation %", "sClass": "text-center" }
+       , { "mData": "PurchasedOn", "sTitle": "Purchased Year", "sClass": "text-center" }
+        , { "mData": "Make", "sTitle": "Make", "sClass": "text-center" }
+       , { "mData": "Amctype", "sTitle": "AMC", "sClass": "text-center" }
+        , { "mData": "", "sTitle": "View Details", "sClass": "text-center" }
+         , { "mData": "AssignedTo", "sTitle": "Action/Assign", "sClass": "text-center" }
+          , { "mData": "", "sTitle": "Update Maintenance", "sClass": "text-center" }
+          , { "mData": "", "sTitle": "Update Amc", "sClass": "text-center" }
+      ],          
+        });
+    });
+</script>
+<div class="card">
+    <div class="card-header text-center ">
+        Asset Details
+    </div>
+    <div class="card-body  ">
+        <div>
+            <div class="row">
+                <div class="MTS_Table">
+                    <table id="getasset" class="table table-bordered table-hover tabel-sm table-responsive" cellspacing="0" width="100%"></table>
+                </div>
+            </div>
+         
+        </div>
+    </div>
+</div>

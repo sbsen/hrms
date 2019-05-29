@@ -1,0 +1,76 @@
+﻿@model MTS.LoginModels.GridModel
+@{
+    
+    ViewBag.Title = "Access Rights";
+    Layout = @Url.Content("~/Views/Shared/_Layout.cshtml");
+}
+<script src="@Url.Content("~/Scripts/LoginGendral.js")" type="text/javascript"></script>
+    <script type="text/javascript">
+        //Global variables
+        var alertMsg;
+        var oTable;
+        var oButtons;
+        $(document).ready(function () {
+            oButtons = [$("#btnSetAccess")]
+        });
+
+        //Function to load partial view
+        function getPartial(_roleid, _type) {
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Content("~/MTS.Login/Role/_PartialViewLoad")',
+                data: { id: _roleid, type: _type },
+                success: function (data) {
+                    $('div#divmainpopup').html(data);
+                    $('#divmainpopup').modal('show');                    
+                },
+                cache: false
+            });
+        }
+
+
+        //Function to fill grid
+        function GetData() {
+            ShowAlertMsg(alertMsg);
+            DisableButtons(oButtons);
+
+            $("#HRoleID").val("0");
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Content("~/MTS.Login/Role/GetData")',
+                success: function (data) {
+                    $('div#TableDiv').html(data);
+                },
+                cache: false
+            });
+        }
+    </script>
+
+<script type="text/javascript">
+    function SetAccess() {
+        getPartial($("#HRoleID").val(), 2);
+    }
+ 
+</script>
+<div class="span12 gap-left0 boxshade">
+    <div class="boxhead">
+        Access Rights
+    </div>
+    <div class="span12 boxbody">
+        <div id="alertDiv" style="display: none" class="alert alert-success">
+        </div>
+        <div class="span12 gap-left0 gap-bottom5">
+            <button id="btnSetAccess" disabled="disabled" class="btn btn-info pull-right gap-right10" onclick="SetAccess();">
+                <i class="icon-zoom-in icon-white"></i>Set Access Rights</button>           
+        </div>
+        <div id="TableDiv" class="span12 gap-left0">
+            @Html.Partial("_PVRoleData")
+        </div>
+    </div>
+    <div class="span12 boxfoot">
+    </div>
+</div>
+
+<!--Hidden variable -->
+<input type="hidden" id="extValue" />
+<input type="hidden" id="HRoleID" />

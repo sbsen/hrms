@@ -1,0 +1,203 @@
+﻿@model  MTSINHR.Models.AssetsMaster
+@System.Web.Optimization.Scripts.Render("~/bundles/datatable")
+<script src="~/Scripts/ValidationFunction.js"></script>
+
+
+<script>
+    var groupTable;
+    $(document).ready(function () {
+        groupTable = $("#getasset").DataTable({
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "iDisplayLength": 5,
+            "bFilter": true,
+            "bProcessing": true,
+            "ajax": {
+                type: "GET",
+                url: '@Url.Content("~/AssetsMaster/Read")',
+                dataSrc: function (data) {
+                    return JSON.parse(data);
+
+                }
+            },
+            "aoColumns":
+      [{ "mData": "Id", "sTitle": "ID", "sClass": "text-right", "sWidth": "80px" }
+      , { "mData": "Assetcode", "sTitle": "Asset Code", "sClass": "text-left" }
+      , { "mData": "Assetname", "sTitle": "Asset Name", "sClass": "text-left" }
+      , { "mData": "Depreciation", "sTitle": "Depreciation", "sClass": "text-center" }
+       , { "mData": "Expectedlife", "sTitle": "Expected Useful Life", "sClass": "text-center" }
+        , { "mData": "Salvagevalue", "sTitle": "Salvage Value", "sClass": "text-center" }
+      , { "mData": "Id", "sTitle": "Edit", "sClass": "text-center", "sWidth": "1%", "orderable": true }
+      ],
+            "aoColumnDefs":
+                [{
+                    "aTargets": [6]
+                    , "mRender": function (data, type, row) {
+                        return '<span onclick= editAsset($(this).closest("tr"))  class="fa fa-edit"></span>';
+                    }
+                }],
+        });
+    });
+
+    function AddEdit(actionurl, formid) {
+        if (checkForm(formid)) {
+            debugger
+            $.ajax({
+                type: 'POST',
+                url: actionurl,
+                data: {
+                    Id: $("#rowId").val(),
+                    Assetname: $("#Assetname").val().trim(),
+                    AssettypeId: $("#AssettypeId").val().trim(),
+                    AssetDepreciation: $("#Assetdepreciation").val(),
+                    ExpectedLife: $("#Expectedlife").val().trim(),
+                    SalvageValue: $("#Salvagevalue").val().trim()
+                },
+                success: function (response) {
+                    debugger
+                    if (parseInt(response.success) == 1) {
+                        $('#asset').modal('hide');
+                        groupTable.ajax.reload();
+                        toastr.success("Successfully Added");
+                    } else {
+                        $('.field-validation-valid').text("Failed To Update, Already Exists");
+                        $('.field-validation-valid').show();
+                    }
+                },
+                error: function (a, b, c) {
+                }
+            });
+        }
+    };
+
+    function editAsset(curTr) {
+        debugger
+        var data = groupTable.row(curTr).data();
+        $("#url").val('@Url.Content("~/AssetsMaster/Edit")');
+        $('.field-validation-valid').text("");
+        $("#rowId").val(data.Id);
+        $("#editassetname").val(data.Assetname);
+        $("#editassettypeId").val(data.AssettypeId);
+        $("#editdAssetdepreciation").val(data.AssetDepreciation);
+        $("#editExpectedlife").val(data.ExpectedLife);
+        $("#editSalvagevalue").val(data.SalvageValue);
+        $("#actiontitle").text("Edit Asset");
+        $("#asset").modal('show');
+    };
+
+    function addAsset() {
+        debugger
+        $("#url").val('@Url.Content("~/AssetsMaster/Add")');
+        $('.field-validation-valid').text("");
+        $("#editassetname").val("");
+        $("#editassettypeId").val("");
+        $("#editdAssetdepreciation").val("");
+        $("#editExpectedlife").val("");
+        $("#editSalvagevalue").val("");
+        $("#actiontitle").text("Add Asset");
+        $("#asset").modal('show');
+    };
+
+
+
+</script>
+
+<div class="card">
+    <div class="card-header text-center ">
+        Asset
+    </div>
+    <div class="card-body">
+        <div>
+            <div class="row">
+
+                <div class="col-sm-12">
+                    <div class="text-right ">
+                        <button type="button" onclick="addAsset()" class="btn btn-primary btn-sm" id="create"><span class="fa fa-plus-circle"></span>&nbsp;&nbsp;Add</button>
+                    </div>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="row m-t-15">
+
+                <div class="MTS_Table">
+                    <table id="getasset" class="table table-bordered table-hover tabel-sm table-responsive" cellspacing="0" width="100%"></table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="asset" data-backdrop="static" keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="actiontitle" class="modal-title"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <form id="AssetList">
+                    <input type="hidden" id="rowId" value="">
+                    <input type="hidden" class="form-control" id="url" value="">
+                    <div>
+                        <div class="form-group">
+                            <div class="editor-label">
+                                Asset Type
+                            </div>
+                            <div class="editor-field">
+                                <div>
+                                    @Html.DropDownListFor(model => model.AssetTypeId, new System.Web.Mvc.SelectList(ViewBag.Asset, "Value", "Text"), new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.AssetTypeId)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @*<div class="col-md-4">
+                        <div class="form-group">
+                            <div class="editor-label ">
+                                Asset Name
+                            </div>
+                            <div class="editor-field">
+                                <div style="width: 450px;">
+                                    @Html.DropDownListFor(model => model.AssetName, new System.Web.Mvc.SelectList(ViewBag.Assetname, "Value", "Text"), new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.AssetName)
+                                </div>
+                            </div>
+                        </div>
+                    </div>*@
+                    @*<div class="form-group">
+                        <label> Asset Type</label>
+                        <input type="text" class="form-control" name="AssettypeId" id="AssettypeId" />
+                        <span class="field-validation-valid" style="color: red; font: bold; display: none"></span>
+                    </div>*@
+                    <div class="form-group">
+                        <label>Asset Name </label>
+                        <input type="text" class="form-control" name="Assetname" id="Assetname" />
+                        <span class="field-validation-valid" style="color: red; font: bold; display: none"></span>
+                    </div>
+                    <div class="form-group">
+                        <label>Depreciation %</label>
+                        <input type="text" class="form-control" name="Assetdepreciation" id="Assetdepreciation" />
+                        <span class="field-validation-valid" style="color: red; font: bold; display: none"></span>
+                    </div>
+                    <div class="form-group">
+                        <label>Expected Useful Life</label>
+                        <input type="text" class="form-control" name="Expectedlife" id="Expectedlife" />
+                        <span class="field-validation-valid" style="color: red; font: bold; display: none"></span>
+                    </div>
+                    <div class="form-group">
+                        <label>Salvage Value</label>
+                        <input type="text" class="form-control" name="SalvageValue" id="Salvagevalue" />
+                        <span class="field-validation-valid" style="color: red; font: bold; display: none"></span>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="dataurl">
+                    <div>
+                        <button type="button" id="save" class="btn btn-success" onclick="AddEdit($('#url').val(), 'AssetList')">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

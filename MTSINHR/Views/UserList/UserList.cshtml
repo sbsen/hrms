@@ -1,0 +1,98 @@
+﻿@{
+    ViewBag.Title = "UserList";
+}
+
+
+@System.Web.Optimization.Styles.Render("~/bundles/bootstrapdt")
+@System.Web.Optimization.Scripts.Render("~/bundles/datatable")
+
+<script>
+    var groupTable;
+    $(document).ready(function () {
+
+        var sessionValue = '@Request.RequestContext.HttpContext.Session["RoleId"]';
+        loadTable();
+        var table = $('#getallemployee').DataTable();
+        $('#getallemployee tbody').on('click', 'tr', function () {
+
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+            }
+            else {
+
+                table.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+
+            }
+        });
+
+    });
+
+    function loadTable() {
+        groupTable = $("#getallemployee").DataTable({
+            "iDisplayLength": 25,
+            "bFilter": true,
+            "bProcessing": true,
+            "order": [[1, "asc"]],
+            "ajax": {
+                type: 'Get',
+                url: '@Url.Content("~/EmployeeList/Read")',
+                dataSrc: function (data) {
+                    return JSON.parse(data);
+                }
+            },
+            "aoColumns": [
+                { "mData": "id", "bVisible": false }
+                , { "mData": "Employee_Id", "sTitle": "Employee Id", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }
+                , { "mData": "Firstname", "sTitle": "First Name", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }
+                , { "mData": "Lastname", "sTitle": "Last Name", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }
+                , { "mData": "Skills", "sTitle": "Skills", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }
+                , { "mData": "ROLEID", "sTitle": "Role", "bVisible": false, "defaultContent": "<i>Not set</i>" }
+                , { "mData": "Designation", "sTitle": "Designation", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }
+                , { "mData": "Languages", "sTitle": "Language", "sClass": "text-left", "defaultContent": "<i>Not set</i>" },
+
+                 { "mData": "id", "sTitle": "View", "sClass": "text-center", "bSortable": false,"bVisible": false, "sWidth": "1%", "orderable": false }
+
+            ]
+
+        });
+    }
+
+    function showEmployee(data) {
+
+        $.ajax({
+            type: 'POST',
+            data: { id: data },
+            url: '@Url.Action("SetPrimaryid", "UserList")',
+            success: function (result) {
+                if (result == "success") {
+                    window.location.href = '@Url.Action("UserDetails", "UserList")';
+                }
+            }
+        });
+
+
+    }
+</script>
+<style>
+    i
+    {
+        cursor: pointer !important;
+    }
+</style>
+<div class="card">
+    <div class="card-header text-center ">
+        Employee List
+    </div>
+    <div class="card-body">
+        <div>
+            <div class="m-t-15">
+                <div class="MTS_Table">
+                    <table id="getallemployee" class="table table-bordered table-hover tabel-sm table-responsive" cellspacing="0" width="100%">
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

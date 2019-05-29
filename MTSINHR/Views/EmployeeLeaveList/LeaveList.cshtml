@@ -1,0 +1,197 @@
+﻿@model LeaveApply.Models.Leave
+
+@{
+    Layout = "~/Views/Shared/Layout_New.cshtml";
+}
+@System.Web.Optimization.Styles.Render("~/bundles/bootstrapdt")
+@System.Web.Optimization.Styles.Render("~/bundles/datepickercss")
+@System.Web.Optimization.Scripts.Render("~/bundles/datatable")
+@System.Web.Optimization.Scripts.Render("~/bundles/datepicker")
+<script src="~/Scripts/bootbox.js"></script>
+<script src="~/Scripts/ValidationFunction.js"></script>
+<script src="~/Scripts/DataTables/dataTables.buttons.min.js"></script>
+<script src="~/Scripts/DataTables/excel.min.js"></script>
+<script src="~/Scripts/DataTables/buttons.html5.min.js"></script>
+<link href="~/Content/DataTables/css/buttons.dataTables.min.css" rel="stylesheet" />
+
+
+<div class="leavelist p-b-10">
+    <form method="post" id="listform">
+        <div class="Leave List">
+            <div class="card card-shadow">
+                <div class="card-header form-signin-heading text-center">
+                    Leave List
+                </div>
+                <div class="card-body p-b-10">
+                    <div>
+                        <div class="row">
+                            <div class="form-group col-md-4">
+                                <div>@Html.LabelFor(m => m.FromDate)</div>
+                                <div>
+                                    @Html.TextBoxFor(m => m.FromDate, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(m => m.FromDate)
+                                </div>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <div>@Html.LabelFor(m => m.ToDate)</div>
+                                <div>
+                                    @Html.TextBoxFor(m => m.ToDate, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(m => m.ToDate)
+                                </div>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <div>@Html.LabelFor(m => m.EmployeeName)</div>
+                                <div>@Html.DropDownListFor(m => m.EmployeeName, new System.Web.Mvc.SelectList(ViewBag.EmployeeNames, "Value", "Text"), new { @class = " form-control select-add-placeholder" })</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <button type="button" id="getlist" class="display btn btn-primary btn btn-md">Search</button>
+                    </div>
+                    <div>
+                        <div class="MTS_Table  p-t-10 p-b-10">
+                            <div class="form-group">
+                                <select name="" id="statusdropdown" style="width:30%;position:absolute ;left:10%;top:50%" class="form-control valid">
+                                    <option value="2">Approved</option>
+                                    <option value="1">Pending</option>
+                                    <option value="0">Select All</option>
+                                </select>
+                            </div>
+                            <button type="Submit" id="export" style="display: none" class="display btn btn-primary btn btn-md ">Export</button>
+                            <table id="mytable" class="table table-bordered table-hover tabel-sm table-responsive"></table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<script>
+
+    var leaveListTable;
+    $(document).ready(function () {
+
+        $(".select-add-placeholder").prepend("<option value='0'  selected>--SELECT ALL--</option>")
+        loadLeaveList();
+
+        $("#getlist").on('click', function () {
+            debugger
+            if ($("#listform").valid()) {
+                $("html, body").animate({ scrollTop: $(document).height() }, "slow");
+
+                $.ajax({
+
+                    type: "POST",
+                    url: '@Url.Content("~/EmployeeLeaveList/GetAllEmployeeLeaveList")',
+                    data: {
+                        'FromDate': $("#FromDate").val(),
+                        'ToDate': $("#ToDate").val(),
+                        'EmployeeName': $("#EmployeeName").val()
+                    },
+                    success: function (data) {
+
+                        leaveListTable.clear();
+                        leaveListTable.rows.add(JSON.parse(data));
+                        leaveListTable.draw();
+                        $(".MTS_Table").show();
+                    }
+
+
+                });
+            }
+
+        });
+
+    });
+    function loadLeaveList() {
+
+
+        leaveListTable = $("#mytable").DataTable({
+            "dom": 'Bfrtip',
+            buttons: [
+        'excel',
+            ],
+            "data": "",
+
+
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "iDisplayLength": 5,
+
+            "aoColumns":
+                [{ "mData": "Employee_Id", "sTitle": "Employee ID", },//0
+                { "mData": "FromDate", "sTitle": "FromDate" },//1
+                { "mData": "ToDate", "sTitle": "ToDate" },//2
+                { "mData": "EmployeeName", "sTitle": "EmployeeName" },//3
+                { "mData": "Numberofdays", "sTitle": "Number of days" },//4
+                { "mData": "LeaveType", "sTitle": "LeaveType" },//5
+                { "mData": "Reason", "sTitle": "Reason" },//6
+                { "mData": "Approval", "sTitle": "Status" }//7
+                ],
+
+            "aoColumnDefs": [
+{
+    "aTargets": [7]
+, "mRender": function (data, type, row) {
+
+    if (data == 2) {
+        return "Approved";
+    }
+    else if (data == 3) {
+        return "Rejected";
+    }
+    else {
+        return "Pending";
+    }
+}
+}],
+
+        });
+        $(".MTS_Table").hide();
+    }
+    $('#statusdropdown').on('change', function () {
+        debugger;
+        var cmbSelected = $('#statusdropdown').val();
+
+        if (cmbSelected == "0") {
+            leaveListTable.column(7).search('').draw();
+        }
+        else if (cmbSelected == "1") {
+            leaveListTable.column(7).search('Pending').draw();
+        }
+        else if (cmbSelected == "2") {
+            leaveListTable.column(7).search('Approved').draw();
+        }
+    });
+
+
+
+</script>
+
+<script>
+    var todayDate = new Date();
+    var end = new Date().getDate();
+    var yearrestrict = '@System.Configuration.ConfigurationManager.AppSettings["Year_restrict_count"]';
+    $('#FromDate').datepicker({
+        startDate: "-" + yearrestrict + "y",
+        endDate: '+1m',
+
+        autoclose: true
+    }).on('changeDate', function () {
+
+        $("#ToDate").val(this.value);
+        $('#ToDate').datepicker('setStartDate', new Date($(this).val()));
+    });
+
+    $('#ToDate').datepicker({
+        startDate: "-" + yearrestrict + "y",
+        endDate: '+1m',
+
+        autoclose: true
+    }).on('changeDate', function () {
+
+        $('#FromDate').datepicker('setEndDate', new Date($(this).val()));
+    });
+</script>

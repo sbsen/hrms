@@ -1,0 +1,586 @@
+﻿using IntellaLend.Model;
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
+
+namespace MTSEntityDataAccess
+{
+    //public class DBConnect : DbContext
+    //{
+    //    public static string TableSchema { get; set; }
+    //    public const string MTSSchema = "IL";
+
+    //   // public DBConnect() { }
+
+    //    public DBConnect(string tableSchema)
+    //    {
+    //        TableSchema = tableSchema;
+    //    }
+
+    //    #region User Tables
+
+    //    public DbSet<User> Users { get; set; }
+    //    public DbSet<UserAddressDetail> UserAddressDetail { get; set; }
+    //    public DbSet<UserRoleMapping> UserRoleMapping { get; set; }
+    //    public DbSet<CustomAddressDetail> CustomAddressDetail { get; set; }
+    //    public DbSet<UserSecurityQuestion> UserSecurityQuestion { get; set; }
+
+    //    #endregion
+
+    //    #region Role Tables
+
+    //    public DbSet<RoleMaster> Roles { get; set; }
+    //    public DbSet<MenuMaster> Menus { get; set; }
+    //    public DbSet<AccessURL> AccessURLs { get; set; }
+    //    public DbSet<RoleMenuMapping> RoleMenuMapping { get; set; }
+
+    //    #endregion
+
+    //    #region Loan Tables
+
+    //    public DbSet<Loan> Loan { get; set; }
+    //    public DbSet<LoanDetail> LoanDetail { get; set; }
+    //    public DbSet<LoanImage> LoanImage { get; set; }
+    //    public DbSet<LoanSearch> LoanSearch { get; set; }
+
+    //    #endregion
+
+    //    #region Customer Master Tables
+
+    //    public DbSet<CustomerMaster> CustomerMaster { get; set; }
+    //    public DbSet<ReviewTypeMaster> ReviewTypeMaster { get; set; }
+    //    public DbSet<LoanTypeMaster> LoanTypeMaster { get; set; }
+    //    public DbSet<DocumentTypeMaster> DocumentTypeMaster { get; set; }
+    //    public DbSet<DocumentFieldMaster> DocumentFieldMaster { get; set; }
+    //    public DbSet<CheckListMaster> CheckListMaster { get; set; }
+    //    public DbSet<CheckListDetailMaster> CheckListDetailMaster { get; set; }
+    //    public DbSet<RuleMaster> RuleMaster { get; set; }
+    //    public DbSet<StackingOrderMaster> StackingOrderMaster { get; set; }
+    //    public DbSet<StackingOrderDetailMaster> StackingOrderDetailMaster { get; set; }
+
+    //    #endregion
+
+    //    #region Mapping Tables
+
+    //    public DbSet<CustLoanMapping> CustLoanMapping { get; set; }
+    //    public DbSet<CustLoanReviewMapping> CustLoanReviewMapping { get; set; }
+    //    public DbSet<CustLoanDocMapping> CustLoanDocMapping { get; set; }
+    //    public DbSet<CustLoanReviewCheckMapping> CustLoanReviewCheckMapping { get; set; }
+    //    public DbSet<CustLoanReviewStackMapping> CustLoanReviewStackMapping { get; set; }
+
+    //    #endregion
+
+    //    #region IntellaLend Tables
+
+    //    public DbSet<WorkFlowStatusMaster> WorkFlowStatusMaster { get; set; }
+    //    public DbSet<TenantMaster> TenantMaster { get; set; }
+    //    public DbSet<ServiceConfig> ServiceConfig { get; set; }
+    //    public DbSet<EmailMaster> EmailMaster { get; set; }
+    //    public DbSet<AppConfig> AppConfig { get; set; }
+
+
+    //    #endregion
+
+    //    #region Master Tables
+
+    //    public DbSet<SecurityQuestionMasters> SecurityQuestionMasters { get; set; }
+
+    //    #endregion
+
+    //    #region Audit Loan Tables
+
+    //    public DbSet<AuditLoan> AuditLoan { get; set; }
+    //    public DbSet<AuditLoanDetail> AuditLoanDetail { get; set; }
+    //    public DbSet<AuditLoanMissingDoc> AuditLoanMissingDoc { get; set; }
+    //    public DbSet<AuditLoanSearch> AuditLoanSearch { get; set; }
+
+    //    #endregion
+
+    //    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    //    {
+    //        optionsBuilder.UseSqlServer(ConfigurationManager.ConnectionStrings["DBConnection"].ConnectionString);
+    //    }
+
+    //    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    //    {
+    //        #region User Tables
+
+    //        modelBuilder.Entity<User>()
+    //           .ToTable("Users", schema: TableSchema);
+
+    //        modelBuilder.Entity<UserAddressDetail>()
+    //           .ToTable("UserAddressDetails", schema: TableSchema);
+
+    //        modelBuilder.Entity<UserRoleMapping>()
+    //           .ToTable("UserRoleMappings", schema: TableSchema);
+
+    //        modelBuilder.Entity<CustomAddressDetail>()
+    //           .ToTable("CustomAddressDetails", schema: TableSchema);
+
+    //        modelBuilder.Entity<UserSecurityQuestion>()
+    //           .ToTable("UserSecurityQuestion", schema: TableSchema);
+
+    //        #endregion
+
+    //        #region Role Tables
+
+    //        modelBuilder.Entity<RoleMaster>()
+    //           .ToTable("RoleMasters", schema: TableSchema);
+
+    //        modelBuilder.Entity<MenuMaster>()
+    //           .ToTable("MenuMasters", schema: TableSchema);
+
+    //        modelBuilder.Entity<AccessURL>()
+    //           .ToTable("AccessURLs", schema: TableSchema);
+
+    //        modelBuilder.Entity<RoleMenuMapping>()
+    //           .ToTable("RoleMenuMappings", schema: TableSchema);
+
+    //        #endregion
+
+    //        #region Loan Tables
+
+    //        modelBuilder.Entity<Loan>()
+    //           .ToTable("Loans", schema: TableSchema);
+
+    //        modelBuilder.Entity<LoanDetail>()
+    //           .ToTable("LoanDetails", schema: TableSchema);
+
+    //        modelBuilder.Entity<LoanImage>()
+    //           .ToTable("LoanImages", schema: TableSchema);
+
+    //        modelBuilder.Entity<LoanSearch>()
+    //           .ToTable("LoanSearch", schema: TableSchema);
+
+    //        #endregion
+
+    //        #region Customer Master Tables
+
+    //        modelBuilder.Entity<CustomerMaster>()
+    //           .ToTable("CustomerMasters", schema: TableSchema);
+
+    //        modelBuilder.Entity<ReviewTypeMaster>()
+    //           .ToTable("ReviewTypeMasters", schema: TableSchema);
+
+    //        modelBuilder.Entity<LoanTypeMaster>()
+    //           .ToTable("LoanTypeMasters", schema: TableSchema);
+
+    //        modelBuilder.Entity<DocumentTypeMaster>()
+    //           .ToTable("DocumentTypeMasters", schema: TableSchema);
+
+    //        modelBuilder.Entity<DocumentFieldMaster>()
+    //           .ToTable("DocumentFieldMasters", schema: TableSchema);
+
+    //        modelBuilder.Entity<CheckListMaster>()
+    //           .ToTable("CheckListMasters", schema: TableSchema);
+
+    //        modelBuilder.Entity<CheckListDetailMaster>()
+    //           .ToTable("CheckListDetailMasters", schema: TableSchema);
+
+
+    //        modelBuilder.Entity<RuleMaster>()
+    //           .ToTable("RuleMasters", schema: TableSchema);
+
+    //        modelBuilder.Entity<StackingOrderMaster>()
+    //           .ToTable("StackingOrderMasters", schema: TableSchema);
+
+    //        modelBuilder.Entity<StackingOrderDetailMaster>()
+    //           .ToTable("StackingOrderDetailMasters", schema: TableSchema);
+
+    //        #endregion
+
+    //        #region Mapping Tables
+
+    //        modelBuilder.Entity<CustLoanMapping>()
+    //           .ToTable("CustLoanMapping", schema: TableSchema);
+
+    //        modelBuilder.Entity<CustLoanReviewMapping>()
+    //           .ToTable("CustLoanReviewMapping", schema: TableSchema);
+
+    //        modelBuilder.Entity<CustLoanDocMapping>()
+    //           .ToTable("CustLoanDocMapping", schema: TableSchema);
+
+    //        modelBuilder.Entity<CustLoanReviewCheckMapping>()
+    //           .ToTable("CustLoanReviewCheckMapping", schema: TableSchema);
+
+    //        modelBuilder.Entity<CustLoanReviewStackMapping>()
+    //           .ToTable("CustLoanReviewStackMapping", schema: TableSchema);
+
+    //        #endregion
+
+    //        #region IntellaLend Tables
+
+    //        modelBuilder.Entity<WorkFlowStatusMaster>()
+    //               .ToTable("WorkFlowStatusMaster", schema: MTSSchema);
+
+    //        modelBuilder.Entity<TenantMaster>()
+    //           .ToTable("TenantMasters", schema: MTSSchema);
+
+    //        modelBuilder.Entity<ServiceConfig>()
+    //           .ToTable("ServiceConfigs", schema: MTSSchema);
+
+    //        modelBuilder.Entity<EmailMaster>()
+    //           .ToTable("EmailMaster", schema: MTSSchema);
+
+    //        modelBuilder.Entity<AppConfig>()
+    //           .ToTable("AppConfig", schema: MTSSchema);
+
+    //        #endregion
+
+    //        #region Master Tables
+
+    //        modelBuilder.Entity<SecurityQuestionMasters>()
+    //           .ToTable("SecurityQuestionMasters", schema: TableSchema);
+
+    //        #endregion
+
+    //        #region Audit Loan Tables
+
+    //        modelBuilder.Entity<AuditLoan>()
+    //                .ToTable("AuditLoan", schema: TableSchema);
+
+    //        modelBuilder.Entity<AuditLoanDetail>()
+    //                .ToTable("AuditLoanDetails", schema: TableSchema);
+
+    //        modelBuilder.Entity<AuditLoanMissingDoc>()
+    //                .ToTable("AuditLoanMissingDoc", schema: TableSchema);
+
+    //        modelBuilder.Entity<AuditLoanSearch>()
+    //                .ToTable("AuditLoanSearch", schema: TableSchema);
+
+    //        #endregion
+    //    }
+
+    //}
+
+
+    public class DBConnect : DbContext, IDbModelCacheKeyProvider
+    {
+        #region Constructor
+
+        public string TenantSchema { get; private set; }
+        public string SystemSchema { get; private set; }
+
+
+        public DBConnect()
+        {
+            Database.SetInitializer<DBConnect>(null);
+        }
+
+        public DBConnect(string TenantSchema)
+            : base(ConfigurationManager.ConnectionStrings["DBConnection"].ConnectionString)
+        {
+            Database.SetInitializer<DBConnect>(null);
+            this.TenantSchema = TenantSchema;
+            this.SystemSchema = "IL";
+        }
+
+
+
+        #endregion
+
+        #region DataSet Properties
+
+        #region User Tables
+
+        public DbSet<User> Users { get { return this.Set<User>(); } }
+        public DbSet<UserAddressDetail> UserAddressDetail { get { return this.Set<UserAddressDetail>(); } }
+        public DbSet<UserRoleMapping> UserRoleMapping { get { return this.Set<UserRoleMapping>(); } }
+        public DbSet<CustomAddressDetail> CustomAddressDetail { get { return this.Set<CustomAddressDetail>(); } }
+        public DbSet<UserSecurityQuestion> UserSecurityQuestion { get { return this.Set<UserSecurityQuestion>(); } }
+
+        #endregion
+
+        #region Role Tables
+
+        public DbSet<RoleMaster> Roles { get { return this.Set<RoleMaster>(); } }
+        public DbSet<MenuMaster> Menus { get { return this.Set<MenuMaster>(); } }
+        public DbSet<AccessURL> AccessURLs { get { return this.Set<AccessURL>(); } }
+        public DbSet<RoleMenuMapping> RoleMenuMapping { get { return this.Set<RoleMenuMapping>(); } }
+        public DbSet<MenuGroupMaster> MenuGroupMaster { get { return this.Set<MenuGroupMaster>(); } }        
+
+        #endregion
+
+        #region Loan Tables
+
+        public DbSet<Loan> Loan { get { return this.Set<Loan>(); } }
+        public DbSet<LoanDetail> LoanDetail { get { return this.Set<LoanDetail>(); } }
+        public DbSet<LoanImage> LoanImage { get { return this.Set<LoanImage>(); } }
+        public DbSet<LoanSearch> LoanSearch { get { return this.Set<LoanSearch>(); } }
+        public DbSet<LoanPDF> LoanPDF { get { return this.Set<LoanPDF>(); } }
+        public DbSet<PurgeStaging> PurgeStaging { get { return this.Set<PurgeStaging>(); } }
+        public DbSet<PurgeStagingDetails> PurgeStagingDetails { get { return this.Set<PurgeStagingDetails>(); } }
+
+        #endregion
+
+        #region Customer Master Tables
+
+        public DbSet<CustomerMaster> CustomerMaster { get { return this.Set<CustomerMaster>(); } }
+        public DbSet<ReviewTypeMaster> ReviewTypeMaster { get { return this.Set<ReviewTypeMaster>(); } }
+        public DbSet<LoanTypeMaster> LoanTypeMaster { get { return this.Set<LoanTypeMaster>(); } }        
+        public DbSet<ReviewPriorityMaster> ReviewPriorityMaster { get { return this.Set<ReviewPriorityMaster>(); } }
+        public DbSet<SystemReviewTypeMaster> SystemReviewTypeMaster { get { return this.Set<SystemReviewTypeMaster>(); } }
+        public DbSet<SystemLoanTypeMaster> SystemLoanTypeMaster { get { return this.Set<SystemLoanTypeMaster>(); } }
+        public DbSet<DocumentTypeMaster> DocumentTypeMaster { get { return this.Set<DocumentTypeMaster>(); } }
+        public DbSet<DocumentFieldMaster> DocumentFieldMaster { get { return this.Set<DocumentFieldMaster>(); } }
+        public DbSet<CheckListMaster> CheckListMaster { get { return this.Set<CheckListMaster>(); } }
+        public DbSet<CheckListDetailMaster> CheckListDetailMaster { get { return this.Set<CheckListDetailMaster>(); } }
+        public DbSet<RuleMaster> RuleMaster { get { return this.Set<RuleMaster>(); } }
+        public DbSet<StackingOrderMaster> StackingOrderMaster { get { return this.Set<StackingOrderMaster>(); } }
+        public DbSet<StackingOrderDetailMaster> StackingOrderDetailMaster { get { return this.Set<StackingOrderDetailMaster>(); } }
+        public DbSet<CustomerConfig> CustomerConfig { get { return this.Set<CustomerConfig>(); } }
+
+        #endregion
+
+        #region Mapping Tables
+
+        public DbSet<CustReviewMapping> CustReviewMapping { get { return this.Set<CustReviewMapping>(); } }
+        public DbSet<CustReviewLoanMapping> CustReviewLoanMapping { get { return this.Set<CustReviewLoanMapping>(); } }
+        public DbSet<CustLoanDocMapping> CustLoanDocMapping { get { return this.Set<CustLoanDocMapping>(); } }
+        public DbSet<CustReviewLoanCheckMapping> CustReviewLoanCheckMapping { get { return this.Set<CustReviewLoanCheckMapping>(); } }
+        public DbSet<CustReviewLoanStackMapping> CustReviewLoanStackMapping { get { return this.Set<CustReviewLoanStackMapping>(); } }
+
+        #endregion
+
+        #region IntellaLend Tables
+
+        public DbSet<WorkFlowStatusMaster> WorkFlowStatusMaster { get { return this.Set<WorkFlowStatusMaster>(); } }
+        public DbSet<TenantMaster> TenantMaster { get { return this.Set<TenantMaster>(); } }
+        public DbSet<ServiceConfig> ServiceConfig { get { return this.Set<ServiceConfig>(); } }
+        public DbSet<EmailMaster> EmailMaster { get { return this.Set<EmailMaster>(); } }
+        public DbSet<AppConfig> AppConfig { get { return this.Set<AppConfig>(); } }
+
+
+        #endregion
+
+        #region Master Tables
+
+        public DbSet<SecurityQuestionMasters> SecurityQuestionMasters { get { return this.Set<SecurityQuestionMasters>(); } }
+
+        #endregion
+
+        #region Audit Loan Tables
+
+        public DbSet<AuditLoan> AuditLoan { get { return this.Set<AuditLoan>(); } }
+        public DbSet<AuditLoanDetail> AuditLoanDetail { get { return this.Set<AuditLoanDetail>(); } }
+        public DbSet<AuditLoanMissingDoc> AuditLoanMissingDoc { get { return this.Set<AuditLoanMissingDoc>(); } }
+        public DbSet<AuditLoanSearch> AuditLoanSearch { get { return this.Set<AuditLoanSearch>(); } }
+
+        #endregion
+
+        #region BoxAPI
+
+        public DbSet<BoxUserToken> BoxUserToken { get { return this.Set<BoxUserToken>(); } }
+        public DbSet<BoxDownloadQueue> BoxDownloadQueue { get { return this.Set<BoxDownloadQueue>(); } }
+
+        #endregion
+
+        #endregion
+
+        #region Overrides
+
+        protected override void OnModelCreating(System.Data.Entity.DbModelBuilder modelBuilder)
+        {
+            if (this.TenantSchema != null)
+            {
+                #region User Tables
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<User>()
+                   .ToTable("Users");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<UserAddressDetail>()
+                   .ToTable("UserAddressDetails");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<UserRoleMapping>()
+                   .ToTable("UserRoleMappings");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<CustomAddressDetail>()
+                   .ToTable("CustomAddressDetails");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<UserSecurityQuestion>()
+                   .ToTable("UserSecurityQuestion");
+
+                #endregion
+
+                #region Role Tables
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<RoleMaster>()
+                   .ToTable("RoleMasters");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<MenuMaster>()
+                   .ToTable("MenuMasters");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<AccessURL>()
+                   .ToTable("AccessURLs");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<RoleMenuMapping>()
+                   .ToTable("RoleMenuMappings");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<MenuGroupMaster>()
+                   .ToTable("MenuGroupMasters");
+
+                #endregion
+
+                #region Loan Tables
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<Loan>()
+                   .ToTable("Loans");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<LoanDetail>()
+                   .ToTable("LoanDetails");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<LoanImage>()
+                   .ToTable("LoanImages");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<LoanSearch>()
+                   .ToTable("LoanSearch");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<LoanPDF>()
+                   .ToTable("LoanPDF"); 
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<PurgeStaging>()
+                    .ToTable("PurgeStaging");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<PurgeStagingDetails>()
+                    .ToTable("PurgeStagingDetails");
+                #endregion
+
+                #region Customer Master Tables
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<CustomerMaster>()
+                   .ToTable("CustomerMasters");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<ReviewTypeMaster>()
+                   .ToTable("ReviewTypeMasters");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<LoanTypeMaster>()
+                   .ToTable("LoanTypeMasters");
+                                
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<ReviewPriorityMaster>()
+                  .ToTable("ReviewPriorityMasters");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<DocumentTypeMaster>()
+                   .ToTable("DocumentTypeMasters");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<DocumentFieldMaster>()
+                   .ToTable("DocumentFieldMasters");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<CheckListMaster>()
+                   .ToTable("CheckListMasters");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<CheckListDetailMaster>()
+                   .ToTable("CheckListDetailMasters");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<RuleMaster>()
+                   .ToTable("RuleMasters");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<StackingOrderMaster>()
+                   .ToTable("StackingOrderMasters");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<StackingOrderDetailMaster>()
+                   .ToTable("StackingOrderDetailMasters");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<CustomerConfig>()
+                   .ToTable("CustomerConfig"); 
+
+                #endregion
+
+                #region Mapping Tables
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<CustReviewMapping>()
+                   .ToTable("CustReviewMapping");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<CustReviewLoanMapping>()
+                   .ToTable("CustReviewLoanMapping");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<CustLoanDocMapping>()
+                   .ToTable("CustLoanDocMapping");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<CustReviewLoanCheckMapping>()
+                   .ToTable("CustReviewLoanCheckMapping");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<CustReviewLoanStackMapping>()
+                   .ToTable("CustReviewLoanStackMapping");
+
+                #endregion
+
+                #region IntellaLend Tables
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<WorkFlowStatusMaster>()
+                       .ToTable("WorkFlowStatusMaster");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<TenantMaster>()
+                   .ToTable("TenantMasters");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<ServiceConfig>()
+                   .ToTable("ServiceConfigs");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<EmailMaster>()
+                   .ToTable("EmailMaster");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<AppConfig>()
+                   .ToTable("AppConfig");
+
+                if (!this.TenantSchema.Equals(this.SystemSchema))
+                {
+                    modelBuilder.Entity<SystemReviewTypeMaster>()
+                       .ToTable(String.Format("{0}.ReviewTypeMasters", this.SystemSchema));
+
+                    modelBuilder.Entity<SystemLoanTypeMaster>()
+                       .ToTable(String.Format("{0}.LoanTypeMasters", this.SystemSchema));
+                }
+
+                #endregion
+
+                #region Master Tables
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<SecurityQuestionMasters>()
+                   .ToTable("SecurityQuestionMasters");
+
+                #endregion
+
+                #region Audit Loan Tables
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<AuditLoan>()
+                        .ToTable("AuditLoan");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<AuditLoanDetail>()
+                        .ToTable("AuditLoanDetails");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<AuditLoanMissingDoc>()
+                        .ToTable("AuditLoanMissingDoc");
+
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<AuditLoanSearch>()
+                        .ToTable("AuditLoanSearch");
+
+                #endregion
+
+                #region BoxAPI
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<BoxUserToken>()
+                        .ToTable("BoxUserToken");
+                modelBuilder.HasDefaultSchema(this.TenantSchema).Entity<BoxDownloadQueue>()
+                       .ToTable("BoxDownloadQueue");
+                #endregion
+            }
+
+            base.OnModelCreating(modelBuilder);
+        }
+
+        #endregion
+
+        #region IDbModelCacheKeyProvider Members
+
+        public string CacheKey
+        {
+            get { return this.TenantSchema; }
+        }
+
+        #endregion
+    }
+}

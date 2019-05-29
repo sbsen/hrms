@@ -1,0 +1,297 @@
+﻿@model MTSINHR.Models.Message
+
+@{
+    Layout = "~/Views/Shared/Layout_New.cshtml";
+}
+
+@System.Web.Optimization.Styles.Render("~/bundles/bootstrapdt")
+@System.Web.Optimization.Styles.Render("~/bundles/datepickercss")
+
+<style>
+    .carousel-inner img {
+        width: 100%;
+        height: 350px;
+    }
+</style>
+
+<div class="card">
+    <div class="card-header">
+        Messages
+    </div>
+    <div class="card-body">
+
+        <div class="text-right ">
+            <button type="button" onclick="addMessages()" class="btn btn-primary btn-sm" id="create"><span class="fa fa-plus-circle"></span>&nbsp;&nbsp;Add</button>
+        </div>
+        <div class="row m-t-15">
+            <div class="MTS_Table">
+                <table id="ReadMessages" class="table table-bordered table-hover tabel-sm table-responsive" cellspacing="0" width="100%">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<div id="carousel-example" style="display: none" class="carousel slide" data-ride="carousel">
+    <ul class="carousel-indicators">
+    </ul>
+    <div class="carousel-inner">
+    </div>
+    <a class="carousel-control-prev" href="#carousel-example" data-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+    </a>
+    <a class="carousel-control-next" href="#carousel-example" data-slide="next">
+        <span class="carousel-control-next-icon"></span>
+    </a>
+</div>
+
+
+
+
+
+
+<div class="modal fade" id="MessageModal" data-backdrop="static" keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="actiontitle" class="modal-title">Edit Message</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+
+            <div class="modal-body">
+                <form id="MessageList">
+                    <input type="hidden" id="rowId" value="">
+                    <input type="hidden" class="form-control" id="url" value="">
+
+                    <div class="form-group">
+                        <label>Message Header</label>
+                        <input type="text" class="form-control" name="MessageHeader" id="MessageHeader" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Message Title</label>
+                        <input type="text" class="form-control" name="MessageTitle" id="MessageTitle" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea class="form-control" name="TextMessage" id="TextMessage" rows="3" maxlength="100" placeholder="PostSomething...!" required>
+                                </textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>From Date</label>
+                        <input type="text" class="form-control" name="FromDate" id="FromDate" data-val-regex-pattern="^(([0-9])|([0-2][0-9])|([3][0-1]))\/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\/\d{4}$" required />
+                    </div>
+                    <div class="form-group">
+                        <label>To Date</label>
+                        <input type="text" class="form-control" name="ToDate" id="ToDate" data-val-regex-pattern="^(([0-9])|([0-2][0-9])|([3][0-1]))\/(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\/\d{4}$" required />
+                        <span class="field-validation-valid" style="color: red; font: bold; display: none"></span>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <div class="dataurl">
+                    <div>
+                        <button type="button" id="save" class="btn btn-success" onclick="AddEdit($('#url').val(), 'MessageList')">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/bootbox.min.js"></script>
+<script src="~/Scripts/ValidationFunction.js"></script>
+<script>
+    var len;
+    var groupTable;
+    $(document).ready(function () {
+
+        var start = new Date();
+
+        var end = new Date(new Date().setYear(start.getFullYear() + 2));
+
+        $('#FromDate').datepicker({
+            startDate: start,
+            endDate: end,
+            format: 'dd/M/yyyy',
+            autoclose: true,
+            todayHighlight: true
+        }).on('changeDate', function () {
+            $("#ToDate").val(this.value);
+            $('#ToDate').datepicker('setStartDate', new Date($(this).val()));
+        });
+
+        $('#ToDate').datepicker({
+            startDate: start,
+            endDate: end,
+            format: 'dd/M/yyyy',
+            autoclose: true,
+            todayHighlight: true
+        }).on('changeDate', function () {
+
+            $('#FromDate').datepicker('setEndDate', new Date($(this).val()));
+        });
+        LoadMessages();
+
+
+        function LoadMessages() {
+
+            groupTable = $("#ReadMessages").DataTable({
+                "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+                "iDisplayLength": 5,
+                "bFilter": true,
+                "bProcessing": true,
+
+                "ajax": {
+                    type: "GET",
+                    url: '@Url.Content("~/Messages/GetMessages")',
+
+                    dataSrc: function (data) {
+                        len = JSON.parse(data);
+                        if (len.length > 0) {
+
+                            LoadTableMessages(len);
+
+                        }
+                        return JSON.parse(data);
+
+                    }
+                },
+
+                "aoColumns": [
+                     { "mData": "id", "sTitle": "ID", "sClass": "text-center", "sWidth": "80px", "bVisible": false }
+                    , { "mData": "FromDate", "sTitle": "From Date", "sClass": "text-center" }
+                    , { "mData": "ToDate", "sTitle": "To Date", "sClass": "text-center" }
+                    , { "mData": "MessageHeader", "sTitle": "Message Header", "sClass": "text-left" }
+                    , { "mData": "MessageTitle", "sTitle": "Message Title", "sClass": "text-left" }
+                    , { "mData": "Message", "sTitle": "Message", "sClass": "text-left" }
+                    , { "mData": "id", "sTitle": "Edit", "sClass": "text-center", "sWidth": "1%", "orderable": false }
+                ],
+                "aoColumnDefs": [{
+                    "aTargets": [6]
+                    , "mRender": function (data, type, row) {
+                        return '<span onclick=editMessages($(this).closest("tr")) class="fa fa-edit"></span>';
+                    }
+                }],
+            });
+        }
+
+        $.ajax({
+            type: "GET",
+            url: '@Url.Content("~/Messages/GetBirthDays")',
+            async: false,
+            success: function (data) {
+                var len = JSON.parse(data);
+                if (len.length > 0) {
+                    for (var i = 0; i < len.length; i++) {
+
+                        var str = '<div class="carousel-item"><img src=@Url.Content("~/Images/birthday.jpg") alt="Slider" class="img-fluid"><div class="carousel-caption"><h2 class="headtitle">' + "Birthday Wishes" + '</h2> <h4 class="messagetitle"> ' + "Wish You Many More Happy Returns Of The Day " + len[i].Name + ' </h4> <p class="messageparagraph">' + "Hope You Have The Greatest Birthday Ever!" + '</p> </div></div>'
+
+                        $(str).appendTo(".carousel-inner");
+
+                        $('<li data-target="#carousel-example" data-slide-to="' + len[i] + '"></li>').appendTo('.carousel-indicators')
+
+                    }
+
+                    $('.carousel-item').first().addClass('active');
+                    $('.carousel-indicators > li').first().addClass('active');
+                    $('#carousel-example').carousel();
+                }
+                else {
+                    $(".form-signin").show();
+                }
+            }
+             });
+    });
+
+</script>
+
+
+<script>
+    function addMessages() {
+        $("#url").val('@Url.Content("~/Messages/Add")');
+        $('.field-validation-valid').text("");
+        $("#MessageHeader").val("");
+        $("#MessageTitle").val("");
+        $("#TextMessage").val("");
+        $("#FromDate").val("");
+        $("#ToDate").val("");
+        $("#MessageModal").modal('show');
+    };
+
+    function editMessages(curTr) {
+        var data = groupTable.row(curTr).data();
+        $("#url").val('@Url.Content("~/Messages/Edit")');
+        $('.field-validation-valid').text("");
+        $("#rowId").val(data.id);
+        $("#MessageHeader").val(data.MessageHeader);
+        $("#MessageTitle").val(data.MessageTitle);
+        $("#TextMessage").val(data.Message);
+        $("#FromDate").val(data.FromDate);
+        $("#ToDate").val(data.ToDate);
+        $("#MessageModal").modal('show');
+    };
+</script>
+
+
+
+
+<script>
+    function AddEdit(actionurl, formid) {
+        if (checkForm(formid)) {
+            $.ajax({
+                type: "POST",
+                url: actionurl,
+                data:
+                    {
+                        Id: $('#rowId').val(),
+                        FromDate: $('#FromDate').val(),
+                        ToDate: $('#ToDate').val(),
+                        MessageHeader: $('#MessageHeader').val().trim(),
+                        MessageTitle: $('#MessageTitle').val().trim(),
+                        TextMessage: $('#TextMessage').val().trim()
+                    },
+
+                success: function (response) {
+                    if (parseInt(response.success) == 1) {
+                        $('#MessageModal').modal('hide');
+                        location.reload(true);
+                    }
+                    else {
+                        $('.field-validation-valid').text("Failed To Update");
+                        $('.field-validation-valid').show();
+                    }
+                }
+            });
+        }
+    }
+</script>
+
+<script>
+    function LoadTableMessages(len) {
+        
+        $("#carousel-example").show();
+        for (var i = 0; i < len.length; i++) {
+
+            var str = '<div class="carousel-item"><img src=@Url.Content("~/Images/slider1.jpg") alt="Slider" class="img-fluid"><div class="carousel-caption"><h2 class="headtitle">' + len[i].MessageHeader + '</h2> <h4 class="messagetitle"> ' + len[i].MessageTitle + ' </h4> <p class="messageparagraph">' + len[i].Message + '</p> </div></div>'
+            $(str).appendTo(".carousel-inner");
+
+
+            $('<li data-target="#carousel-example" data-slide-to="' + len[i] + '"></li>').appendTo('.carousel-indicators')
+
+        }
+        $('.carousel-item').first().addClass('active');
+        $('.carousel-indicators > li').first().addClass('active');
+        $('#carousel-example').carousel();
+    }
+</script>
+
+
