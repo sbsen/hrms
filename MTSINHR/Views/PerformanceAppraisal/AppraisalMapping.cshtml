@@ -1,0 +1,666 @@
+﻿
+@{
+    ViewBag.Title = "AppraisalMapping";
+    Layout = "~/Views/Shared/Layout_New.cshtml";
+}
+@System.Web.Optimization.Scripts.Render("~/bundles/datatable")
+
+@System.Web.Optimization.Scripts.Render("~/bundles/jquery")
+@System.Web.Optimization.Styles.Render("~/bundles/bootstrapdt")
+@System.Web.Optimization.Scripts.Render("~/bundles/datatable")
+<script src="~/Scripts/select2.min.js"></script>
+<link href="~/Content/css/select2.min.css" rel="stylesheet" />
+@*<link href="~/Content\css\style.css" rel="stylesheet" />*@
+
+<style>
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .pad-top25 {
+        padding-top: 25px;
+    }
+
+    .pad0 {
+        padding: 0px;
+    }
+
+    .pad-top22 {
+        padding-top: 22px;
+    }
+
+    .requir {
+        border-left: 2px solid red !important;
+    }
+
+    .modal-lg {
+        max-width: 1200px;
+    }
+</style>
+<body>
+    @*<div class="modal fade" id="Employee_mapping_modal" data-backdrop="static">
+            <div class="modal-dialog modal-lg ">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Edit Employee Mapping Details</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body  ">
+                        <div class="card-body">
+                            <div class="row col-lg-12">
+                                <div class="col-lg-3 form-group pad0">
+                                    <div class="col-lg-12">
+                                        <lable class=''>Employee Code</lable>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <input id="empCode" type="text" class=" form-control" disabled/>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 form-group pad0">
+                                    <div class="col-lg-12">
+                                        <lable class=''>Employee Designation</lable>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <input id="empDesg" type="text" class="form-control" disabled />
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 form-group pad0">
+                                    <div class="col-lg-12">
+                                        <lable class=''>Assign Managers</lable>
+                                    </div>
+                                    <div class="col-lg-12 ">
+                                        <select id="drpdwnEmpName" class="form-control">
+                                            <option value="0">---Select Manager---</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 pad-top22">
+                                    <div class="col-lg-12">
+                                        <div id="btnassignManager"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="MTS_Table">
+                                <table class="table table-bordered table-responsive table-hover tabel-sm" width="100%" id="Edit_Employee_Mapping"></table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="modalClose" class="btn btn-primary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+    <div class="modal fade" id="KRA_SKillModal" data-backdrop="static">
+        <div class="modal-dialog modal-lg ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">KRA/Skills Details</h4>
+                    <button type="button" onclick="clearinput()" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body  ">
+                    <div class="card-body">
+                        <div class="row col-lg-12">
+                            <div class="col-lg-6">
+                                <div class="col-lg-12">
+                                    <label>Type</label>
+                                </div>
+                                <div class="col-lg-12">
+                                    <select id="type" class="col-lg-12 form-control inputcls requir select2cls">
+                                        <option value="0">---Select Type---</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-6" id="dvWeightage">
+                                <div class="col-lg-12">
+                                    <label>Weightage(%)</label>
+                                </div>
+                                <div class="col-lg-12">
+
+                                    <input id="weightage" class="col-lg-12 requir inputclearcls form-control" type="number" />
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="col-lg-12">
+                                    <label>Functional Role</label>
+                                </div>
+                                <div class="col-lg-12">
+                                    <select id="designation" class="col-lg-12 requir form-control inputcls select2cls">
+                                        <option value="0">---Select Functional Role---</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-6" id="dvdescription">
+                                <div class="col-lg-12">
+                                    <label class="">Description</label>
+                                </div>
+                                <div class="col-lg-12">
+                                    <select id="description" multiple="multiple" placeholder="--Select Description--" class="col-lg-12 requir form-control  select2cls">
+                                        @*<option value="0" >---Select Description---</option>*@
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        @*<div class="col-lg-12 text-right gap-top10" style="padding-top: 20px;">
+
+                            </div>*@
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="modalClose" onclick="clearinput()" class="btn btn-light" data-dismiss="modal">Close</button>
+                    <button type="button" id="btnSave" class="btn btn-primary" onclick="saveDesignationMapping()">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="">
+        <div class="card">
+            <div class="card-header text-center ">
+                KRA/SKILL Taggingg
+            </div>
+            <div class="card-body">
+              <div class="row">
+                  <div class="col-lg-6 p-l-30">
+                      <label class="col-lg-12 pad0">Filter: </label>
+                      <select id="filter" class="col-lg-12 requir form-control  select2cls">
+                          <option value="0">---All---</option>
+                      </select>
+                  </div>
+                  <div class="col-lg-6 text-right">
+                      <button class="btn btn-primary" style="font-size:15px;" onclick="addKRA_SkillDetails()"><i class="fa fa-plus-circle"></i> Add KRA/Skill </button>
+                  </div>
+              </div>
+                <div class="tab-pane active detail_tab" id="Designation_Mapping_Content">
+                    <div class="MTS_Table">
+                        <table class="table table-bordered table-hover tabel-sm table-responsive " id="Designation_Mapping_Table" width="100%"></table>
+                    </div>
+                </div>
+                @*<div class="col-lg-12">
+                        <ul class="nav nav-tabs" id="">
+                            <li class="nav-item">
+                                <a class="nav-link active nav_active" id="Designation_Mapping" data-toggle="tab" href="#Designation_Mapping_Content">Designation Mapping</a>
+                            </li>
+                            <li class="nav-item">
+                                    <a class="nav-link nav_active " id="Employee_Mapping" data-toggle="tab" href="#Employee_Mapping_Content">Employee Mapping</a>
+                                </li>
+                        </ul>
+                    </div>
+                    <div class="tab-content pad-top25">
+                        <div class="tab-pane active detail_tab" id="Designation_Mapping_Content">
+                            <div class="MTS_Table">
+                                <table class="table table-bordered table-hover tabel-sm table-responsive " id="Designation_Mapping_Table" width="100%"></table>
+                            </div>
+                        </div>
+                        <div class="tab-pane  detail_tab" id="Employee_Mapping_Content">
+                                <div class="MTS_Table ">
+                                    <table class="table table-bordered table-hover tabel-sm table-responsive " id="Employee_Mapping_Table" width="100%"></table>
+                                </div>
+                            </div>
+                        <div class="clearfix"></div>
+                    </div>*@
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+</body>
+<script>
+    var DesignationList = [];
+    var Skill_KRA_details = [];
+    var TypeList = [];
+    var DescriptionList = [];
+    var DesgnMappingTable;
+    var EmpMappingTable;
+    var EmpMappingTableDetails;
+    var DesgnMappingTableDetails;
+    var rowData;
+    var currType = '';
+    $(document).ready(function () {
+        $('.select2cls').select2({ 'width': '100%' });
+        GetDesignationList();
+        GetFilterList();
+        Get_Skill_KRA_Details();
+        Get_Appraisal_Mapping_Table_Details();
+        //Employee_mappingTable();
+        //Designation_mappingTable();
+        $('.nav_active').on('click', function () {
+            $('.detail_tab').removeClass('active');
+            //     $(this).attr('href')
+            $($(this).attr('href')).addClass('active');
+        });
+        GetEvaluatorsList();
+
+        $("#filter").on("change", function () {
+            if ($("#filter").val() != 0) {
+                var selectedtext = $("#filter option:selected").text();
+                var currentdata = [];
+                $.each(DesgnMappingTableDetails, function (i, val) {
+                    if ((val.DESIGNATION == selectedtext)) {
+                        currentdata.push(val);
+                    }
+                });
+                Designation_mappingTable(currentdata);
+            }
+            else {
+                Designation_mappingTable(DesgnMappingTableDetails);
+            }
+
+        });
+    });
+
+    $('#weightage').on('input', function () {
+
+        $('.field-validation-valid').text('');
+        $('.field-validation-valid').show();
+        if ($(this).val() > 100) {
+            $('<span class="field-validation-valid">' + 100 + ' is the maximum limit ...!</span>').css('color', 'red').insertAfter(this);
+        }
+        else if ($(this).val() == 0 || $(this).val() == 00) {
+            $('<span class="field-validation-valid">' + ' Weightage should be more than 0</span>').css('color', 'red').insertAfter(this);
+        }
+        $(this).val(Math.max(Math.min($(this).val(), 100), -(100)));
+
+    });
+    $('#designation').on('change', function () {
+        $('#type').trigger('change');
+    });
+    $('#type').on('change', function (e) {
+        $('.field-validation-valid').text('');
+        $('.field-validation-valid').show();
+        $('#description').select2('val', '');
+        $('#description').empty();
+        currType = e.currentTarget.value;
+        var selecteddesignation = $("#designation option:selected").text();
+        if (e.currentTarget.value == '1') {
+            $('#weightage').val('');
+            if ($("#dvdescription").hasClass("col-lg-12"))
+                $("#dvdescription").removeClass("col-lg-12");
+            if (!$("#dvdescription").hasClass("col-lg-6"))
+                $("#dvdescription").addClass("col-lg-6");
+            //$('#weightage').attr('disabled', false);
+            $('#dvWeightage').show();
+
+            $('#description').empty();
+            $.each(DescriptionList, function (i, value) {
+                if (e.currentTarget.value == DescriptionList[i].PerformanceTypeID) {
+                    $('#description').append('<option  value="' + DescriptionList[i].Id + '">' + DescriptionList[i].Description + '');
+                }
+            });
+            $.each(DesgnMappingTableDetails, function (i, value) {
+                $.each(DescriptionList, function (j, val) {
+                    if (DescriptionList[j].Description == DesgnMappingTableDetails[i].DESCRIPTION && selecteddesignation == DesgnMappingTableDetails[i].DESIGNATION) {
+                        $('#description option[value="' + DescriptionList[j].Id + '"]').remove();
+                    }
+                })
+            });
+        }
+        else if (e.currentTarget.value == '2') {
+            $('#weightage').val('');
+            //$('#weightage').attr('disabled', false);
+            if ($("#dvdescription").hasClass("col-lg-12"))
+                $("#dvdescription").removeClass("col-lg-12");
+            if (!$("#dvdescription").hasClass("col-lg-6"))
+                $("#dvdescription").addClass("col-lg-6");
+            $('#dvWeightage').show();
+            $('#description').empty();
+            $.each(DescriptionList, function (i, value) {
+                if (e.currentTarget.value == DescriptionList[i].PerformanceTypeID) {
+                    $('#description').append('<option  value="' + DescriptionList[i].Id + '">' + DescriptionList[i].Description + '');
+                }
+            });
+            $.each(DesgnMappingTableDetails, function (i, value) {
+                $.each(DescriptionList, function (j, val) {
+                    if (DescriptionList[j].Description == DesgnMappingTableDetails[i].DESCRIPTION && selecteddesignation == DesgnMappingTableDetails[i].DESIGNATION) {
+                        $('#description option[value="' + DescriptionList[j].Id + '"]').remove();
+                    }
+                })
+            });
+        }
+        else if (e.currentTarget.value == '3') {
+            $('#weightage').val('');
+            //$('#weightage').attr('disabled', true);
+            $('#dvWeightage').hide();
+            if ($("#dvdescription").hasClass("col-lg-6"))
+                $("#dvdescription").removeClass("col-lg-6");
+            if (!$("#dvdescription").hasClass("col-lg-12"))
+                $("#dvdescription").addClass("col-lg-12");
+            $('#description').empty();
+            $.each(DescriptionList, function (i, value) {
+                if (e.currentTarget.value == DescriptionList[i].PerformanceTypeID) {
+                    $('#description').append('<option  value="' + DescriptionList[i].Id + '">' + DescriptionList[i].Description + '');
+                }
+            });
+            $.each(DesgnMappingTableDetails, function (i, value) {
+                $.each(DescriptionList, function (j, val) {
+                    if (DescriptionList[j].Description == DesgnMappingTableDetails[i].DESCRIPTION && selecteddesignation == DesgnMappingTableDetails[i].DESIGNATION) {
+                        $('#description option[value="' + DescriptionList[j].Id + '"]').remove();
+                    }
+                })
+            });
+        }
+        else {
+            $('#weightage').val('');
+            //$('#weightage').attr('disabled', false);
+            $('#dvWeightage').show();
+            $('#description').empty();
+            if ($("#dvdescription").hasClass("col-lg-12"))
+                $("#dvdescription").removeClass("col-lg-12");
+            if (!$("#dvdescription").hasClass("col-lg-6"))
+                $("#dvdescription").addClass("col-lg-6");
+            //$.each(DescriptionList, function (i, value) {
+            //    $('#description').append('<option  value="' + DescriptionList[i].Id + '">' + DescriptionList[i].Description + '');
+            //});
+        }
+    });
+    function getEvaluatorsName() {
+        $.each(EvaluatorsList, function (i) {
+            $("#drpdwnEmpName").append('<option value="' + EvaluatorsList[i].id + '">' + EvaluatorsList[i].Firstname + ' ' + EvaluatorsList[i].Lastname + '');
+        });
+
+    }
+    function GetEvaluatorsList() {
+        $.ajax({
+            type: "get",
+            url: '@Url.Content("~/PerformanceAppraisal/GetEvaluatorsList")',
+            //  data: { EmpId: 64, type: 1, description: 2, Amount: 1000, month: "January-2019" },
+            success: function (data) {
+                EvaluatorsList = JSON.parse(data);
+                getEvaluatorsName();
+            }
+        });
+    }
+    function addKRA_SkillDetails() {
+        $('#KRA_SKillModal').modal('show');
+    }
+    function Get_Appraisal_Mapping_Table_Details() {
+        $.ajax({
+            type: 'get',
+            url: '@Url.Content("~/PerformanceAppraisal/Get_Appraisal_Mapping_Table_Details")',
+            success: function (data) {
+                DesgnMappingTableDetails = JSON.parse(data.result1);
+                EmpMappingTableDetails = JSON.parse(data.result2);
+                //Employee_mappingTable();
+                Designation_mappingTable(DesgnMappingTableDetails);
+            }
+        })
+    }
+        function Designation_mappingTable(dsdata) {
+        if ($.fn.DataTable.isDataTable('#Designation_Mapping_Table')) {
+            $('#Designation_Mapping_Table').dataTable().fnDestroy();
+        }
+        DesgnMappingTable = $('#Designation_Mapping_Table').DataTable({
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "iDisplayLength": 5,
+            "bFilter": true,
+            // 'scrollX': true,
+            'data': dsdata,
+
+            "aoColumns":
+            [
+            { "mData": "TYPE", "sTitle": "Type", "sClass": "text-left", "sWidth": "25%", "defaultContent": "<i>Not set</i>" }//0
+          , { "mData": "DESCRIPTION", "sTitle": "Description", "sClass": "text-left", "sWidth": "25%", "defaultContent": "<i>Not set</i>" }//1
+         , { "data": "WEIGHTAGE", "sTitle": "Weightage", "sClass": "text-center", "sWidth": "25%", "defaultContent": "<i>Not set</i>" }//2
+         , { "mData": "DESIGNATION", "sTitle": "Functional Role", "sClass": "text-left", "sWidth": "25%", "defaultContent": "<i>Not set</i>" }//3
+
+            ],
+        })
+    }
+
+
+    //function Employee_mappingTable() {
+    //    if ($.fn.DataTable.isDataTable('#Employee_Mapping_Table')) {
+    //        $('#Employee_Mapping_Table').dataTable().fnDestroy();
+    //    }
+    //    EmpMappingTable = $('#Employee_Mapping_Table').DataTable({
+    //        "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+    //        "iDisplayLength": 5,
+    //        "bFilter": true,
+    //        // 'scrollX': true,
+    //        'data': EmpMappingTableDetails
+    //,
+    //        "aoColumns":
+    //    [
+    //       { "mData": "EMP_CODE", "sTitle": "Employee Code", "sClass": "text-left", "sWidth": "20%", "defaultContent": "<i>Not set</i>" }//0
+    //   , { "mData": "EMP_NAME", "sTitle": "Employee Name", "sClass": "text-left", "sWidth": "20%", "defaultContent": "<i>Not set</i>" }//0
+    //      , { "mData": "TYPE", "sTitle": "Type", "sClass": "text-left", "sWidth": "20%", 'bVisible': false, "defaultContent": "<i>Not set</i>" }//1
+    //      , { "mData": "DESCRIPTION", "sTitle": "Description", "sClass": "text-left", "sWidth": "20%", 'bVisible': false, "defaultContent": "<i>Not set</i>" }//2
+    //     , { "data": "WEIGHTAGE", "sTitle": "Weightage", "sClass": "text-center", "sWidth": "20%", 'bVisible': false, "defaultContent": "<i>Not set</i>" }//3
+    //     , { "mData": "DESIGNATION", "sTitle": "Designation", "sClass": "text-left", "sWidth": "20%", "defaultContent": "<i>Not set</i>" }//4
+    //      , { "mData": null, "sTitle": "Edit", "sClass": "text-center", "sWidth": "20%", "defaultContent": "<i class='fa fa-edit' style='cursor: pointer;' onclick='EditCall(this)'></i>" }//4
+
+
+
+    //    ],
+    //        'aoColumnDefs':
+    //            [
+
+    //            ],
+    //    })
+    //}
+    //function EditCall(thisval) {
+    //    $('#Employee_mapping_modal').modal('show');
+
+    //    rowData = $('#Employee_Mapping_Table').DataTable().row(thisval.closest('tr')).data();
+    //    showTable(rowData.EMP_ID);
+    //}
+    @*function showTable(id) {
+        $.ajax({
+            type: 'get',
+            url: '@Url.Content("~/PerformanceAppraisal/GetIndividualMappingDetails")',
+            data: { EmpId: id },
+            success: function (data) {
+                editEmployeeDetails = JSON.parse(data.result1);
+                Edit_Employee_Mapping_Table();
+            }
+
+        })
+
+    }*@
+    @*function Edit_Delete_Row(thisval, status) {
+        rowData = $('#Edit_Employee_Mapping').DataTable().row(thisval.closest('tr')).data();
+
+        $.ajax({
+            type: 'post',
+            url: '@Url.Content("~/PerformanceAppraisal/RemoveEmployeeMappingDetails")',
+            data: { status: status, weightage: rowData.WEIGHTAGE, rowID: rowData.ROW_ID },
+            success: function (data) {
+                if (data.result == 1) {
+                    toastr.success("Updated successfully");
+                    $('#Employee_mapping_modal').modal('hide');
+                }
+                if (data.result == 2) {
+                    toastr.success("Removed successfully");
+                    $('#Employee_mapping_modal').modal('hide');
+                }
+                showTable(rowData.ROW_ID);
+            }
+
+        })
+    }*@
+    //function Edit_Employee_Mapping_Table() {
+    //    if ($.fn.DataTable.isDataTable('#Edit_Employee_Mapping')) {
+    //        $('#Edit_Employee_Mapping').dataTable().fnDestroy();
+    //    }
+    //    editEmployeeTable = $('#Edit_Employee_Mapping').DataTable({
+    //        "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+    //        "iDisplayLength": 5,
+    //        "bFilter": true,
+    //        // 'scrollX': true,
+    //        'data': editEmployeeDetails
+    //,
+    //        "aoColumns":
+    //    [
+    //       { "mData": "EMP_CODE", "sTitle": "Employee Code", "sClass": "text-left", "sWidth": "10%", 'bVisible': false, "defaultContent": "<i>Not set</i>" }//0
+    //   , { "mData": "EMP_NAME", "sTitle": "Employee Name", "sClass": "text-left", 'bVisible': false, "defaultContent": "<i>Not set</i>" }//1
+    //      , { "mData": "TYPE", "sTitle": "Type", "sClass": "text-left", "sWidth": "15%", "defaultContent": "<i>Not set</i>" }//2
+    //      , { "mData": "DESCRIPTION", "sTitle": "Description", "sClass": "text-left", "sWidth": "25%", "defaultContent": "<i>Not set</i>" }//3
+    //     , { "data": "WEIGHTAGE", "sTitle": "Weightage", "sClass": "text-center", "sWidth": "40%", "defaultContent": "<i>Not set</i>" }//4
+    //     , { "mData": "DESIGNATION", "sTitle": "Designation", 'bVisible': false, "sClass": "text-left", "sWidth": "10%", "defaultContent": "<i>Not set</i>" }//5
+    //      , { "mData": "null", "sTitle": "Delete", "sClass": "text-center", "defaultContent": "<i class='fa fa-trash' style='cursor: pointer;' onclick='Edit_Delete_Row(this,2)'></i>" }//6
+
+
+
+    //    ],
+    //        "aoColumnDefs": [{
+    //            "aTargets": [4]
+    //                        , "mRender": function (data, type, row) {
+    //                            var tempData = '';
+    //                            tempData = '<button id="btnSave' + row.ROW_ID + '" type="button" class="btn btn-primary" onclick="saveAssignManager(' + row.ROW_ID + ')">Assign & Save</button>';
+    //                            $('#btnassignManager').html(tempData);
+    //                                $('#empCode').val(row.EMP_CODE);
+    //                            $('#empDesg').val(row.DESIGNATION);
+    //                            return ' <div><input id="weightage' + row.ROW_ID + '"  onchange="modifyWeightage(this,' + row.ROW_ID + ')" class="" type="number" value=' + data + ' disabled />&nbsp&nbsp<i class="fa fa-edit" onclick="enableWeightage(this,' + row.ROW_ID + ')" style="cursor: pointer;"></i>&nbsp&nbsp<i class="fa fa-save" onclick="Edit_Delete_Row(this,1)" style="cursor: pointer;"></i></div>'
+    //                        },
+
+    //        },
+
+
+    //        ]
+    //    })
+    //}
+    function saveAssignManager(RowId) {
+        $.ajax({
+            type: 'post',
+            url: '@Url.Content("~/PerformanceAppraisal/AssignManagerToEmployee")',
+            data: { id: RowId, managerId: $('#drpdwnEmpName').val() },
+            success: function (data) {
+                if (data.result == 1) {
+                    toastr.success("Assigned successfully");
+                }
+            }
+        })
+
+    }
+    function modifyWeightage(thisval, rowID) {
+
+        rowData = $('#Edit_Employee_Mapping').DataTable().row(thisval.closest('tr')).data();
+        rowData.WEIGHTAGE = $('#weightage' + rowID).val();
+    }
+    function enableWeightage(thisval, rowID) {
+        if ($('#weightage' + rowID).is(":disabled")) {
+            $('#weightage' + rowID).attr('disabled', false);
+        }
+        else {
+            $('#weightage' + rowID).attr('disabled', true);
+        }
+
+    }
+    function GetDesignationList() {
+        $.ajax({
+            url: '@Url.Content("~/PerformanceAppraisal/GetDesignationDetails")',
+            success: function (data) {
+                DesignationList = JSON.parse(data.result);
+                $.each(DesignationList, function (i, value) {
+                    $('#designation').append('<option value="' + DesignationList[i].id + '">' + DesignationList[i].Role_Name + '');
+                });
+
+            }
+        })
+    }
+
+ function GetFilterList() {
+        $.ajax({
+            url: '@Url.Content("~/PerformanceAppraisal/GetDesignationDetails")',
+            success: function (data) {
+                FilterList = JSON.parse(data.result);
+                $.each(FilterList, function (i, value) {
+                    $('#filter').append('<option value="' + FilterList[i].id + '">' + FilterList[i].Role_Name + '');
+                });
+
+            }
+        })
+    }
+    function Get_Skill_KRA_Details() {
+        $.ajax({
+            url: '@Url.Content("~/PerformanceAppraisal/Get_Skill_KRA_Details")',
+            success: function (data) {
+                //   Skill_KRA_details = JSON.parse(data.result);
+                TypeList = JSON.parse(data.result1);
+                DescriptionList = JSON.parse(data.result3);
+                generateDescriptionList();
+            }
+        })
+    }
+    function generateDescriptionList() {
+        $.each(TypeList, function (i, value) {
+            $('#type').append('<option value="' + TypeList[i].Id + '">' + TypeList[i].PerformanceType + '');
+        });
+        if ($('#type').val() != "0") {
+        $.each(DescriptionList, function (i, value) {
+
+            $('#description').append('<option  value="' + DescriptionList[i].Id + '">' + DescriptionList[i].Description + '');
+            });
+        }
+    }
+    function validationCall() {
+        $('.field-validation-valid').text('');
+        $('.field-validation-valid').show();
+        for (var i = 0; i < $('.inputcls').length; i++) {
+            if ($('#' + $('.inputcls')[i].id).val() == '0') {
+                $('<span class="field-validation-valid">' + ' This field is required...!</span>').css('color', 'red').insertAfter('#' + $('.inputcls')[i].id);
+            }
+        }
+        if (currType != '3') {
+            if ($('#weightage').val() == '' || $('#weightage').val() == 0) {
+                $('<span class="field-validation-valid">' + ' Weightage should be more than 0</span>').css('color', 'red').insertAfter($('#weightage'));
+            }
+        }
+       
+        if ($('#description').val() == '') {
+            $('<span class="field-validation-valid">' + ' This field is required...!</span>').css('color', 'red').insertAfter($('#description'));
+        }
+
+    }
+    function saveDesignationMapping() {
+        var tempDescription = '';
+        validationCall();
+        if ($('.field-validation-valid').text() != '') {
+            return false;
+        }
+        for (var i = 0; i < $('#description').val().length; i++) {
+            tempDescription += $('#description').val()[i] + ',';
+        }
+
+        tempDescription = tempDescription.substring(0, tempDescription.length - 1);
+        $.ajax({
+            type: 'post',
+            url: '@Url.Content("~/PerformanceAppraisal/Add_Appraisal_Designation_Mapping")',
+            data: { type: $('#type').val(), description: tempDescription, weightage: $('#weightage').val(), designation: $('#designation').val() },
+            success: function (data) {
+                if (JSON.parse(data.result) == 1) {
+                    toastr.success("Saved successfully");
+                    Get_Appraisal_Mapping_Table_Details();
+                    Designation_mappingTable();
+                    //      Employee_mappingTable();
+                    $('.field-validation-valid').text('');
+                    $('#KRA_SKillModal').modal('hide');
+                    clearinput();
+                }
+                else {
+                    toastr.warning("Failed to Save");
+                    $('.field-validation-valid').text('');
+                    $('#KRA_SKillModal').modal('hide');
+                    clearinput();
+
+                }
+            }
+        })
+
+    }
+    function clearinput() {
+        $('.select2cls').select2('val', 0);
+        $('#designation').select2('val', 0);
+        $('#description').select2('val', '');
+        $('#description').empty();
+        $('.inputclearcls').val('');
+        $('.field-validation-valid').text('');
+        if ($("#dvdescription").hasClass("col-lg-12"))
+            $("#dvdescription").removeClass("col-lg-12");
+        if (!$("#dvdescription").hasClass("col-lg-6"))
+            $("#dvdescription").addClass("col-lg-6");
+        //$('#weightage').attr('disabled', false);
+        $('#dvWeightage').show();
+    }
+
+</script>

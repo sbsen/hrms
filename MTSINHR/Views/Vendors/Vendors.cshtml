@@ -3,8 +3,6 @@
 @{
     ViewBag.Title = "Vendors";
 }
-
-<h2> Add Vendor Details</h2>
 @{
 
     List<SelectListItem> TypeItems = new List<SelectListItem>();
@@ -23,157 +21,294 @@
 }
 
 
-
-
-
-<form id="vendor" method="post">
-    <div class="panel">
-        <div class="card">
-            <div class="card-header p-b-0">
-                <div class="card-title text-center">
-                    <label id="addedit"></label>
+<div class="card">
+    <div class="card-header text-center ">
+        Vendors
+    </div>
+    <div class="card-body">
+        <div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="text-right ">
+                        <button type="button" onclick="addVendors()" class="btn btn-primary btn-sm" id="create"><span class="fa fa-plus-circle"></span>&nbsp;&nbsp;Add</button>
+                    </div>
                 </div>
             </div>
-            <div class="card-block">
-                <div class="content-align p15">
-                    <div class="row">
-                        <div class="col-md-4">
+            <div class="clearfix"></div>
+            <div class="row m-t-15">
+                <div class="MTS_Table">
+                    <table id="getvendors" class="table table-bordered table-hover tabel-sm table-responsive" cellspacing="0" width="100%"></table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="vendorModal" data-backdrop="static" keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="actiontitle" class="modal-title"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+            </div>
+
+            <div class="modal-body">
+                <form id="vendorList" method="post">
+                    <input type="hidden" class="form-control" id="url" value="">
                             <div class="form-group">
                                 <div class="editor-label">
                                     @Html.LabelFor(model => model.Name)
                                 </div>
                                 <div class="editor-field">
-                                    @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+                                    @Html.TextBoxFor(model => model.Name, new { @class = "form-control", @id = "name", @name = "name" })
                                     @Html.ValidationMessageFor(model => model.Name)
+                                    <span class="field-validation-valid" id="ErrorName" style="color:red;font: bold; display: none"></span>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="col-md-4">
                             <div class="form-group">
                                 <div class="editor-label">
                                     @Html.LabelFor(model => model.Type)
                                 </div>
                                 <div class="editor-field">
-                                    @Html.DropDownListFor(model => model.Type, new System.Web.Mvc.SelectList(TypeItems, "value", "Text"), "Select Type ", new { @class = "form-control" })
+                                    @Html.DropDownListFor(model => model.Type, new System.Web.Mvc.SelectList(TypeItems, "value", "Text"), "Select Type", new { @class = "form-control", @id = "Type", @name = "Type" })
                                     @Html.ValidationMessageFor(model => model.Type)
-                                </div>                            
+                                    <span class="field-validation-valid" id="ErrorType" style="color:red;font: bold; display: none"></span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-4">
+
                             <div class="form-group">
                                 <div class="editor-label">
                                     @Html.LabelFor(model => model.Address)
                                 </div>
                                 <div class="editor-field">
-                                    @Html.TextAreaFor(model => model.Address, new { @class = "form-control" })
+                                    @Html.TextAreaFor(model => model.Address, new { @class = "form-control", @id = "Address", @name = "Address" })
                                     @Html.ValidationMessageFor(model => model.Address)
+                                    <span class="field-validation-valid" id="ErrorAddress" style="color:red;font: bold; display: none"></span>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <div class="editor-label">
-                                    @Html.LabelFor(model => model.City)
-                                </div>
-                                <div class="editor-field">
-                                    @Html.TextBoxFor(model => model.City, new { @class = "form-control" })
-                                    @Html.ValidationMessageFor(model => model.City)
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
                             <div class="form-group">
                                 <div class="editor-label">
                                     @Html.LabelFor(model => model.Phone)
                                 </div>
                                 <div class="editor-field">
-                                    @Html.TextBoxFor(model => model.Phone, new { @class = "form-control" })
+                                    @Html.TextBoxFor(model => model.Phone, new { @class = "form-control", @id = "Phone", @name = "Phone" })
                                     @Html.ValidationMessageFor(model => model.Phone)
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="col-md-4">
                             <div class="form-group">
                                 <div class="editor-label">
                                     @Html.LabelFor(model => model.ContactPerson)
                                 </div>
                                 <div class="editor-field">
-                                    @Html.TextBoxFor(model => model.ContactPerson, new { @class = "form-control" })
+                                    @Html.TextBoxFor(model => model.ContactPerson, new { @class = "form-control", @id = "ContactPerson", @name = "ContactPerson" })
                                     @Html.ValidationMessageFor(model => model.ContactPerson)
+                                    <span class="field-validation-valid" id="ErrorContactPerson" style="color:red;font: bold; display: none"></span>
                                 </div>
                             </div>
-                        </div>
 
-
-                        <div class="col-md-4">
                             <div class="form-group">
                                 <div class="editor-label">
                                     @Html.LabelFor(model => model.MobileNo)
                                 </div>
                                 <div class="editor-field">
-                                    @Html.TextBoxFor(model => model.MobileNo, new { @class = "form-control" })
+                                    @Html.TextBoxFor(model => model.MobileNo, new { @class = "form-control", @id = "MobileNo", @name = "MobileNo" })
                                     @Html.ValidationMessageFor(model => model.MobileNo)
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="col-md-4">
                             <div class="form-group">
                                 <div class="editor-label">
                                     @Html.LabelFor(model => model.Email)
                                 </div>
                                 <div class="editor-field">
-                                    @Html.TextBoxFor(model => model.Email, new { @class = "form-control" })
+                                    @Html.TextBoxFor(model => model.Email, new { @class = "form-control", @id = "Email", @name = "Email" })
                                     @Html.ValidationMessageFor(model => model.Email)
                                 </div>
                             </div>
-                        </div>
+
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <div class="dataurl">
+                    <div>
+                        <button type="button" id="save" class="btn btn-success" onclick="AddEdit($('#url').val(), 'VendorList')">Save</button>
                     </div>
-                </div>
-                <div class="pull-right p-b-10 p-r-10">
-                    <button type="button" id="cancel" onclick="back()" class="btn btn-light m-r-5">Close</button>
-                    <button type="button" id="add" class="btn btn-primary spanedit " onclick="AssetsAddEdit()">Save</button>
                 </div>
             </div>
         </div>
     </div>
-</form>
+</div>
+
+
+
+
 
 
 <script>
-    function AssetsAddEdit() {
+
+    $(document).ready(function () {
+
+        getVendor();
+
+    });
+
+    function getVendor() {
+
+        if ($.fn.DataTable.isDataTable('#getvendors')) {
+            $('#getvendors').dataTable().fnDestroy();
+        }
+
+        groupTable = $("#getvendors").DataTable({
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "iDisplayLength": 5,
+            "bFilter": true,
+            "bProcessing": true,
+            "ajax": {
+                type: 'Get',
+                async: true,
+                url: '@Url.Content("~/Vendors/Read")',
+                dataSrc: function (data) {
+                    
+                    return JSON.parse(data);
+                }
+            },
+
+            "aoColumns":
+                [{ "mData": "ID", "sTitle": "ID", "sClass": "text-right", "sWidth": "80px", "bVisible": false }
+                , { "mData": "Name", "sTitle": "Vendor Name", "sClass": "text-left" }
+                , { "mData": "VENDOR_TYPE", "sTitle": "Type", "sClass": "text-left" }
+                //, { "mData": "id", "sTitle": "Edit", "sClass": "text-center", "sWidth": "1%", "orderable": false }
+                ]
+            , "aoColumnDefs":
+                [
+
+                    {
+                        "aTargets": [2]
+                    , "mRender": function (data, type, row) {
+                        
+                        if (data == 0) {
+                            return "Service provider";
+                        }
+                        else if (data == 1) {
+                            return "Supplier";
+                        }
+                        else if (data == null) {
+                            return "N/A";
+                        }
+                        else {
+                            return "-";
+                        }
+                    }
+                    }
+                //    ,{
+                //    "aTargets": [3]
+                //    , "mRender": function (data, type, row) {
+                //        return '<span style="cursor:pointer;" onclick= editVendor($(this).closest("tr"))  class="fa fa-edit"></span>';
+                //    }
+                //}
+                ],
+        });
+    }
+
+
+    function AddEdit(actionurl, formid) {
 
         @*//var actionname = "@ViewBag.actionURL";*@
 
 
         var url = '@Url.Content("~/Vendors/AddVendorDetails")';
 
-        if ($("#vendor").valid()) {
 
+        if ($("#vendorList").valid()) {
+            if (validationCall()) {
+                $.ajax({
+                    type: "Post",
+                    data: $("#vendorList").serialize(),
 
-            $.ajax({
-                type: "Post",
-                data: $("#vendor").serialize(),
+                    url: url,
+                    success: function (result) {
+                        
+                        if (result == "Failed") {
+                            toastr.error("Sorry,we couldn't add these details!");
 
-                url: url,
-                success: function (result) {
-                    debugger;
-                    if (result == "Failed") {
-                        toastr.error("Sorry,we couldn't add these details!");
-                       
+                        }
+                        else if (result == "Success") {
+
+                            toastr.success("Added successfully");
+                            $("#vendorModal").modal('hide');
+                            getVendor();
+                        }
+
                     }
-                    else if (result == "Success") {
+                });
+            }
+        }
 
-                        toastr.success("Added successfully");
-                        $('#vendor').clear();
-                    }
-                    
-                }
-            });
+
+    }
+
+    function addVendors() {
+
+        $("#url").val('@Url.Content("~/Vendor/AddVendorDetails")');
+        $(".field-validation-error").text("");
+        $(".field-validation-valid").text("");
+        $("#actiontitle").text("Add Vendor");
+        document.getElementById("name").value = "";
+        document.getElementById("Type").value = "";
+        document.getElementById("Address").value = "";
+        document.getElementById("ContactPerson").value = "";
+        document.getElementById("Phone").value = "";
+        document.getElementById("MobileNo").value = "";
+        document.getElementById("Email").value = "";
+        $("#vendorModal").modal('show');
+    };
+
+    @*function addVendors() {
+        var data = groupTable.row(curTr).data();
+        $("#url").val('@Url.Content("~/Vendor/Edit")');
+        $(".field-validation-error").text("");
+        $(".field-validation-valid").text("");
+        $("#actiontitle").text("Edit Vendor");
+        document.getElementById("name").value = data.NAME;
+        document.getElementById("Type").value = data.VENDOR_TYPE;
+        document.getElementById("Address").value = date.VENDOR_ADDRESS;
+        document.getElementById("ContactPerson").value = data.CONTACT_PERSON;
+        document.getElementById("Phone").value = data.PHONE;
+        document.getElementById("MobileNo").value = data.MOBILE_NO;
+        document.getElementById("Email").value = data.EMAIL;
+        $("#vendorModal").modal('show');
+    };*@
+
+    function validationCall() {
+        $('.field-validation-valid').text("");
+        $('.field-validation-valid').show();
+        if (document.getElementById("name").value.trim() == null || document.getElementById("name").value.trim() == "") {
+
+            $("#ErrorName").text("WhiteSpace's are not allowed");
+        }
+
+        if (document.getElementById("Type").value == "" || document.getElementById("Type").value == null) {
+            $("#ErrorType").text("Select the field");
+        }
+
+        if (document.getElementById("Address").value.trim() == "" || document.getElementById("Address").value.trim() == null) {
+            $("#ErrorAddress").text("WhiteSpace's are not allowed");
+        }
+        if (document.getElementById("ContactPerson").value.trim() == "" || document.getElementById("ContactPerson").value.trim() == null) {
+            $("#ErrorContactPerson").text("WhiteSpace's are not allowed");
+        }
+
+        if ($(".field-validation-valid").text() == '') {
+            return true;
+        }
+        else {
+            return false;
         }
     }
 </script>

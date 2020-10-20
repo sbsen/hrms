@@ -1,4 +1,4 @@
-﻿@model LeaveApply.Models.Leave
+﻿@model MTSINHR.Models.Leave
 
 @{
     Layout = "~/Views/Shared/Layout_New.cshtml";
@@ -16,6 +16,12 @@
     #ErrorSpan {
         text-align: left;
     }
+    .chebox-lg {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        vertical-align: middle;
+    }
 </style>
 
 <script>
@@ -23,7 +29,6 @@
 
         $("html,body").scrollTop(0);
     });
-
 </script>
 
 
@@ -50,15 +55,14 @@
                             <div class="editor-label">
                                 @Html.LabelFor(m => m.LeaveType)
                             </div>
-
                             <div class="editor-field">
                                 @Html.DropDownListFor(m => m.LeaveType, new System.Web.Mvc.SelectList(ViewBag.LeaveTypes, "Value", "Text"), new { @class = "form-control" })
                                 @Html.ValidationMessageFor(m => m.LeaveType)
                             </div>
 
-
                         </div>
                     </div>
+
 
                     <div class="col-md-6">
                         <div class="form-group">
@@ -79,7 +83,7 @@
                                 @Html.LabelFor(m => m.FromDate)
                             </div>
                             <div class="editor-field">
-                                @Html.TextBoxFor(m => m.FromDate, new { @class = "form-control" })
+                                @Html.TextBoxFor(m => m.FromDate, new { @class = "form-control", @data = "date-end-date='0d'" })
                                 @Html.ValidationMessageFor(m => m.FromDate)
                             </div>
                         </div>
@@ -88,9 +92,9 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <div class="editor-label">
+                                @Html.LabelFor(m => m.LeaveFromSession, "From Session")
                             </div>
                             <div class="editor-field">
-
                                 @Html.DropDownListFor(m => m.LeaveFromSession, new System.Web.Mvc.SelectList(ViewBag.LeaveFromSessions, "Value", "Text"), new { @class = "form-control" })
                                 @Html.ValidationMessageFor(m => m.LeaveFromSession)
                             </div>
@@ -146,6 +150,12 @@
                         <span id="ErrorSpan" style="color: red; align-self: center; font: bold; display: none"></span>
                     </div>
 
+                    <div class="col-md-6 p-l-30">
+                        <div class="form-group">
+                            <input type="checkbox" id="ShowAllManagersList" class="chebox-lg" /> &nbsp;  Show all managers
+                        </div>
+                    </div>
+
 
                 </div>
                 <div class="pull-right">
@@ -173,7 +183,7 @@
 
         $("#Managerid").prop('disabled', true)
         $('#LeaveFromSession').change(function () {
-            debugger
+
             var value = $(this).val();
 
             if (value == '1') {
@@ -228,7 +238,11 @@
             if (($('#FromDate').val()) != "" && ($('#ToDate').val()) != "") {
 
                 $("#Managerid").prop('disabled', false)
-                $("#Managerid").val("").trigger('change');
+                if($("#Managerid")[0].childElementCount > 1){
+                    $("#Managerid").val("").trigger('change');
+                } else{
+                    $("#Managerid").trigger('change');
+                }
             }
 
         });
@@ -239,7 +253,11 @@
 
             if (($("#ToDate").val()) != "" && ($('#FromDate').val()) != "") {
                 $("#Managerid").prop('disabled', false)
-                $("#Managerid").val("").trigger('change');
+                if($("#Managerid")[0].childElementCount > 1){
+                    $("#Managerid").val("").trigger('change');
+                } else{
+                    $("#Managerid").trigger('change');
+                }
             }
             else {
                 $("#Managerid").prop('disabled', true)
@@ -251,7 +269,11 @@
 
             if (($("#ToDate").val()) != "" && ($('#FromDate').val()) != "") {
                 $("#Managerid").prop('disabled', false)
-                $("#Managerid").val("").trigger('change');
+                if($("#Managerid")[0].childElementCount > 1){
+                    $("#Managerid").val("").trigger('change');
+                } else{
+                    $("#Managerid").trigger('change');
+                }
             }
             else {
                 $("#Managerid").prop('disabled', true)
@@ -279,7 +301,11 @@
             if (($("#ToDate").val()) != "" && ($('#FromDate').val()) != "") {
 
                 $("#Managerid").prop('disabled', false)
-                $("#Managerid").val("").trigger('change');
+                if($("#Managerid")[0].childElementCount > 1){
+                    $("#Managerid").val("").trigger('change');
+                } else{
+                    $("#Managerid").trigger('change');
+                }
 
             }
             else {
@@ -294,25 +320,41 @@
 
             if (($("#Managerid").val()) != "") {
 
-                var Totaldaysleave = Noofdays();
+                var Totaldaysleave = BpoNoofdays();
 
                 $("#NumberOfDays").val(Totaldaysleave);
             }
         });
 
+        $('#ShowAllManagersList').on('click',function(){
+            $.ajax({
+                type : "GET",
+                data : {GetAllmanagers : $('#ShowAllManagersList').is(":checked")},
+                url : '@Url.Content("~/LeaveApply/GetManagersNames")',
+                success : function (data){
+                    var ManagersList = JSON.parse(data);
+                    $("#Managerid").html('');
+                    $.each(ManagersList,function(i,val){
+                        $("#Managerid").append('<option value="'+val.Value+'">'+val.Text+'</option>');
+                    })
+                    if ($("#FromDate").val() != "" && $("#FromDate").val() != null && $("#ToDate").val() != "" && $("#ToDate").val() != null) {
+                        $("#Managerid").trigger('change');
+                    }
+                }
+            });
+        })
+
     });
-
-
 </script>
 
 
 <script>
     $(document).ready(function () {
-        var DisableDates = [];
+        //var DisableDates = [];
 
         var year = (new Date()).getFullYear();
 
-        $.ajax({
+        @*$.ajax({
 
             type: 'GET',
             url: '@Url.Content("~/LeaveApply/GetDisableHolidayDatesList")',
@@ -330,37 +372,108 @@
 
                 });
             }
-        });
+        });*@
 
 
 
         var end = new Date(new Date().setYear(new Date().getFullYear() + 2));
-        var setEndDate = new Date().setDate() + 1;
+        var setenddate = new Date().setDate() + 1;
+
 
         $('#FromDate').datepicker({
             format: 'dd/M/yyyy',
             endDate: end,
-            autoclose: true,      
+            autoclose: true,
+            //daysOfWeekDisabled: [0, 6],
+
+            //datesDisabled: DisableDates,
+
         }).on('changeDate', function () {
-            $("#ToDate").val(this.value);
-            $('#ToDate').datepicker('setStartDate', new Date($(this).val()));
-            //$('#ToDate').datepicker('setEndDate', new Date($(this).val()).getDate()+1);
+
+
+            daysOfWeekDisabled: [0, 6]
+        }).on('changeDate', function () {
+            if ($("#LeaveType option:selected").text().toLowerCase() == "casual") {
+                var date = new Date($("#FromDate").val());
+                var month = date.toLocaleString('en-us', { month: 'long' });
+                var EndDate = (date.getDate() + 1) + "/" + month + "/" + date.getFullYear();
+                daysOfWeekDisabled: [0, 6],
+                $("#ToDate").val(this.value).change();
+                $('#ToDate').datepicker('setStartDate', new Date($(this).val()));
+                //$('#ToDate').datepicker('setEndDate', new Date($(this).val()).getDate()+1);
+               // $('#ToDate').datepicker('setEndDate', EndDate);
+            }
+            else {
+                $("#ToDate").val(this.value).change();
+                $('#ToDate').datepicker('setStartDate', new Date($(this).val()));
+                //$('#ToDate').datepicker('setEndDate', '');
+            }
+
         });
+
         $('#ToDate').datepicker({
             format: 'dd/M/yyyy',
-            //endDate: '+1d',
+            //setEndDate:endDate,
+            startDate: new Date('2018-1-5'),
+            //endDate: new Date('2018-1-12'),
             autoclose: true,
+           // daysOfWeekDisabled: [0, 6],
+           // datesDisabled: DisableDates,
         }).on('changeDate', function () {
 
-            $('#FromDate').datepicker('setEndDate', new Date($(this).val()));
+             // $('#FromDate').datepicker('setEndDate', new Date($(this).val()));
         });
-        });
-</script>
+    });
+    var totalDays;
+    function validateLeave() {
+        var leaveReqType = $("#LeaveType option:selected").text();
+        var noOfDays = parseInt($("#NumberOfDays").val());
+        if (leaveBalance.length > 0) {
+            if (leaveReqType != null && leaveReqType != undefined && RestrictSickLeave(leaveReqType)) {
+                var _data = leaveBalance.filter(a=>a.Leavetype == leaveReqType)
 
+                totalDays = _data[0].Leavebalance;
+                if (totalDays < noOfDays) {
+                    bootbox.confirm("You have less number of leave balance than you applied for in " + leaveReqType + ", do you wish to continue?", function (result) {
+                        if (result == true) {
+                            ApplyLeave();
+                        }
+                    });
+                }
+                else {
+                    ApplyLeave();
+                }
+            }
+        }
+        else {
+            var result = RestrictSickLeave(leaveReqType);
+            if (result) {
+                ApplyLeave();
+            }
+        }
+
+    }
+
+    function RestrictSickLeave(leaveReqType) {
+        if (leaveReqType.toLowerCase() == "sick") {
+            var sickLeaveDetails = leaveListTable.rows().data().filter(aa=>aa.LeaveType == "Sick" && aa.Approval == 1)
+            if (sickLeaveDetails.length > 0) {
+                toastr.error("Another sick leave is in pending Status,Cancel your leave or Contact your Manager");
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+        else {
+            return true;
+        }
+    }
+</script>
 <script>
 
     var leaveBalanceTable, leaveListTable;
-
+    var leaveBalance = [];
     $("#FromDate").on("keydown", function () {
         return false;
     });
@@ -368,90 +481,83 @@
         return false;
     });
     $("#submit").click(function () {
-        var disabled = $('#LeaveForm').find(':input:disabled').removeAttr('disabled');
-        if ($('#LeaveForm').valid()) {
-            debugger
-            //var x;
-            var currleavetype = $("#LeaveType").val();
-            var EmpLeavebalance = employeeLeaveBalance.filter(x=>x.LeavetypeId == currleavetype);
-            // var currLeavebalance = $("#Leavebalance");
-            var currLeavebalance = EmpLeavebalance[0].Leavebalance;
-            if (currLeavebalance <= 0) {
-                {
-                    bootbox.confirm("Your Leave balance is Nil do you want to apply?", function (result) {
-
+        if ($('#LeaveType option:selected').text().toLowerCase() == "casual" && $('#NumberOfDays').val() > 2) {
+            toastr.error("Casual leave cannot be applied for more than 2 days consecutively");
+        }
+        else {
+            var disabled = $('#LeaveForm').find(':input:disabled').removeAttr('disabled');
+            var fromYear = new Date(($("#FromDate").val())).getFullYear();
+            var toYear = new Date(($("#ToDate").val())).getFullYear()
+            if (fromYear == toYear) {
+                if ($('#LeaveForm').valid()) {
+                    var leaveResponse = false;
+                    bootbox.confirm("Are you sure want to apply ?", function (result) {
+                         
                         if (result == true) {
-
-                            $.ajax({
-
-                                type: "POST",
-                                url: '@Url.Content("~/LeaveApply/Create")',
-                                data:
-
-                                    $('#LeaveForm').serialize(),
-
-                                success: function (response) {
-
-                                    if (parseInt(response.success) == 1) {
-                                        leaveListTable.ajax.url("../LeaveApply/GetEmployeeLeaveList").load().draw();
-                                        $("#LeaveForm")[0].reset();
-                                        toastr.success("Successfully Applied waiting for approval");
-
-                                    }
-                                    else if (parseInt(response.success) == 2) {
-                                        toastr.error('You cannot apply leave as you are already on casual leave');
-                                    }
-                                    else {
-                                        toastr.error('Failed To Apply  ');
-                                    }
-                                }
-                            });
+                            validateLeave();
                         }
                     })
                 }
-
-
-
-                }
-
+            }
             else {
-                bootbox.confirm("Are you sure you want to apply ?", function (result) {
-
-                    if (result == true) {
-
-                        $.ajax({
-
-                            type: "POST",
-                            url: '@Url.Content("~/LeaveApply/Create")',
-                            data:
-
-                                $('#LeaveForm').serialize(),
-
-                            success: function (response) {
-
-                                if (parseInt(response.success) == 1) {
-                                    leaveListTable.ajax.url("../LeaveApply/GetEmployeeLeaveList").load().draw();
-                                    $("#LeaveForm")[0].reset();
-                                    toastr.success("Successfully Applied waiting for approval");
-
-                                }
-                                else if (parseInt(response.success) == 2) {
-                                    toastr.error('You cannot apply leave as you are already on casual leave');
-                                }
-                                else {
-                                    toastr.error('Failed To Apply  ');
-                                }
-                            }
-                        });
-                    }
-                })
+                toastr.error('Leave cannot be applied across the year !!');
             }
         }
     });
 
+    function ApplyLeaveWithLOP() {
+        bootbox.confirm("Do you want to continue with loss of pay deduction?", function (result) {
+             
+            if (result == true) {
+                $.ajax({
+
+                    type: "POST",
+                    url: '@Url.Content("~/LeaveApply/LeaveApplyWithLOP")',
+                    data: $('#LeaveForm').serialize(),
+                    success: function (response) {
+
+                        if (parseInt(response.success) == 1) {
+                            leaveListTable.ajax.url("../LeaveApply/GetEmployeeLeaveList").load().draw();
+                            $("#LeaveForm")[0].reset();
+                            toastr.success("Successfully Applied waiting for approval");
+                        }
+                        else {
+                            toastr.error('Failed To Apply');
+                        }
+                    }
+                });
+            }
+        })
+    }
+    function ApplyLeave() {
+        $.ajax({
+
+            type: "POST",
+            url: '@Url.Content("~/LeaveApply/Create")',
+            data: $('#LeaveForm').serialize(),
+            success: function (response) {
+
+                if (parseInt(response.success) == 1) {
+                    leaveListTable.ajax.url("../LeaveApply/GetEmployeeLeaveList").load().draw();
+                    $("#LeaveForm")[0].reset();
+                    toastr.success("Successfully Applied waiting for approval");
+
+                }
+                else if (parseInt(response.success) == 0) {
+                    toastr.error(' Failed To Apply ');
+                }
+                else if ((parseInt(response.success) == 2)) {
+                    ApplyLeaveWithLOP();
+                }
+                else {
+                    toastr.error('Failed To Apply');
+                }
+            }
+        });
+    }
 
     $(document).ready(function () {
-        var employeeLeaveBalance = [];
+
         $(".leavebalancelist").hide();
         $(".leavelist").hide();
 
@@ -467,7 +573,6 @@
         });
 
         $("#Myleave").on('click', function () {
-
             $(".leavelist").show();
             $(".leavebalancelist").hide();
             $("html, body").animate({ scrollTop: $(document).height() }, "slow");
@@ -482,11 +587,11 @@
             "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
             "iDisplayLength": 5,
             "ajax": {
-                "url":  '@Url.Content("~/LeaveApply/GetLeaveBalance")',
+                "url": '@Url.Content("~/LeaveApply/GetLeaveBalance")',
                 "dataSrc": function (data) {
                     var d = typeof (data);
                     var s = typeof (JSON.parse(data));
-                    employeeLeaveBalance = JSON.parse(data);
+                    leaveBalance = JSON.parse(data);
                     return JSON.parse(data);
 
                 }
@@ -495,9 +600,7 @@
                 { "mData": "Employee_Id", "sTitle": "Employee Id" },
                 { "mData": "Fullname", "sTitle": "Employee Name" },
                 { "mData": "Leavetype", "sTitle": "Leave Type" },
-                { "mData": "LeavetypeId", "bVisible": false, "sTitle": "Leave Type" },
                 { "mData": "Leavebalance", "sTitle": "Leave Balance" }]
-
         });
     }
 
@@ -509,26 +612,25 @@
             "ajax": {
                 "url": '@Url.Content("~/LeaveApply/GetEmployeeLeaveList")',
                 "dataSrc": function (data) {
-
+                     
                     return JSON.parse(data);
 
                 }
             },
             "aoColumns":
                 [
-                { "mData": "FromDate", "sTitle": "From Date" },
-                { "mData": "ToDate", "sTitle": "To Date" },
+                { "mData": "FromDate",'sType':'date', "sTitle": "From Date" },
+                { "mData": "ToDate",'sType':'date', "sTitle": "To Date" },
                 { "mData": "Numberofdays", "sTitle": "Number Of Days" },
                 { "mData": "LeaveType", "sTitle": "Leave Type" },
                 { "mData": "Reason", "sTitle": "Reason" },
                 { "mData": "Approval", "sTitle": "Status" },
                 { "mData": "id", "sTitle": "Cancel", "sClass": "text-center", "bSortable": true, "sWidth": "1%", "orderable": false },
-                { "mData": "AppliedDate", "bVisible": false, "sTitle": "Applied Date" }
+                { "mData": "AppliedDate",'sType':'date', "bVisible": false, "sTitle": "Applied Date" }
                 ],
 
             "aoColumnDefs": [
                 {
-
                     "aTargets": [6],
                     "mRender": function (data, type, row) {
 
@@ -586,15 +688,17 @@
                     success: function (response) {
 
                         if (parseInt(response.success) == 1) {
-                            $("#ErrorSpan").text("Successfully Canceled");
-                            $("#ErrorSpan").show();
+                            //$("#ErrorSpan").text("Successfully Canceled");
+                            //$("#ErrorSpan").show();
+                            toastr.error("Successfully Cancelled");
 
                             leaveListTable.ajax.url("../LeaveApply/GetEmployeeLeaveList").load().draw();
                         }
                         else {
 
-                            $("#ErrorSpan").text("Failed to Cancel");
-                            $("#ErrorSpan").show();
+                            //$("#ErrorSpan").text("Failed to Cancel");
+                            //$("#ErrorSpan").show();
+                            toastr.error("Failed To Cancel");
                         }
                     }
                 });
@@ -607,9 +711,41 @@
 
 
 <script>
+    function diff(from,to) {
 
+        var date1 = from;
+        var date2 = to;
+        var diffDays = parseInt((date2 - date1) / (1000 * 60 * 60 * 24));
 
-    function Noofdays() {
+        return diffDays+1;
+    }
+    function BpoNoofdays()
+    {
+        var from = new Date($("#FromDate").val());
+        var to = new Date($("#ToDate").val());
+
+        var Noofday = diff(from, to);
+
+        var LeaveFromSession = $("#LeaveFromSession").val();
+        var LeaveToSession = $("#LeaveToSession").val();
+
+        if (LeaveFromSession == 2) {
+            Noofday = 0.5;
+        } else {
+
+            if (LeaveFromSession == 3) {
+                Noofday = Noofday - 0.5;
+            }
+
+            if (LeaveToSession == 2) {
+                Noofday = Noofday - 0.5;
+            }
+
+        }
+        return Noofday;
+    }
+
+    @*function Noofdays() {
 
         var fd = new Date($("#FromDate").val());
         var td = new Date($("#ToDate").val());
@@ -676,10 +812,9 @@
         }
         return noOfDaysLeave;
 
-    }
+    }*@
+
 </script>
-
-
 
 
 

@@ -56,6 +56,10 @@
     <Reference Include="DocumentFormat.OpenXml">
       <HintPath>..\packages\DocumentFormat.OpenXml.2.5\lib\DocumentFormat.OpenXml.dll</HintPath>
     </Reference>
+    <Reference Include="HRConstants, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\HRConstants\bin\Debug\HRConstants.dll</HintPath>
+    </Reference>
     <Reference Include="Humanizer">
       <HintPath>..\packages\Humanizer.Core.2.0.1\lib\portable-win+net45+wp8+wpa81\Humanizer.dll</HintPath>
     </Reference>
@@ -178,18 +182,23 @@
       <DependentUpon>Logon.cshtml.resx</DependentUpon>
     </Compile>
     <Compile Include="Controllers\AssetController.cs" />
+    <Compile Include="Controllers\AssetDashboardController.cs" />
     <Compile Include="Controllers\AssetDetailsController.cs" />
     <Compile Include="Controllers\AMC_InsuranceController.cs" />
     <Compile Include="Controllers\AssetMaintenanceDetailsController.cs" />
+    <Compile Include="Controllers\AssetReportController.cs" />
+    <Compile Include="Controllers\AssetReportVIewController.cs" />
     <Compile Include="Controllers\AssetSaleController.cs" />
     <Compile Include="Controllers\AssetsMasterController.cs" />
     <Compile Include="Controllers\AssignAssetController.cs" />
+    <Compile Include="Controllers\AttendanceLogController.cs" />
     <Compile Include="Controllers\BankDetailsController.cs" />
     <Compile Include="Controllers\DepartmentController.cs" />
     <Compile Include="Controllers\EmailController.cs" />
     <Compile Include="Controllers\BloodGroupController.cs" />
     <Compile Include="Controllers\EmployeeController.cs" />
     <Compile Include="Controllers\EmployeeDocumentsController.cs" />
+    <Compile Include="Controllers\EmployeeEntryController.cs" />
     <Compile Include="Controllers\EmployeeLeaveApprovalController.cs" />
     <Compile Include="Controllers\EmployeeLeaveListController.cs" />
     <Compile Include="Controllers\EmployeeLeavePendingController.cs" />
@@ -201,16 +210,21 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ImageController.cs" />
     <Compile Include="Controllers\ImportExcelController.cs" />
+    <Compile Include="Controllers\ITDeclarationController.cs" />
     <Compile Include="Controllers\LanguageController.cs" />
     <Compile Include="Controllers\LeaveApplyController.cs" />
+    <Compile Include="Controllers\LeavePolicyController.cs" />
     <Compile Include="Controllers\LeaveTypeController.cs" />
     <Compile Include="Controllers\LocationController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\DesignationController.cs" />
     <Compile Include="Controllers\MaritalStatusController.cs" />
     <Compile Include="Controllers\MenuController.cs" />
+    <Compile Include="Controllers\ModuleController.cs" />
     <Compile Include="Controllers\NationalityController.cs" />
+    <Compile Include="Controllers\PayrollController.cs" />
     <Compile Include="Controllers\PaySlip_Form16Controller.cs" />
+    <Compile Include="Controllers\PerformanceAppraisalController.cs" />
     <Compile Include="Controllers\PoliciesController.cs" />
     <Compile Include="Controllers\QualificationController.cs" />
     <Compile Include="Controllers\RelationshipController.cs" />
@@ -233,16 +247,23 @@
     <Compile Include="Models\Address.cs" />
     <Compile Include="Models\AllEmployeeDocuments.cs" />
     <Compile Include="Models\AMC_Insurance.cs" />
+    <Compile Include="Models\apply.cs" />
+    <Compile Include="Models\AssetDashboard.cs" />
+    <Compile Include="Models\AssetDetails.cs" />
     <Compile Include="Models\AssetMaintenanceDetails.cs" />
+    <Compile Include="Models\AssetReportView.cs" />
     <Compile Include="Models\Assets.cs" />
     <Compile Include="Models\AssetSale.cs" />
     <Compile Include="Models\AssetsCategory.cs" />
+    <Compile Include="Models\AssetsEntry.cs" />
     <Compile Include="Models\AssetsMaster.cs" />
     <Compile Include="Models\AssetsNameMaster.cs" />
     <Compile Include="Models\AssignAsset.cs" />
+    <Compile Include="Models\Attendance_Log.cs" />
     <Compile Include="Models\BloodGroup.cs" />
     <Compile Include="Models\Departments.cs" />
     <Compile Include="Models\EmployeeDocuments.cs" />
+    <Compile Include="Models\EmployeeEntry.cs" />
     <Compile Include="Models\Holidays.cs" />
     <Compile Include="Models\Image.cs" />
     <Compile Include="Models\Leave.cs" />
@@ -256,14 +277,17 @@
     <Compile Include="Models\EmployeeDetails.cs" />
     <Compile Include="Models\GovernmentID.cs" />
     <Compile Include="Models\Language.cs" />
+    <Compile Include="Models\LeavePolicy.cs" />
     <Compile Include="Models\LeaveType.cs" />
     <Compile Include="Models\Location.cs" />
     <Compile Include="Models\MaritalStatus.cs" />
     <Compile Include="Models\Message.cs" />
     <Compile Include="Models\Nationality.cs" />
+    <Compile Include="Models\Payroll.cs" />
     <Compile Include="Models\PaySlip.cs" />
     <Compile Include="Models\PaySlip_Form16.cs" />
     <Compile Include="Models\Policies.cs" />
+    <Compile Include="Models\PV_ModuleApproval.cs" />
     <Compile Include="Models\Qualification.cs" />
     <Compile Include="Models\Relationship.cs" />
     <Compile Include="Models\Session.cs" />
@@ -1009,10 +1033,38 @@
     <Content Include="Views\Vendors\Vendors.cshtml" />
     <Content Include="Views\Asset\AssetEntry.cshtml" />
     <Content Include="Views\AssignAsset\AssignAsset.cshtml" />
+    <Content Include="Views\Module\Module.cshtml" />
+    <Content Include="Views\Module\PV_Module_Approval.cshtml" />
+    <Content Include="Views\Payroll\MonthlyVariance.cshtml" />
+    <Content Include="Views\Payroll\Payroll.cshtml" />
+    <Content Include="Views\Payroll\PayrollCalculations.cshtml" />
+    <Content Include="Views\Payroll\PayrollLop.cshtml" />
+    <Content Include="Views\Payroll\PayrollReport.cshtml" />
+    <Content Include="Views\Payroll\_PV_EmployeeLossOfPayDetails.cshtml" />
+    <Content Include="Views\Payroll\_PV_EmployeePayrollDeails.cshtml" />
+    <Content Include="Views\Payroll\_PV_PreviousBonusDetail.cshtml" />
+    <Content Include="Views\PerformanceAppraisal\AppraisalMapping.cshtml" />
+    <Content Include="Views\PerformanceAppraisal\AppraisalProcessDetails.cshtml" />
+    <Content Include="Views\PerformanceAppraisal\ModeratorReviewPage.cshtml" />
+    <Content Include="Views\PerformanceAppraisal\SelfAppraisal.cshtml" />
+    <Content Include="Views\PerformanceAppraisal\TeamMembersAppraisal.cshtml" />
+    <Content Include="Views\LeavePolicy\LeavePolicy.cshtml" />
+    <Content Include="Views\ITDeclaration\ITDeclarationEmployeeDetails.cshtml" />
+    <Content Include="Views\ITDeclaration\ITDeclarationForm.cshtml" />
+    <Content Include="Views\EmployeeEntry\ReadEmployeeEntry.cshtml" />
+    <Content Include="Views\AttendanceLog\AttendanceLog.cshtml" />
+    <Content Include="Views\AttendanceLog\GetMonthlyAttendance.cshtml" />
+    <Content Include="Views\AttendanceLog\MonthlyAttendanceDetails.cshtml" />
+    <Content Include="Views\AssetReportVIew\AssetReportView.cshtml" />
+    <Content Include="Views\AssetReport\AssetReport.cshtml" />
+    <Content Include="Views\AssetDashboard\AssetDashboard.cshtml" />
+    <Content Include="Views\UpdateTimeLine\Messages.cshtml" />
+    <Content Include="Views\UpdateTimeLine\ShowMessages.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Images\NewFolder1\" />
+    <Folder Include="Views\Appraisal\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

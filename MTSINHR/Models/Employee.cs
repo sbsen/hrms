@@ -48,6 +48,11 @@ namespace MTSINHR.Models
         [Display(Name = "Department")]
         public Int64 DepartmentId { get; set; }
 
+        
+        [Required]
+        [Display(Name = "Functional Role")]
+        public Int64 FunctionalRole { get; set; }
+
         [Required]
         [Display(Name = "Nationality")]
         public Int64 Nationality { get; set; }
@@ -75,11 +80,11 @@ namespace MTSINHR.Models
         [RegularExpression("^[+]+[0-9]{12,15}$", ErrorMessage = "Invalid Phone number ex:+919876543210")]
         public string Mobile { get; set; }
 
-        [Required]
+        //[Required]
         [RegularExpression("^([0-9]+)$", ErrorMessage = "Please Enter Numbers only")]
-        public Int64 Aadhar { get; set; }
+        public Int64? Aadhar { get; set; }
 
-        [Required]
+        //[Required]
         [RegularExpression("^([a-zA-Z0-9]+)$", ErrorMessage = "Please Enter AlphaNumeric Values only")]
         public string Pancard { get; set; }
 
@@ -89,15 +94,15 @@ namespace MTSINHR.Models
         public string ESI_Number { get; set; }
       
 
-        [Required]
+        //[Required]
          [Display(Name = "PF Account Number")]
         [RegularExpression("^([a-zA-Z0-9]+)$", ErrorMessage = "Please Enter AlphaNumeric Values only")]
         public string PF_AccountNumber { get; set; }
 
-        [Required]
+        //[Required]
         [Display(Name = "PF UAN")]
         [RegularExpression("^([0-9]+)$", ErrorMessage = "Please Enter Numbers only")]
-        public Int64 PF_UAN { get; set; }
+        public Int64? PF_UAN { get; set; }
 
         
        

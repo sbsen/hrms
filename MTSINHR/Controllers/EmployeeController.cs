@@ -59,31 +59,70 @@ namespace MTSINHR.Controllers
         {
 
             MTSHRDataLayer.Employee data_emp = new MTSHRDataLayer.Employee();
-            var employeemaritalstatus = data_emp.getMaritalstatus();
             List<SelectListItem> maritalstatus = new List<SelectListItem>();
-            maritalstatus.Add(new SelectListItem() { Value = "", Text = "---- Select Marital Status----" });
-            for (int i = 0; i < employeemaritalstatus.Tables[0].Rows.Count; i++)
+            try
             {
-                maritalstatus.Add(new SelectListItem() { Value = employeemaritalstatus.Tables[0].Rows[i]["id"].ToString(), Text = employeemaritalstatus.Tables[0].Rows[i]["Marital_status"].ToString() });
+                var employeemaritalstatus = data_emp.getMaritalstatus();
+                maritalstatus.Add(new SelectListItem() { Value = "", Text = "---- Select Marital Status----" });
+                for (int i = 0; i < employeemaritalstatus.Tables[0].Rows.Count; i++)
+                {
+                    maritalstatus.Add(new SelectListItem() { Value = employeemaritalstatus.Tables[0].Rows[i]["id"].ToString(), Text = employeemaritalstatus.Tables[0].Rows[i]["Marital_status"].ToString() });
 
+                }
             }
+            catch (Exception exec)
+            {
+
+                BaseExceptionHandler.HandleException(ref exec);
+            }
+            
             return maritalstatus;
         }
         private List<SelectListItem> getnationality()
         {
 
             MTSHRDataLayer.Employee data_emp = new MTSHRDataLayer.Employee();
-            var employeenationality = data_emp.getNationality();
             List<SelectListItem> nationality = new List<SelectListItem>();
-            nationality.Add(new SelectListItem() { Value = "", Text = "----Select Nationality----" });
-            for (int i = 0; i < employeenationality.Tables[0].Rows.Count; i++)
+            try
             {
-                nationality.Add(new SelectListItem() { Value = employeenationality.Tables[0].Rows[i]["id"].ToString(), Text = employeenationality.Tables[0].Rows[i]["Nationality"].ToString() });
+                var employeenationality = data_emp.getNationality();
+                nationality.Add(new SelectListItem() { Value = "", Text = "----Select Nationality----" });
+                for (int i = 0; i < employeenationality.Tables[0].Rows.Count; i++)
+                {
+                    nationality.Add(new SelectListItem() { Value = employeenationality.Tables[0].Rows[i]["id"].ToString(), Text = employeenationality.Tables[0].Rows[i]["Nationality"].ToString() });
+                }
             }
+            catch (Exception exec)
+            {
+                BaseExceptionHandler.HandleException(ref exec);
+            }
+           
             return nationality;
         }
 
-        [HttpPost]
+        private List<SelectListItem> getFunctionalRole()
+        {
+
+            MTSHRDataLayer.Designation data_role = new MTSHRDataLayer.Designation();
+            List<SelectListItem> FunctionalRole = new List<SelectListItem>();
+            try
+            {
+                var employeeFunctionalRole = data_role.Read_FunctionalRole();
+                FunctionalRole.Add(new SelectListItem() { Value = "", Text = "----Select Functional Role----" });
+                for (int i = 0; i < employeeFunctionalRole.Rows.Count; i++)
+                {
+                    FunctionalRole.Add(new SelectListItem() { Value = employeeFunctionalRole.Rows[i]["id"].ToString(), Text = employeeFunctionalRole.Rows[i]["Role_Name"].ToString() });
+                }
+            }
+            catch (Exception exec)
+            {
+                BaseExceptionHandler.HandleException(ref exec);
+            }
+
+            return FunctionalRole;
+
+        }
+            [HttpPost]
         public ActionResult SetPrimaryid(Int64 id)
         {
             TempData["employeeid"] = id;
@@ -107,12 +146,12 @@ namespace MTSINHR.Controllers
             return Content("success");
         }
         [HttpPost]
-    
+
         public int SetActive(Int64 id, int active, string inActiveDate)
         {
-            
+
             MTSHRDataLayer.Employee data_emp = new MTSHRDataLayer.Employee();
-           
+
             int result = data_emp.ActivateAccount(id, active, inActiveDate);
             return result;
         }
@@ -126,6 +165,10 @@ namespace MTSINHR.Controllers
                 MTSHRDataLayer.Employee data_emp = new MTSHRDataLayer.Employee();
                 var employeeData = Json(JsonConvert.SerializeObject(data_emp.Read(id)), JsonRequestBehavior.AllowGet);
                 ViewBag.EmployeeData = employeeData.Data;
+
+                MTSHRDataLayer.Employee employee = new MTSHRDataLayer.Employee();
+                var role = employee.GetRole(id);
+                Session["Role"] = role.Rows[0][0].ToString();
 
                 MTSHRDataLayer.EmployeeImage data_image = new MTSHRDataLayer.EmployeeImage();
                 byte[] imagedata = data_image.Read(id);
@@ -164,6 +207,7 @@ namespace MTSINHR.Controllers
                 ViewBag.maritalstatus = getmaritalstatus();
                 ViewBag.nationality = getnationality();
                 ViewBag.EmployeeId = data_emp.getlastemployeeid();
+                ViewBag.FunctionalRoleList = getFunctionalRole();
                 ViewBag.actionURL = "AddEmployee";
                 string empid = TempData["employeeid"].ToString();
                 TempData.Keep("employeeid");
@@ -172,13 +216,14 @@ namespace MTSINHR.Controllers
                     ViewBag.actionURL = "EditEmployee";
                     ViewBag.EmployeeData = JsonConvert.SerializeObject(data_emp.getemployeedetails(empid));
                     DataTable empdata = data_emp.getemployeedetails(empid);
-                    emp.Aadhar = (Int64)empdata.Rows[0]["Aadhar"];
+                    if (empdata.Rows[0]["Aadhar"].ToString() != "")
+                        emp.Aadhar = (Int64)empdata.Rows[0]["Aadhar"];
                     emp.Mobile = (String)empdata.Rows[0]["Mobile"];
                     emp.Dateofbirth = DateTime.Parse(empdata.Rows[0]["Dateofbirth"].ToString());
                     emp.Dateofjoin = DateTime.Parse(empdata.Rows[0]["Dateofjoin"].ToString());
                     emp.Designation = (Int64)empdata.Rows[0]["designationid"];
                     emp.DepartmentId = (Int64)empdata.Rows[0]["departmentid"];
-                   // emp.Department = (String)empdata.Rows[0]["Department"];
+                    emp.FunctionalRole = (Int64)empdata.Rows[0]["FunctionalRole"];
                     emp.Email = (String)empdata.Rows[0]["Email"];
                     emp.Employee_ID = (String)empdata.Rows[0]["Employee_Id"];
                     emp.Fathername = (String)empdata.Rows[0]["Fathername"];
@@ -188,11 +233,12 @@ namespace MTSINHR.Controllers
                     emp.Lastname = (String)empdata.Rows[0]["Lastname"];
                     emp.Maritalstatus = (Int64)empdata.Rows[0]["maritalid"];
                     emp.Nationality = (Int64)empdata.Rows[0]["nationalityid"];
-                    emp.Pancard = (String)empdata.Rows[0]["Pancard"];
+                    emp.Pancard = empdata.Rows[0]["Pancard"]?.ToString();
                     emp.Spousename = (String)empdata.Rows[0]["Spousename"];
-                    emp.PF_AccountNumber = (String)empdata.Rows[0]["PF_AccountNumber"];
-                    emp.PF_UAN = (Int64)empdata.Rows[0]["PF_UAN"];
-                    emp.ESI_Number = empdata.Rows[0]["ESI_Number"].ToString();
+                    emp.PF_AccountNumber = empdata.Rows[0]["PF_AccountNumber"]?.ToString();
+                    if (empdata.Rows[0]["PF_UAN"].ToString() != "")
+                        emp.PF_UAN = (Int64)empdata.Rows[0]["PF_UAN"];
+                    emp.ESI_Number = empdata.Rows[0]["ESI_Number"]?.ToString();
                     return PartialView("Employee", emp);
 
                 }
@@ -226,7 +272,7 @@ namespace MTSINHR.Controllers
 
                     DbCommand DCMD = DataAccess.ExecuteNonQueryCMD("MTS_AddEmailMasterEntry", TemplateId, SpName);
                     DbCommand cmd = DataAccess.ExecuteNonQueryCMD("MTS_ADDUSER",
-                       emp.Email,
+                        emp.Email,
                         hashPwd,
                         emp.Firstname,
                         emp.Lastname,
@@ -237,8 +283,8 @@ namespace MTSINHR.Controllers
                         false);//Locked
 
                     RetVal = Convert.ToInt16(cmd.Parameters["@RETURN_VALUE"].Value.ToString());
-                    int result = data_emp.Create(emp.Aadhar, emp.Dateofbirth, emp.Dateofjoin, emp.Designation, emp.Email, emp.Employee_ID, emp.Fathername, emp.Firstname, emp.Gender, emp.Lastname, emp.Maritalstatus, emp.Mobile, emp.Nationality, emp.Pancard, emp.Spousename, emp.PF_AccountNumber, emp.PF_UAN, emp.ESI_Number, emp.DepartmentId);
-                    if (result == 1)
+                    int result = data_emp.Create(emp.Aadhar, emp.Dateofbirth, emp.Dateofjoin, emp.Designation, emp.Email, emp.Employee_ID, emp.Fathername, emp.Firstname, emp.Gender, emp.Lastname, emp.Maritalstatus, emp.Mobile, emp.Nationality, emp.Pancard, emp.Spousename, emp.PF_AccountNumber, emp.PF_UAN, emp.ESI_Number, emp.DepartmentId, emp.FunctionalRole);
+                    if (result > 0)
                     {
                         return Content("Success");
                     }
@@ -262,41 +308,74 @@ namespace MTSINHR.Controllers
         [HttpPost]
         public ActionResult EditEmployee(Employee emp)
         {
-
-            MTSHRDataLayer.Employee data_emp = new MTSHRDataLayer.Employee();
-            Int64 result = data_emp.Edit(emp.Aadhar, emp.Dateofbirth, emp.Dateofjoin, emp.Designation, emp.DepartmentId, emp.Email, emp.Employee_ID, emp.Fathername, emp.Firstname, emp.Gender, emp.id, emp.Lastname, emp.Maritalstatus, emp.Mobile, emp.Nationality, emp.Pancard, emp.Spousename, emp.PF_AccountNumber, emp.PF_UAN, emp.ESI_Number);
-
-            if (result >= 1)
+            try
             {
-                TempData["employeeid"] = result;
-                TempData.Keep("employeeid");
-                return Content("EditSuccess");
+                MTSHRDataLayer.Employee data_emp = new MTSHRDataLayer.Employee();
+                data_emp.UpdateEmployeeLeavePolicy(emp.id, emp.DepartmentId);
+                Int64 result = data_emp.Edit(emp.Aadhar, emp.Dateofbirth, emp.Dateofjoin, emp.Designation, emp.DepartmentId, emp.Email, emp.Employee_ID, emp.Fathername, emp.Firstname, emp.Gender, emp.id, emp.Lastname, emp.Maritalstatus, emp.Mobile, emp.Nationality, emp.Pancard, emp.Spousename, emp.PF_AccountNumber, emp.PF_UAN, emp.ESI_Number, emp.FunctionalRole);
+
+                if (result >= 1)
+                {
+                    TempData["employeeid"] = result;
+                    TempData.Keep("employeeid");
+                    return Content("EditSuccess");
+                }
+                else
+                {
+                    return Content("Failed");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return Content("Failed");
+                BaseExceptionHandler.HandleException(ref ex);
             }
+            return Content("Failed");
         }
 
 
         [HttpPost]
         public int ResetEmployeePassword(Employee emp)
         {
-            UserLogonData userLogon = new UserLogonData();
-            Encrypt encrypt = new Encrypt();
-            string password = encrypt.CreateRandomPassword(6);
-            string hashPwd = encrypt.GetSHA1HashData(password);
-            string shapwd = encrypt.GetSHA1HashData(hashPwd + emp.id);
+            int result = 0;
+            try
+            {
+                UserLogonData userLogon = new UserLogonData();
+                Encrypt encrypt = new Encrypt();
+                string password = encrypt.CreateRandomPassword(6);
+                string hashPwd = encrypt.GetSHA1HashData(password);
+                string shapwd = encrypt.GetSHA1HashData(hashPwd + emp.id);
 
-            
-            //Get Paremeters from the Database
-            //Status=1, initial status when user created.
-            string TemplateId = "3";
-            string SpName = emp.Email + "," + emp.Firstname + "," + emp.Lastname + "," + password;
 
-            DbCommand DCMD = DataAccess.ExecuteNonQueryCMD("MTS_AddEmailMasterEntry", TemplateId, SpName);
-            int result = userLogon.ForgotPassword(emp.id, shapwd);    
+                //Get Paremeters from the Database
+                //Status=1, initial status when user created.
+                string TemplateId = "3";
+                string SpName = emp.Email + "," + emp.Firstname + "," + emp.Lastname + "," + password;
+
+                DbCommand DCMD = DataAccess.ExecuteNonQueryCMD("MTS_AddEmailMasterEntry", TemplateId, SpName);
+                result = userLogon.ForgotPassword(emp.id, shapwd);
+            }
+            catch (Exception ex)
+            {
+                BaseExceptionHandler.HandleException(ref ex);
+            }
             return result;
+        }
+        [HttpGet]
+        public ActionResult EditRole(int? RoleId)
+        {
+            MTSHRDataLayer.Employee employee = new MTSHRDataLayer.Employee();
+            Int64 result = new Int64();
+            try
+            {
+                result = employee.EditRole((Int64)TempData["employeeid"], RoleId);
+                TempData.Keep("employeeid");
+            }
+            catch(Exception ex)
+            {
+                ex.Data.Clear();
+                result = -999;
+            }
+            return Content(result.ToString());
         }
     }
 }

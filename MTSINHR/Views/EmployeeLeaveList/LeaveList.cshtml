@@ -1,5 +1,5 @@
-﻿@model LeaveApply.Models.Leave
-
+﻿
+@model MTSINHR.Models.Leave
 @{
     Layout = "~/Views/Shared/Layout_New.cshtml";
 }
@@ -51,10 +51,11 @@
                     <div>
                         <div class="MTS_Table  p-t-10 p-b-10">
                             <div class="form-group">
-                                <select name="" id="statusdropdown" style="width:30%;position:absolute ;left:10%;top:50%" class="form-control valid">
+                                <select name="" id="statusdropdown" style="width:30%;position:relative ;left:10%;top:55px" class="form-control valid">
+                                    <option value="0">Select All</option>
                                     <option value="2">Approved</option>
                                     <option value="1">Pending</option>
-                                    <option value="0">Select All</option>
+
                                 </select>
                             </div>
                             <button type="Submit" id="export" style="display: none" class="display btn btn-primary btn btn-md ">Export</button>
@@ -78,18 +79,19 @@
         loadLeaveList();
 
         $("#getlist").on('click', function () {
-            debugger
             if ($("#listform").valid()) {
                 $("html, body").animate({ scrollTop: $(document).height() }, "slow");
+                var fromDate = new Date($("#FromDate").val());
+                var toDate = new Date($("#ToDate").val());
 
                 $.ajax({
 
                     type: "POST",
                     url: '@Url.Content("~/EmployeeLeaveList/GetAllEmployeeLeaveList")',
                     data: {
-                        'FromDate': $("#FromDate").val(),
-                        'ToDate': $("#ToDate").val(),
-                        'EmployeeName': $("#EmployeeName").val()
+                        FromDate: fromDate.toISOString(),
+                        ToDate: toDate.toISOString(),
+                         EmployeeName: $("#EmployeeName").val()
                     },
                     success: function (data) {
 
@@ -152,7 +154,7 @@
         $(".MTS_Table").hide();
     }
     $('#statusdropdown').on('change', function () {
-        debugger;
+         
         var cmbSelected = $('#statusdropdown').val();
 
         if (cmbSelected == "0") {

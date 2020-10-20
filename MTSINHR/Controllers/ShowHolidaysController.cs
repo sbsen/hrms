@@ -24,5 +24,10 @@ namespace MTSINHR.Controllers
             return Json(JsonConvert.SerializeObject(holidays.Read(str), new IsoDateTimeConverter() { DateTimeFormat = "dd/MMM/yyyy" }), JsonRequestBehavior.AllowGet);
         }
 
+        public JsonResult ReadUpCommingHoliday(string str)
+        {
+            MTSHRDataLayer.Holidays holidays = new MTSHRDataLayer.Holidays();
+            return Json(JsonConvert.SerializeObject(holidays.ReadUpCommingHoliday(str), new IsoDateTimeConverter() { DateTimeFormat = "dd/MMM/yyyy" }), JsonRequestBehavior.AllowGet);
+        }
     }
 }

@@ -11,12 +11,12 @@ namespace MTSHRDataLayer
     {
         public int Create(params object[] parameterValues)
         {
-            return DataAccess.ExecuteNonQuery("CREATE_ASSET_SALE", parameterValues);
+            return Convert.ToInt16( DataAccess.ExecuteScalar("CREATE_ASSET_Sale", parameterValues));
 
         }
         public DataTable Read()
         {
-            return DataAccess.ExecuteDataTable("ASSET_SALE");
+            return DataAccess.ExecuteDataTable("READ_ASSET_SALE");
 
         }
     }

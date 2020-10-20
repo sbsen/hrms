@@ -21,6 +21,10 @@ namespace MTSHRDataLayer
             return Convert.ToInt32(DataAccess.ExecuteScalar("CreateUpdate_BankDetails", parameterValues));
 
         }
-       
+        public DataTable FilterBankdetails(params object[] parameterValues)
+        {
+            return DataAccess.ExecuteDataTable("FILTER_BANKDETAILS", parameterValues);
+        }
+
     }
 }

@@ -1,4 +1,6 @@
-﻿@System.Web.Optimization.Scripts.Render("~/bundles/datatable")
+﻿@model MTSINHR.Models.LeaveType
+
+@System.Web.Optimization.Scripts.Render("~/bundles/datatable")
 <script src="~/Scripts/ValidationFunction.js"></script>
  
    
@@ -20,7 +22,7 @@
             },
             "aoColumns": [
                   { "mData": "id", "sTitle": "ID", "sClass": "text-right", "sWidth": "80px", "bVisible": false }
-                , { "mData": "Leavetype", "sTitle": "Leave Type", "sClass": "text-left" }
+                , { "mData": "LEAVE_TYPE", "sTitle": "Leave Type", "sClass": "text-left" }
                 , { "mData": "Department", "sTitle": "Department", "sClass": "text-left" }
                 , { "mData": "Numberofdays", "sTitle": "Number Of Days", "sClass": "text-left" }
                 , { "mData": "id", "sTitle": "Edit", "sClass": "text-center", "sWidth": "1%", "orderable": false }
@@ -29,52 +31,76 @@
 
                 "aTargets": [4]
                 , "mRender": function (data, type, row) {
-                    return '<span onclick=editLeavetype($(this).closest("tr")) class="fa fa-edit"></span>';
+                    return '<span style="cursor: pointer;" onclick=editLeavetype($(this).closest("tr")) class="fa fa-edit"></span>';
                 }
-            }],
+            }
+            ,
+
+          
+            ],
         });
     });
 
 
     function AddEdit(actionurl, formid) {
-        if (checkForm(formid)) {
+        
+        if (validationCall()) {
             
-            $.ajax({
-                type: 'POST',
-                url: actionurl,
-                data: {
-                    Id: $("#rowId").val(),
-                    Leavetype: $('#Leavetype').val().trim(),
-                    Numberofdays: $('#Numberofdays').val().trim(),
-                     Department: $('#Department').val()
-                },
-                success: function (response) {
-                    
-                    if (parseInt(response.success) == 1) {
-                        $('#leavetype').modal('hide');               
-                        groupTable.ajax.reload();
-                        toastr.success("Successfully Added");
-                    } else {
-                        $('.field-validation-valid').text("Failed To Update, Already Exists");
-                        $('.field-validation-valid').show();
+            if (checkForm(formid)) {
+                
+                $.ajax({
+                    type: 'POST',
+                    url: actionurl,
+                    data: {
+                        Id: $("#rowId").val(),
+                        Leavetype: $('#Leavetype').val().trim(),
+                        Numberofdays: $('#Numberofdays').val().trim(),
+                        Department: $('#Department').val(),
+                        HolidayAsLeave: $('#leaveCountYes').is(':checked') ? 1 : 0
+                    },
+                    success: function (response) {
+
+                        if (parseInt(response.success) == 1) {
+                            $('#leavetype').modal('hide');
+                            groupTable.ajax.reload();
+                            $("#save").val() == 'Save' ? toastr.success("Successfully Saved") : toastr.success("Successfully Updated");
+                        } else {
+                           // $('.field-validation-valid').text("Failed To Update, Already Exists");
+                            //$('.field-validation-valid').show();
+                            toastr.warning("Failed To Update, Already Exists");
+                        }
+                    },
+                    error: function (a, b, c) {
                     }
-                },
-                error: function (a, b, c) {
-                }
-            });
+                });
+            }
+            else {
+                $("#ErrorLeavetype").text("Please use character only");
+                $("#ErrorNumberofdays").text("Please use Numbers only");
+            }
+
         }
+        
     };
 
     function editLeavetype(curTr) {
-        
         var data = groupTable.row(curTr).data();
         $("#url").val('@Url.Content("~/LeaveType/Edit")');
         $('.field-validation-valid').text("");      
-        $("#rowId").val(data.Id);        
-        $("#editleavetype").val(data.Leavetype);     
-        $("#editnumberofdays").val(data.Numberofdays);      
-        $("#editdepartment").val(data.Department);
+        $("#rowId").val(data.id);        
+        $("#Leavetype").val(data.Leavetype);
+        $("#Numberofdays").val(data.Numberofdays);
+        $("#Department").val(data.DepartmentId);
+        if (data.HolidayAsLeave == true) {
+            $('#leaveCountYes').prop("checked", true);
+            $('#leaveCountNo').prop("checked", false);
+        }
+        else if (data.HolidayAsLeave == false) {
+            $('#leaveCountYes').prop("checked", false);
+            $('#leaveCountNo').prop("checked", true);
+        }
         $("#actiontitle").text("Edit Leave Type");
+        $("#save").text('Update');
         $("#leavetype").modal('show');
     };
 
@@ -82,14 +108,44 @@
         
         $("#url").val('@Url.Content("~/LeaveType/Add")');
         $('.field-validation-valid').text("");
-        $("#editleavetype").val("");
-        $("#editnumberofdays").val("");
-        $("#editdepartment").val("");
+        $("#Leavetype").val("");
+        $("#Numberofdays").val("");
+        $("#Department").val("");
+        $('#leaveCountYes').prop("checked", false);
+        $('#leaveCountNo').prop("checked", false);
         $("#actiontitle").text("Add Leave Type");
+        $("#save").text('Save');
         $("#leavetype").modal('show');
     };
     
-  
+    function validationCall() {
+        
+        $('.field-validation-valid').text("");
+        $('.field-validation-valid').show();
+        if ($("#Leavetype").val().trim() == null || $("#Leavetype").val().trim() == "") {
+
+            $("#ErrorLeavetype").text("This field is requried");
+        }
+
+        if ($("#Department").val().trim() == "" || $("#Department").val().trim() == null) {
+            $("#ErrorDepartment").text("This field is requried");
+        }
+
+        if ($("#Numberofdays").val().trim() == "" || $("#Numberofdays").val().trim() == null) {
+            $("#ErrorNumberofdays").text("This field is requried");
+        }
+
+        if (!($('#leaveCountYes').is(':checked')) && !($('#leaveCountNo').is(':checked'))) {
+            $("#ErrorHolidayAsLeave").text("This field is required");
+        }
+       
+        if ($(".field-validation-valid").text() == '') {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 
 </script>
 
@@ -132,13 +188,15 @@
                     <input type="hidden" id="rowId" value="">
                     <input type="hidden" class="form-control" id="url" value="">
                     <div class="form-group">
-                        <label>Leavetype</label>
-                        <input type="text" class="form-control" name="Leavetype" id="Leavetype" data-val-regex-pattern="^[a-zA-Z ]+$" />
+                        <label>Leave Type</label>
+                        @*<input type="text" class="form-control" name="Leavetype" id="Leavetype" data-val-regex-pattern="^[a-zA-Z ]+$" />*@
+                        @Html.DropDownListFor(model => model.Leavetype, new System.Web.Mvc.SelectList(ViewBag.leavetype, "value", "Text"), new { @class = "form-control", @id = "Leavetype", placeholder = "--Select Leave Type--" })
+                        <span class="field-validation-valid" id="ErrorLeavetype" style="color: red; font: bold; display: none"></span>
                     </div> 
                     <div class="form-group">
                         <label>Department</label>
-                        <select id="Department"> 
-                            <span class="field-validation-valid" style="color: red; font: bold; display: none"></span>
+                        <select id="Department" class="form-control"> 
+                            
                             @{
                                 foreach (var item in ViewBag.Department)
                                 {
@@ -151,13 +209,28 @@
                                 }
                             }
                         </select>
+                        <span class="field-validation-valid" id="ErrorDepartment" style="color: red; font: bold; display: none"></span>
                     </div>
                         <div class="form-group">
                             <label>Number Of Days</label>
-                            <input type="text" class="form-control" name="Numberofdays" id="Numberofdays" />
-                            <span class="field-validation-valid" style="color: red; font: bold; display: none"></span>
+                            <input type="text" class="form-control" name="Numberofdays" id="Numberofdays" data-val-regex-pattern="^[0-9]+$" />
+                            <span class="field-validation-valid" id="ErrorNumberofdays" style="color: red; font: bold; display: none"></span>
                         </div>
+                    
 </form>
+                <div class="form-group">
+                    <label>Holidays between Leave period</label>
+                    <div class="row">
+                        <div class="col-lg-1"></div>
+                        <div class="col-lg-5">
+                            <input type="radio" name="HolidayAsLeave" id="leaveCountYes" value="1"> Count as Leave
+                        </div>
+                        <div class="col-lg-5">
+                            <input type="radio" name="HolidayAsLeave" id="leaveCountNo" value="0"> Don’t Count as leave
+                        </div>
+                    </div>
+                    <span class="field-validation-valid" id="ErrorHolidayAsLeave" style="color:red;font: bold; display: none"></span>
+                </div>
             </div>
             <div class="modal-footer">
                 <div class="dataurl">

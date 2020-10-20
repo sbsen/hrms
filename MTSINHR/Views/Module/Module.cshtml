@@ -1,0 +1,521 @@
+﻿
+@{
+    ViewBag.Title = "Module";
+    Layout = "~/Views/Shared/Layout_New.cshtml";
+}
+@System.Web.Optimization.Styles.Render("~/bundles/bootstrapdt")
+
+<style>
+    .nav-link.active {
+        background-color: lightsteelblue !important;
+    
+    }
+    .tab-pane {
+    margin-bottom:30px;
+    align-content:stretch;
+    
+    
+    }
+</style>
+
+<script>
+    var moduleDetailsdata;
+    var ApprovalDetailsTable;
+    var ApprovalViewDetailsTable;
+    var ApprovedTable;
+    var RejectedDetailsTable;
+    $(document).ready(function () {
+        
+
+        $('.viewtab_nav_active').on('click', function () {
+            $('.view_detail_tab').removeClass('active');
+            //     $(this).attr('href')
+            $($(this).attr('href')).addClass('active');
+        });
+
+        functionCall();
+
+    });
+
+    //function ViewRemarks(){
+        
+    //    $('[data-toggle="popover"]').popover({
+    //        trigger: 'hover'
+    //    })
+    //}
+
+    function functionCall() {
+        
+        $.ajax({
+            type: "POST",
+            url: '@Url.Content("~/Module/ReadApprovers")',
+            //async:false,
+            success: function (data) {
+                
+                approverFlag = data.success;
+                if (data.success == (@HRConstants.UserFlagforApprovalConstants.Initiator) ) {
+                    $("#ActivityDetailsTablink").hide();
+                    $("#ApprovedTablink").hide();
+                    $("#ActivityDetailsTab").hide();
+                    $("#ApprovedTab").hide();
+                    $("#RejectedDetailsTablink").addClass('active'); 
+                    $("#RejectedDetailsTab").addClass('active');
+                    $("#RejectedDetailsTablink").hide();
+                    $(".xc-border-tab").hide();
+                    $('#rejectHeader').show();
+                    LoadRejectedTable();
+                }
+                else if (data.success == (@HRConstants.UserFlagforApprovalConstants.Approver) || data.success == (@HRConstants.UserFlagforApprovalConstants.Both) ) {
+                    $('#rejectHeader').hide();
+                    LoadTable();
+                    LoadApprovedTable();
+                    LoadRejectedTable();
+                }
+            }
+        });
+
+    }
+
+    function LoadTable() {
+        
+
+        if ($.fn.DataTable.isDataTable('#ReadApprovalDetails')) {
+            $('#ReadApprovalDetails').dataTable().fnDestroy();
+        }
+
+        ApprovalDetailsTable = $("#ReadApprovalDetails").DataTable({
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "iDisplayLength": 5,
+            "bFilter": true,
+            "bProcessing": true,
+            "ajax": {
+                type: "POST"
+                , data: { TableFlag: 1 }
+                , url: '@Url.Content("~/Module/ReadApprovalDetails")'
+                //, async: false
+                , dataSrc: function (data) {
+                    
+                    moduleDetailsdata = data;
+                    return JSON.parse(data.success);
+                }
+            },
+            "aoColumns": [
+                { "mData": "ID", "sTitle": "ID", "bVisible": false }    //0
+                , { "mData": "MODULE_ID", "sTitle": "Module id", "sClass": "text-left", "bVisible": false }  //1
+                , { "mData": "MODULE", "sTitle": "Description", "sClass": "text-left"  }  //2
+                , { "mData": "ACTIVITY_ID", "sTitle": "Activity id", "sClass": "text-right", "bVisible": false  }    //3
+                , { "mData": "FROM_WHOM", "sTitle": "From", "sClass": "text-left" }     //4
+                , { "mData": "STATUS", "sTitle": "Status", "sClass": "text-center" }    //5
+                , { "mData": "TO_WHOM", "sTitle": "To", "sClass": "text-center", "bVisible": false }     //6
+                , { "mData": "DATE", "sTitle": "Date", "sType": "date", "sClass": "text-left" }     //7
+                , { "mData": "PARAMETER_VALUE", "sTitle": "Parameter(s)", "sClass": "text-center", "bVisible": false }   //8
+                , { "mData": "PARAMETERS", "sTitle": "Parameter(s)", "sClass": "text-center", "bVisible": false  }   //9
+                , { "mData": "REMARKS", "sTitle": "Remarks", "sClass": "text-center" }   //10
+                , { "mData": "ID", "sTitle": "History", "sClass": "text-center", "sWidth":"2%" }     //11
+                , { "mData": "ID", "sTitle": "View", "sClass": "text-center", "sWidth":"2%" }   //12
+                , { "mData": "EmployeeName", "bVisible": false}   //13
+                , { "mData": "MonthYear", "bVisible": false}   //14
+            ],
+            "aoColumnDefs": [
+                {
+                    "aTargets":[2]
+                        ,"mRender":function (data,type,row){
+                            if(row.EmployeeName == 'No Data'){
+                                return data + ' - ' + row.MonthYear;
+                            }
+                            else{
+                                return data + ' - ' + row.EmployeeName + ' (' + row.MonthYear + ')';
+                            }
+                        }
+                }
+                , {
+                    "aTargets": [5]
+                    , "mRender": function (data, type, row) {
+                        // result;
+                        var result = (data == 0) ? 'Initiated' : (data == 1) ? 'Forwarded' : (data == 2) ? 'Approved' : (data == 3) ? 'Rejected' : 'N/A';
+                        return result;
+                    }
+                }
+                , {
+                    "aTargets":[10]
+                        ,"mRender":function (data,type,row){
+                            if(data != null && data != undefined && data != ''){
+                                //return '<span class="fa fa-info-circle" data-toggle="popover" data-placement="left" data-html="true" data-content="' + data + '" data-original-title="" title="" ></span>';
+                                return data;
+                            }
+                            else{
+                                return '-';
+                            }
+                        }
+                }
+                 , {
+                     "aTargets": [11]
+                    , "mRender": function (data, type, row) {
+                        return '<span style="cursor: pointer !important;" onclick=getModuleParameters(($(this).closest("tr")),1) class="fa fa-history" ></span>';
+                    }
+                 }
+                , {
+                    "aTargets": [12]
+                    , "mRender": function (data, type, row) {
+                        return '<span style="cursor: pointer !important;" id="Action" onclick=viewModulePage(($(this).closest("tr")),1) class="fa fa-bars" ></span>';
+
+                    }
+                }
+            ]
+        });
+    }
+
+    function LoadApprovedTable() {
+
+        if ($.fn.DataTable.isDataTable('#ReadApproved')) {
+            $('#ReadApproved').dataTable().fnDestroy();
+        }
+
+        ApprovedTable = $("#ReadApproved").DataTable({
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "iDisplayLength": 5,
+            "bFilter": true,
+            "bProcessing": true,
+            "ajax": {
+                type: "POST"
+                , data: { TableFlag : 2 }
+                , url: '@Url.Content("~/Module/ReadApprovalDetails")'
+                //, async: false
+                , dataSrc: function (data) {
+                    
+                    return JSON.parse(data.success);
+                }
+            },
+            "aoColumns": [
+                { "mData": "ID", "sTitle": "ID", "bVisible": false }    //0
+                , { "mData": "MODULE_ID", "sTitle": "Module id", "sClass": "text-left", "bVisible": false }  //1
+                , { "mData": "MODULE", "sTitle": "Description", "sClass": "text-left" }  //2
+                , { "mData": "ACTIVITY_ID", "sTitle": "Activity id", "sClass": "text-right", "bVisible": false }    //3
+                , { "mData": "FROM_WHOM", "sTitle": "From", "sClass": "text-left" }     //4
+                , { "mData": "STATUS", "sTitle": "Status", "sClass": "text-center", "bVisible": false }    //5
+                , { "mData": "TO_WHOM", "sTitle": "To", "sClass": "text-center", "bVisible": false }     //6
+                , { "mData": "DATE", "sTitle": "Date", "sType": "date", "sClass": "text-left" }     //7
+                , { "mData": "PARAMETER_VALUE", "sTitle": "Parameter(s)", "sClass": "text-center", "bVisible": false }   //8
+                , { "mData": "PARAMETERS", "sTitle": "Parameter(s)", "sClass": "text-center", "bVisible": false }   //9
+                , { "mData": "REMARKS", "sTitle": "Remarks", "sClass": "text-center" }   //10
+                , { "mData": "ID", "sTitle": "History", "sClass": "text-center", "sWidth":"2%" }     //11
+                , { "mData": "ID", "sTitle": "View", "sClass": "text-center", "sWidth":"2%" }     //12
+                , { "mData": "EmployeeName", "bVisible": false}   //13
+                , { "mData": "MonthYear", "bVisible": false}   //14
+            ],
+            "aoColumnDefs": [
+                {
+                    "aTargets":[2]
+                        ,"mRender":function (data,type,row){
+                            if(row.EmployeeName == 'No Data'){
+                                return data + ' - ' + row.MonthYear;
+                            }
+                            else{
+                                return data + ' - ' + row.EmployeeName + ' (' + row.MonthYear + ')';
+                            }
+                        }
+                }
+                , {
+                    "aTargets": [5]
+                    , "mRender": function (data, type, row) {
+                        // result;
+                        var result = (data == 0) ? 'Initiated' : (data == 1) ? 'Forwarded' : (data == 2) ? 'Approved' : (data == 3) ? 'Rejected' : 'N/A';
+                        return result;
+                    }
+                }
+                , {
+                    "aTargets":[10]
+                    ,"mRender":function (data,type,row){
+                        if(data != null && data != undefined && data != ''){
+                            //return '<span class="fa fa-info-circle" data-toggle="popover" data-placement="left" data-html="true" data-content="' + data + '" data-original-title="" title="" ></span>';
+                            return data;
+                        }
+                        else{
+                            return '-';
+                        }
+                    }
+                }
+                 , {
+                     "aTargets": [11]
+                    , "mRender": function (data, type, row) {
+                        return '<span style="cursor: pointer !important;" id="ActionDetails" onclick=getModuleParameters(($(this).closest("tr")),2) class="fa fa-history" ></span>';
+                        //'<span style="cursor: pointer !important;" onclick=editMessages($(this).closest("tr")) class="fa fa-edit"></span>';
+                    }
+                 }
+                 , {
+                     "aTargets": [12]
+                    , "mRender": function (data, type, row) {
+                        return '<span style="cursor: pointer !important;" onclick=viewModulePage(($(this).closest("tr")),2) class="fa fa-bars" ></span>';
+
+                    }
+                 }
+            ]
+        });
+
+    }
+
+    function LoadRejectedTable(){
+
+        if ($.fn.DataTable.isDataTable('#ReadRejectedDetails')) {
+            $('#ReadRejectedDetails').dataTable().fnDestroy();
+        }
+
+        RejectedDetailsTable = $("#ReadRejectedDetails").DataTable({
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "iDisplayLength": 5,
+            "bFilter": true,
+            "bProcessing": true,
+            "ajax": {
+                type: "POST"
+                , url: '@Url.Content("~/Module/ReadRejectedDetails")'
+                //, async: false
+                , dataSrc: function (data) {
+                    
+                    return JSON.parse(data.success);
+                }
+            },
+            "aoColumns": [
+                { "mData": "ID", "sTitle": "ID", "bVisible": false }    //0
+                , { "mData": "MODULE_ID", "sTitle": "Module id", "sClass": "text-left", "bVisible": false }  //1
+                , { "mData": "MODULE", "sTitle": "Description", "sClass": "text-left" }  //2
+                , { "mData": "ACTIVITY_ID", "sTitle": "Activity id", "sClass": "text-right", "bVisible": false }    //3
+                , { "mData": "FROM_WHOM", "sTitle": "Rejected by", "sClass": "text-left" }     //4
+                , { "mData": "STATUS", "sTitle": "Status", "sClass": "text-center", "bVisible": false }    //5
+                , { "mData": "DATE", "sTitle": "Date", "sType": "date", "sClass": "text-left" }     //6
+                , { "mData": "PARAMETER_VALUE", "sTitle": "Parameter(s)", "sClass": "text-center", "bVisible": false }   //7
+                , { "mData": "PARAMETERS", "sTitle": "Parameter(s)", "sClass": "text-center", "bVisible": false }   //8
+                , { "mData": "REMARKS", "sTitle": "Remarks", "sClass": "text-center" }   //9
+                , { "mData": "ID", "sTitle": "History", "sClass": "text-center", "sWidth":"2%" }     //10
+                , { "mData": "ID", "sTitle": "View", "sClass": "text-center", "sWidth":"2%" }     //11
+            ],
+            "aoColumnDefs": [
+                {
+                    "aTargets":[2]
+                        ,"mRender":function (data,type,row){
+                            if(row.EmployeeName == 'No Data'){
+                                return data + ' - ' + row.MonthYear;
+                            }
+                            else{
+                                return data + ' - ' + row.EmployeeName + ' (' + row.MonthYear + ')';
+                            }
+                        }
+                }
+                , {
+                    "aTargets": [5]
+                    , "mRender": function (data, type, row) {
+                        // result;
+                        var result = (data == 0) ? 'Initiated' : (data == 1) ? 'Forwarded' : (data == 2) ? 'Approved' : (data == 3) ? 'Rejected' : 'N/A';
+                        return result;
+                    }
+                }
+                , {
+                    "aTargets":[9]
+                    ,"mRender":function (data,type,row){
+                        if(data != null && data != undefined && data != ''){
+                            //return '<span class="fa fa-info-circle" data-toggle="popover" data-placement="left" data-html="true" data-content="' + data + '" data-original-title="" title="" ></span>';
+                            return data;
+                        }
+                        else{
+                            return '-';
+                        }
+                    }
+                }
+                 , {
+                     "aTargets": [10]
+                    , "mRender": function (data, type, row) {
+                        return '<span style="cursor: pointer !important;" onclick=getModuleParameters(($(this).closest("tr")),3) class="fa fa-history" ></span>';
+                        //'<span style="cursor: pointer !important;" onclick=editMessages($(this).closest("tr")) class="fa fa-edit"></span>';
+                    }
+                 }
+                 , {
+                     "aTargets": [11]
+                    , "mRender": function (data, type, row) {
+                        return '<span style="cursor: pointer !important;" onclick=viewModulePage(($(this).closest("tr")),3) class="fa fa-bars" ></span>';
+
+                    }
+                 }
+            ]
+        });
+    }
+
+    function getModuleParameters(curTr,tableFlag) {
+        
+        var Tempdata;
+
+        if (tableFlag != null && tableFlag != '') {
+
+            Tempdata = ( tableFlag == 1 ) ? ApprovalDetailsTable.row(curTr).data() : ( tableFlag == 2 ) ? ApprovedTable.row(curTr).data() : ( tableFlag == 3 ) ? RejectedDetailsTable.row(curTr).data() : 0;
+            if(Tempdata.EmployeeName == 'No Data'){
+                $('#description').text(Tempdata.MODULE + ' - ' + Tempdata.MonthYear);
+            }
+            else{
+                $('#description').text(Tempdata.MODULE + ' - ' + Tempdata.EmployeeName + ' (' + Tempdata.MonthYear + ')');
+            }
+
+            if ($.fn.DataTable.isDataTable('#ViewApprovalDetails')) {
+                $('#ViewApprovalDetails').dataTable().fnDestroy();
+            }
+
+            ApprovalViewDetailsTable = $("#ViewApprovalDetails").DataTable({
+                "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+                "iDisplayLength": 5,
+                "bFilter": true,
+                "bProcessing": true,
+                "ajax": {
+                    type: "POST"
+                    , data: { ActivityID: Tempdata.ACTIVITY_ID }
+                    , url: '@Url.Content("~/Module/ReadApprovalActions")'
+                    //, async: false
+                    , dataSrc: function (data) {
+                        return JSON.parse(data.success);
+                    }
+                },
+                "aoColumns": [
+                    { "mData": "ID", "sTitle": "ID", "bVisible": false }    //0
+                    , { "mData": "MODULE", "sTitle": "Description", "sClass": "text-left", "bVisible": false }  //1
+                    , { "mData": "ACTIVITY_ID", "sTitle": "Activity id", "sClass": "text-right", "bVisible": false  }    //2
+                    , { "mData": "FROM_WHOM", "sTitle": "From", "sClass": "text-left" }     //3
+                    , { "mData": "STATUS", "sTitle": "Status", "sClass": "text-center" }    //4
+                    , { "mData": "TO_WHOM", "sTitle": "To", "sClass": "text-left" }     //5
+                    , { "mData": "DATE", "sTitle": "Date", "sType": "date", "sClass": "text-left" }     //6
+                    , { "mData": "PARAMETER_VALUE", "sTitle": "Parameter(s)", "sClass": "text-center", "bVisible": false }   //7
+                    , { "mData": "PARAMETERS", "sTitle": "Parameter(s)", "sClass": "text-center", "bVisible": false  }   //8
+                    , { "mData": "REMARKS", "sTitle": "Remarks", "sClass": "text-center" }   //9
+                ],
+                "aoColumnDefs": [
+                    {
+                        "aTargets": [4]
+                        , "mRender": function (data, type, row) {
+                            // result;
+                            var result = (data == 0) ? 'Initiated' : (data == 1) ? 'Forwarded' : (data == 2) ? 'Approved' : (data == 3) ? 'Rejected' : 'N/A';
+                            return result;
+                        }
+                    }
+                    , {
+                        "aTargets":[9]
+                        ,"mRender":function (data,type,row){
+                            if(data != null && data != undefined && data != ''){
+                                //return '<span class="fa fa-info-circle" data-toggle="popover" data-placement="left" data-html="true" data-content="' + data + '" data-original-title="" title="" ></span>';
+                                return data;
+                            }
+                            else{
+                                return '';
+                            }
+                        }
+                    }
+                ]
+            });
+
+            $("#modViewApprovalDetails").modal('show');
+        }
+
+    }
+
+   
+
+    function viewModulePage(curTr, tableFlag) {                 // For this function tableFlag to view repective page from inbox and rejected table
+        
+        var Urlstring;                                          // 1 - Inbox Table  ,    2 - Approved Table  ,
+                                                                // 3 - Rejected Table   
+        var data = tableFlag == 1 ? ApprovalDetailsTable.row(curTr).data() : tableFlag == 2 ? ApprovedTable.row(curTr).data() : tableFlag == 3 ? RejectedDetailsTable.row(curTr).data() : null;
+        $.ajax({
+            type: 'POST'
+            , data: { ActivityID: data.ACTIVITY_ID, ModuleID: data.MODULE_ID }
+            //, async: false
+            , url: '@Url.Content("~/Module/ViewModulePage")'
+            , success: function (data) {
+                Urlstring = data.Urlstring;
+                window.location.replace(Urlstring + data.PARAMETERS_VALUE + '&Description=' + data.Description);
+            }
+        });
+
+        @*window.location.href = '@Url.Content(datatab[0].PAGE_URL)' + datatab[0].PARAMETERS_VALUE;*@
+        //window.location.pathname = datatab[0].PAGE_URL;
+        //window.location.href = '/Payroll/Payroll';
+
+    }
+
+
+</script>
+
+<div role="tabpanel">
+    <div class="row">
+        <div class="xc-border-tab" style="width:100%">
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item"><a href="#ActivityDetailsTab" class="viewtab_nav_active active" id="ActivityDetailsTablink" aria-controls="ActivityDetailsTab" data-toggle="tab">Inbox</a></li>
+                <li class="nav-item"><a href="#ApprovedTab" class="viewtab_nav_active" id="ApprovedTablink" aria-controls="ApprovedTab" data-toggle="tab">Approved</a></li>
+                <li class="nav-item"><a href="#RejectedDetailsTab" class="viewtab_nav_active" id="RejectedDetailsTablink" aria-controls="RejectedDetailsTab" data-toggle="tab">Rejected</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="tab-content m-t-15 m-b-15">
+        @*      Activity details tab        *@
+        <div role="tabpanel" class="tab-pane active view_detail_tab" id="ActivityDetailsTab">
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="row m-t-15">
+                        <div class="MTS_Table">
+                            <table id="ReadApprovalDetails" class="table table-bordered table-hover table-responsive table-sm bg-th-blue" style="width:100%"></table>
+                        </div>
+                     </div>
+                </div>
+            </div>
+
+        </div>
+        @*      Approved tab        *@
+        <div role="tabpanel" class="tab-pane view_detail_tab" id="ApprovedTab">
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="row m-t-15">
+                        <div class="MTS_Table">
+                            <table id="ReadApproved" class="table table-bordered table-hover table-responsive table-sm bg-th-blue" style="width:100%"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        @*      Rejected tab        *@
+        <div role="tabpanel" class="tab-pane view_detail_tab" id="RejectedDetailsTab">
+
+            <div class="card">
+                <div id="rejectHeader" class="card-header">
+                    Rejected
+                </div>
+                <div class="card-body">
+                    <div class="row m-t-15">
+                        <div class="MTS_Table">
+                            <table id="ReadRejectedDetails" class="table table-bordered table-hover table-responsive table-sm bg-th-blue" style="width:100%"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="modViewApprovalDetails" style="width:inherit" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="description" class="modal-title"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="row m-t-15">
+                    <div class="MTS_Table">
+                        <table id="ViewApprovalDetails" class="table table-bordered table-hover table-responsive table-sm bg-th-blue" style="width:100%"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

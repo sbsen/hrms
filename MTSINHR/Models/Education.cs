@@ -18,13 +18,13 @@ namespace MTSINHR.Models
         public string SchoolName { get; set; }
 
         [Required]
-        public DateTime SchoolPassedoutyear { get; set; }
+        public DateTime? SchoolPassedoutyear { get; set; }
 
         [Required]
         public string CollegeName { get; set; }
 
         [Required]
-        public DateTime CollegePassedoutyear { get; set; }
+        public DateTime? CollegePassedoutyear { get; set; }
 
         [Required]
         public string Qualifications { get; set; }

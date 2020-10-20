@@ -71,7 +71,7 @@
                 type: 'POST',
                 url: '@Url.Content("~/Policies/ImageFiles?")' + "docname=" + docname,
             autoUpload: false,
-            acceptFileTypes: /(\.|\/)(pdf)$/i,
+            acceptFileTypes: /(\.|\/)(jpg|jpeg|png|pdf)$/i,
             maxFileSize: 2097152,
             previewMaxWidth: 100,
             previewMaxHeight: 100,
@@ -117,7 +117,7 @@
         }).off('fileuploaddone').on('fileuploaddone', function (e, data) {
 
 
-            bootbox.alert("Document succefully uploaded");
+            bootbox.alert("Document successfully uploaded");
 
             $('#progress .progress-bar').css('width', '0%');
             $("#files").empty();
@@ -138,19 +138,19 @@
 
 var returncontent;
 function ShowDocuments(returncontent) {
-    debugger;
+     
     if ($("#fileinfo").valid()) {
         $.ajax({
             type: "GET",
-            url: '@Url.Content("~/EmployeeDocuments/GetDocuments")',
+            url: '@Url.Content("~/Policies/GetDocuments")',
                 data:
                     {
-                        Documents: $("#Documents").val(),
+                        Documents: $("#PolicyName").val(),
                         functiontype: returncontent
                     },
                 success: function (data) {
                     if (data == "Success") {
-                        window.location.href = '@Url.Action("ViewDocuments", "EmployeeDocuments")';
+                        window.location.href = '@Url.Action("ViewDocuments", "Policies")';
                     }
                     else {
                         $(".errorspan").show();
@@ -186,12 +186,12 @@ function ShowDocuments(returncontent) {
                         <span class="btn btn-success fileinput-button ">
                             <i class="fa fa-plus"></i>
                             <span>Select File</span>
-                            <input type="file" id="documentfile" name="files[]" value="pick" accept=".pdf" />
+                            <input type="file" id="documentfile" name="files[]" value="pick" accept=".jpg,.jpeg,.png,.pdf" />
                         </span>
                     </div>
                 </form>
             </div>
-
+            <span class="text-right" style="color:red">Upload File Type - .jpg,.jpeg,.png,.pdf</span>
             <div id="progress" class="progress">
                 <div class="progress-bar progress-bar-success"></div>
             </div>

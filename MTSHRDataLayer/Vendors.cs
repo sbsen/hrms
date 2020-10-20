@@ -16,5 +16,9 @@ namespace MTSHRDataLayer
             return Convert.ToInt32(DataAccess.ExecuteScalar("CREATE_VENDORDETAILS", parameterValues));
         }
 
+        public DataSet ReadVendorName()
+        {
+            return DataAccess.ExecuteDataSet("READ_VENDOR_NAME");
+        }
     }
 }

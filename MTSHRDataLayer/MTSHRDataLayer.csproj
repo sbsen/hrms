@@ -74,12 +74,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Address.cs" />
+    <Compile Include="Appraisal.cs" />
     <Compile Include="Asset.cs" />
+    <Compile Include="AssetDashboard.cs" />
     <Compile Include="AssetDetails.cs" />
     <Compile Include="AssetInsurance.cs" />
     <Compile Include="AssetMaintenanceDetails.cs" />
+    <Compile Include="AssetReport.cs" />
+    <Compile Include="AssetReportView.cs" />
     <Compile Include="AssetSale.cs" />
     <Compile Include="AssetsMaster.cs" />
+    <Compile Include="AssignAsset.cs" />
+    <Compile Include="Attendancelog.cs" />
     <Compile Include="BankDetails.cs" />
     <Compile Include="BloodGroup.cs" />
     <Compile Include="Department.cs" />
@@ -89,11 +95,13 @@
     <Compile Include="EmployeeContact.cs" />
     <Compile Include="EmployeeDetails.cs" />
     <Compile Include="EmployeeDocuments.cs" />
+    <Compile Include="EmployeeEntry.cs" />
     <Compile Include="EmployeeImage.cs" />
     <Compile Include="EmployeeLeave.cs" />
     <Compile Include="GovernmentID.cs" />
     <Compile Include="Holidays.cs" />
     <Compile Include="ImportExcel.cs" />
+    <Compile Include="ITDeclaration.cs" />
     <Compile Include="Language.cs" />
     <Compile Include="Leave.cs" />
     <Compile Include="LeavePending_Approve.cs" />
@@ -101,8 +109,11 @@
     <Compile Include="Location.cs" />
     <Compile Include="MaritalStatus.cs" />
     <Compile Include="Messages.cs" />
+    <Compile Include="Module.cs" />
     <Compile Include="Nationality.cs" />
+    <Compile Include="Payroll.cs" />
     <Compile Include="PaySlip.cs" />
+    <Compile Include="PerformanceAppraisal.cs" />
     <Compile Include="Policies.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Qualification.cs" />

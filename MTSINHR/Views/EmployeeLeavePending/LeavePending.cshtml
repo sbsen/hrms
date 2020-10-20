@@ -1,10 +1,11 @@
-﻿@model LeaveApply.Models.Leave
+﻿
+@model MTSINHR.Models.Leave
 
 @{
     ViewBag.Title = "LeavePending";
 }
 
-
+<script src="~/Scripts/DataTables/datatables.sorting.natural.js"></script>
 @System.Web.Optimization.Styles.Render("~/bundles/fontawesome")
 @System.Web.Optimization.Styles.Render("~/bundles/bootstrapdt")
 @System.Web.Optimization.Scripts.Render("~/bundles/datatable")
@@ -42,8 +43,8 @@
             },
             "aoColumns": [{ "mData": "Empid", "sTitle": "Employee ID" },
                             { "mData": "EmployeeName", "sTitle": "Employee Name" },
-                            { "mData": "FromDate", "sTitle": "From Date" },
-                            { "mData": "ToDate", "sTitle": "To Date" },
+                            { "mData": "FromDate",'sType':'date', "sTitle": "From Date" },
+                            { "mData": "ToDate", 'sType': 'date', "sTitle": "To Date" },
                             { "mData": "NumberOfDays", "sTitle": "Number of Days" },
                             { "mData": "LeaveType", "sTitle": "Leave Type" },
                             { "mData": "Reason", "sTitle": "Reason" },
@@ -82,7 +83,6 @@
 
 
     function approveleave(curTr) {
-
         var data = leavelisttable.row(curTr).data();
         var Fromdate = new Date(data.FromDate);
         var Todate = new Date(data.ToDate);
@@ -94,7 +94,7 @@
 
         bootbox.confirm({
             title: "Leave Approval",
-            message: "Are you sure Want to approve this leave?",
+            message: "Are you sure Want to approve this leave ?",
             buttons: {
                 cancel: {
                     label: '<i class="fa fa-times"></i> Cancel',
@@ -114,6 +114,7 @@
 
             }
         });
+        $(".bootbox-close-button").addClass("bootbox-customheaderalign");
 
         function ajaxfunction(approval) {
             $.ajax({
@@ -121,22 +122,25 @@
                 type: "POST",
                 url: '@Url.Content("~/EmployeeLeavePending/Approve_Leave")',
                 data: {
-                    id: data.primaryid,
-                    Approval: approval,
-                    Employee_Id: data.Employee_Id,
-                    FromDate: data.FromDate,
-                    ToDate: data.ToDate,
-                    LeaveFromSession: LeaveFromSession,
-                    LeaveToSession: LeaveToSession,
-                    LeaveType: data.id,
-                    Reason: data.Reason,
-                    NumberOfDays: data.NumberOfDays,
-
+                    le: {
+                        id: data.primaryid,
+                        Approval: approval,
+                        Employee_Id: data.Employee_Id,
+                        //FromDate: Fromdate.getDate().toString() + '/' + (Fromdate.getMonth() + 1).toString() + '/' + Fromdate.getFullYear().toString(),
+                        //ToDate: Todate.getDate().toString() + '/' + (Todate.getMonth() + 1).toString() + '/' + Todate.getFullYear().toString(),
+                        FromDate: Fromdate.toISOString(),
+                        ToDate: Todate.toISOString(),
+                        LeaveFromSession: LeaveFromSession,
+                        LeaveToSession: LeaveToSession,
+                        LeaveType: data.id,
+                        Reason: data.Reason,
+                        NumberOfDays: data.NumberOfDays,
+                        isLOP:data.isLOP,
+                    }
                 },
 
                 success: function (response) {
-                    
-                    if (response == 1) {
+                    if (response == 1 || response >= 1) {
                         bootbox.hideAll;
                         toastr.success("Leave Approved Successfully");
                         leavelisttable.ajax.reload();
@@ -154,10 +158,12 @@
 <script>
     function rejectleave(curTr) {
         var data = leavelisttable.row(curTr).data();
+        var Fromdate = new Date(data.FromDate);
+        var Todate = new Date(data.ToDate);
         var approval;
         bootbox.confirm({
             title: "Leave Reject",
-            message: "Are you sure Want to reject this leave. ?",
+            message: "Are you sure Want to reject this leave ?",
             buttons: {
                 cancel: {
                     label: '<i class="fa fa-times"></i> Cancel',
@@ -182,8 +188,8 @@
                         data: {
                             Approval: approval,
                             Employee_Id: data.Employee_Id,
-                            FromDate: data.FromDate,
-                            ToDate: data.ToDate,
+                            FromDate: Fromdate.toISOString(),
+                            ToDate: Todate.toISOString(),
                             LeaveType: data.id,
                             Reason: data.Reason
                         },
@@ -199,6 +205,7 @@
                 }
             }
         });
+        $(".bootbox-close-button").addClass("bootbox-customheaderalign");
     };
 </script>
 

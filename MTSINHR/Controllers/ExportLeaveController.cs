@@ -8,7 +8,7 @@ using System.Web.Mvc;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using ClosedXML.Excel;
-using LeaveApply.Models;
+using MTSINHR.Models;
 using Newtonsoft.Json;
 
 namespace MTSINHR.Controllers

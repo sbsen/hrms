@@ -30,7 +30,7 @@ namespace MTSINHR.Controllers
         public JsonResult Edit(AssetsMaster ass)
         {
             MTSHRDataLayer.AssetsMaster data_asset = new MTSHRDataLayer.AssetsMaster();
-            int result = data_asset.Update(ass.AssetTypeId,ass.AssetName,ass.AssetDepreciation, ass.ExpectedLife,ass.SalvageValue);
+            int result = data_asset.Update(ass.Id,ass.AssetTypeId,ass.AssetName,ass.AssetDepreciation, ass.ExpectedLife,ass.SalvageValue);
             return Json(new { success = result }, JsonRequestBehavior.AllowGet);
         }
 
@@ -67,11 +67,11 @@ namespace MTSINHR.Controllers
             List<SelectListItem> Assetnamelist = new List<SelectListItem>();
             try
             {
-                var Assetname = data_Ass.ReadAssetName();
-                Assetnamelist.Add(new SelectListItem() { Value = "", Text = "---- Select Asset Name----" });
-                for (int i = 0; i < Assetname.Tables[0].Rows.Count; i++)
+                var Assetname = data_Ass.ReadAssetNames();
+                Assetnamelist.Add(new SelectListItem() { Value = "", Text = "---- Select Category----" });
+                for (int i = 0; i < Assetname.Rows.Count; i++)
                 {
-                    Assetnamelist.Add(new SelectListItem() { Value = Assetname.Tables[0].Rows[i]["Id"].ToString(), Text = Assetname.Tables[0].Rows[i]["Assetname"].ToString() });
+                    Assetnamelist.Add(new SelectListItem() { Value = Assetname.Rows[i]["Id"].ToString(), Text = Assetname.Rows[i]["Assetname"].ToString() });
                 }
             }
             catch (Exception exec)

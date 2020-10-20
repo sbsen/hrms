@@ -5,14 +5,17 @@ using System.Web;
 using System.Web.Mvc;
 using MTSEntBlocks.ExceptionBlock.Handlers;
 using MTSINHR.Models;
+using Newtonsoft.Json;
+using MTS.Controllers;
 
 namespace MTSINHR.Controllers
 {
-    public class VendorsController : Controller
+    public class VendorsController : SecureController
     {
         // GET: Vendors
         public ActionResult Vendors()
         {
+           
             return View();
         }
 
@@ -42,6 +45,11 @@ namespace MTSINHR.Controllers
             }
         }
 
+        public ActionResult Read()
+        {
+            MTSHRDataLayer.Vendors vendor = new MTSHRDataLayer.Vendors();
+            return Json(JsonConvert.SerializeObject(vendor.ReadVendorName().Tables[0]), JsonRequestBehavior.AllowGet);
+        }
 
     }
 }

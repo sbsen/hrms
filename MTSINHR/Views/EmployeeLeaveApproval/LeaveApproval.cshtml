@@ -1,4 +1,4 @@
-﻿@model LeaveApply.Models.Leave
+﻿@model MTSINHR.Models.Leave
 
 @{
     ViewBag.Title = "LeaveApproval";
@@ -10,6 +10,7 @@
 <script src="~/Scripts/daterangepicker.min.js"></script>
 <script src="~/Scripts/bootbox.js"></script>
 <link href="~/Content/daterangepicker.css" rel="stylesheet" />
+<script src="~/Scripts/DataTables/datatables.sorting.natural.js"></script>
 
 <ul class="nav nav-tabs">
     <li class="active col-md-6 text-center"><a class="nav-link" href='@Url.Content("~/EmployeeLeavePending/LeavePending")'>Pending</a></li>
@@ -20,18 +21,16 @@
     var dt;
     $(document).ready(function () {
         InitializeTable();
+        var date = new Date();
+        var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+        var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
         $('input[name="daterange"]').daterangepicker({
-            opens: 'left'
+            opens: 'left',
+            startDate: firstDay,
+            endDate :lastDay
         });
-        $.ajax({
-            type: "POST",
-            url: '@Url.Content("~/EmployeeLeaveApproval/GetAllApprovalLeaveList")',
-            success: function (ds1) {
-                
-                dt.rows().clear().draw();
-                dt.rows.add(JSON.parse(ds1)).draw();
-            },
-        });
+        FilterLeaves();
+        
     });
 
 
@@ -45,20 +44,27 @@
             "aoColumns":
                 [{ "mData": "Empid", "sTitle": "Employee ID", },
                 { "mData": "EmployeeName", "sTitle": "Employee Name" },
-                { "mData": "FromDate", "sTitle": "From Date" },
-                { "mData": "ToDate", "sTitle": "To Date" },
+                { "mData": "FromDate", 'sType': 'date', "sTitle": "From Date" },
+                { "mData": "ToDate", 'sType': 'date', "sTitle": "To Date" },
                 { "mData": "NumberOfDays", "sTitle": "Number of Days" },
                 { "mData": "LeaveType", "sTitle": "Leave Type" },
                 { "mData": "Reason", "sTitle": "Reason" },
                 ]
         });
     }
-  function FilterLeaves()
+    function FilterLeaves()
     {
+        var DateVal = $('input[name="daterange"]').val().split("-");
+        var fromDate = DateVal[0].trim();
+        var toDate = DateVal[1].trim();
+         var startDate = new Date(fromDate);
+         var endDate = new Date(toDate);
       $.ajax({
           type: "POST",
           data:{
-              DateRange: $("input[name='daterange']").val()
+              //DateRange: $("input[name='daterange']").val()
+              FromDate: startDate.toISOString(),
+              ToDate: endDate.toISOString()
           },
           headers:{"Range":1},
           url: '@Url.Content("~/EmployeeLeaveApproval/GetAllApprovalLeaveList")',

@@ -203,6 +203,7 @@
     <Content Include="Global.asax" />
     <None Include="Scripts\jquery-1.12.4.intellisense.js" />
     <Content Include="Images\bg.png" />
+    <Content Include="Images\bg1.png" />
     <Content Include="Images\logo.png" />
     <Content Include="Scripts\app.js" />
     <Content Include="Scripts\bootstrap.min.js" />

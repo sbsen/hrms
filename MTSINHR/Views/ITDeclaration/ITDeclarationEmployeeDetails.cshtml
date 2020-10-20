@@ -1,0 +1,384 @@
+﻿
+@{
+    ViewBag.Title = "ITDeclarationEmployeeDetails";
+}
+@System.Web.Optimization.Styles.Render("~/bundles/datepickercss")
+@System.Web.Optimization.Scripts.Render("~/bundles/datepicker")
+<style>
+      input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+       .badge {
+        display: inline-block;
+        padding: 0.25em 0.4em;
+        font-size: 78%;
+        font-weight: bold;
+        line-height: 1;
+        color: #fff;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: 0.25rem;
+    }
+
+</style>
+<body>
+    <div class="">
+        <div class="card">
+            <div class="card-header text-center ">
+                IT Declaration Employee Details
+            </div>
+            <div class="card-body" id="appraisalProcessContentDiv">
+                <div class="row col-lg-12">
+                    <div class="col-lg-2">
+                        <label>Select Financial Year:</label>
+                    </div>
+                    <div class="col-lg-2">
+                        @*<input type="number"  class="form-control" id="FinancialYear" />*@
+                        <select id="ddlFinYear" class="form-control"></select>
+                    </div>
+                    <div class="col-lg-2">
+                        <button class="btn btn-primary" onclick="getFinancialYearDetails()">View</button>
+                    </div>
+                    <div class="col-lg-6" id="dvEnable">
+                        <div class="" id="skipManagerToggleDiv">
+                            <div class="pull-right">
+                                <p class="m-b-0 pull-left fz14 m-l-5" id="tglEnable">Enable IT Declaration</p>
+                                <div class="tg-list pull-left p-l-5">
+                                    <div class="tg-list-item">
+                                        <input class="tgl tgl-light" id="tglOption" type="checkbox">
+                                        <label class="tgl-btn" for="tglOption"></label>
+                                    </div>
+                                </div>
+                                <p class="m-b-0 pull-left fz14 m-r-5 p-l-5" id="tglDisable">Disable IT Declaration</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12  row p-l-30" id="dvConfirm">
+                    <div class="col-lg-6"></div>
+                    <div class="col-lg-6 enableCls">
+                        <div class="row float-right">
+                            <button class="btn btn-success" onclick="EnableDisableDeclarations(true)">Confirm</button>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 disableCls text-right">
+                        <div class="p-b-5">
+                            <button class="btn btn-danger form" onclick="EnableDisableDeclarations(false)">Confirm</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="col-lg-6">
+                        <span>Filter: &nbsp;</span>
+                        <select id="ddlFilter">
+                            <option>All</option>
+                            <option>Submission Pending</option>
+                            <option>Proof Submission Pending</option>
+                            <option>Approval Pending</option>
+                        </select>
+                    </div>
+                    @*<div class="col-lg-6">
+                        <input type="checkbox" id="chkEnabled" onchange="CheckEnabledDetails()" />
+                        <span>IT Declaration Enabled Employees</span>
+                    </div>*@
+                </div>
+                <div class="MTS_Table">
+                    <table class="table-bordered table-responsive table" width="100%" id="declarationTable"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    var declarationTableDetails;
+    var financialYearDetails = [];
+    var CurrYear = [];
+    $(document).ready(function () {
+        debugger;
+        getFinancialYear();
+        //$('#FinancialYear').datepicker({
+        //    //dateFormat: 'yyyy',
+        //    format: "yyyy",
+        //  //  viewMode: "years",
+        //    minViewMode: "years",
+        //    autoclose: true
+        //});
+        $("#ddlFinYear").html('');
+        $("#ddlFinYear").append('<option value="' + 0 + '">' + "----Select Year----" + '</option>');
+        debugger
+        $.each(CurrYear, function (i, val) {
+            debugger
+	        $("#ddlFinYear").append('<option value="' + val.Financial_Year + '">' + val.Financial_Year + '</option>');
+            //$("#ddlFinYear").append('<option value="' + val.Id + '">' + val.Financial_Year + '</option>');
+        });
+
+        $('.disableCls').hide();
+
+        $('#tglOption').click(function () {
+
+            if ($(this).prop("checked") == true) {
+                $('.enableCls').hide();
+                $('.disableCls').show();
+            }
+            else if ($(this).prop("checked") == false) {
+                $('.enableCls').show();
+                $('.disableCls').hide();
+            }
+        });
+
+        $("#ddlFilter").change(function () {
+            var selval = $("#ddlFilter :selected").text();
+            var currentdata = [];
+            if (selval != "All") {
+                $.each(financialYearDetails, function (i, val) {
+                    if ((val.STATUS == selval)) {
+                        currentdata.push(val);
+                    }
+                });
+            }
+            else {
+                currentdata = financialYearDetails;
+            }
+
+
+            declarationTableDetails.clear().draw();
+            declarationTableDetails.rows.add(currentdata); // Add new data
+            declarationTableDetails.columns.adjust().draw();
+        });
+    });
+
+    //function CheckEnabledDetails() {
+    //    var chkval = $("#chkEnabled").val();
+    //    if (chkval) {
+
+    //    }
+    //}
+
+    function dateValueFormat(date) {
+        var d = new Date(date);
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                        "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var val = d.getDate() + "-" + months[d.getMonth()] + "-" + d.getFullYear();
+        return val;
+    }
+   function getFinancialYear() {
+        $.ajax({
+            type: 'get',
+            url: '@Url.Content("~/ITDeclaration/getFinancialYear")',
+            async: false,
+            success: function (data) {
+                if (data.success) {
+                    CurrYear = JSON.parse(data.result);
+                }
+            }
+        });
+    }
+    function  getFinancialYearDetails()
+    {
+        //var year=new Date();
+        if ($('#ddlFinYear').val() == '' || $('#ddlFinYear').val() == null || $('#ddlFinYear').val() == 0)
+        {
+            toastr.warning('Please Select Financial Year');
+            return false;
+        }
+        else
+        {
+            year = $('#ddlFinYear').val();
+        }
+        debugger
+        $.ajax({
+            type: 'get',
+            url:'@Url.Content("~/ITDeclaration/getFinancialYearDetails")',
+            data: { year: year },
+            success: function (data) {
+                if(data.success){
+                    financialYearDetails = JSON.parse(data.result1);
+                    declarationTableCall(financialYearDetails);
+                    debugger
+                    $.each(CurrYear, function (i, val) {
+                        if (val.Financial_Year == year && val.STATUS == true) {
+                            declarationTableDetails.columns(10, 12).visible(true);
+                            $("#dvConfirm").show();
+                            $("#dvEnable").show();
+                        }
+                        else {
+                            declarationTableDetails.columns(10, 12).visible(false);
+                            $("#dvConfirm").hide();
+                            $("#dvEnable").hide();
+
+                        }
+                    });
+
+                    declarationTableDetails.columns.adjust().draw();
+                    }
+                }
+        });
+    }
+
+    function declarationTableCall(data) {
+        if ($.fn.DataTable.isDataTable('#declarationTable')) {
+            $('#declarationTable').dataTable().fnDestroy();
+        }
+        declarationTableDetails = $('#declarationTable').DataTable({
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "iDisplayLength": 5,
+            "bFilter": true,
+            'scrollX': true,
+            'data': data
+    ,
+            "aoColumns":
+        [
+           { "mData": "Emp_Code", "sTitle": "Employee Code", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//0
+         , { "mData": "Emp_Name", "sTitle": "Employee Name", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//1
+         , { "mData": "Dateofjoin", "sTitle": "Date of Join", "sClass": "text-left", "sWidth": "15%", "defaultContent": "<i>Not set</i>" }//2
+         , { "mData": "Designation_Name", "sTitle": "Designation", "sClass": "text-left", "sWidth": "30%", "defaultContent": "<i>Not set</i>" }//3
+         , { "data": "Department_Name", "sTitle": "Department", "sClass": "text-center", "sWidth": "40%", "defaultContent": "<i>Not set</i>" }//4
+         , { "mData": "Gross_Earnings", "sTitle": "Gross Earnings", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//5
+         , { "mData": "Projected_Annual_gross", "sTitle": "Annual Gross", "sClass": "text-center", "sWidth": "15%", "defaultContent": "<i>Not set</i>" }//6
+         , { "mData": "Total_Earnings", "sTitle": "Total Earnings", "sClass": "text-center", "sWidth": "15%", "defaultContent": "<i>Not set</i>" }//7
+         , { "mData": "STATUS", "sTitle": "Status", "sClass": "text-center", "sWidth": "15%", "defaultContent": "<i>Not set</i>" }//8
+         , { "mData": "", "sTitle": "Date Submission", "sClass": "text-center", "sWidth": "15%", "defaultContent": "<i>Not set</i>" }//9
+         , { "mData": "IT_Declaration_Enabled", "sTitle": "Enable/Disable", "sClass": "text-center", "sWidth": "15%", "defaultContent": "<i>Not set</i>" }//10
+         , { "mData": "id", "sTitle": "View Details", "sClass": "text-center", "sWidth": "15%", "defaultContent": "<i>Not set</i>" }//11
+          , { "mData": "", "sTitle": "Multi-Select Enable/Disable", "sClass": "text-center", "sWidth": "15%", "defaultContent": "<i>Not set</i>" }//12
+        ],
+
+            'aoColumnDefs':
+                [
+                    {
+                        "aTargets": [2],
+                        "mRender": function (data, type, row) {
+                            return dateValueFormat(data);
+                        }
+                    }
+                    , {
+                        "aTargets": [5,6,7],
+                        "mRender": function (data, type, row) {
+                            if (data != null) {
+                                return data.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
+                            }
+                            //return parseFloat(data.replace(/,/g, ''));
+                           
+                        }
+                    }
+                    ,
+                    {
+                        "aTargets": [10],
+                        "mRender": function (data, type, row) {
+                            if(!data)
+                                return '<button onclick="updateEmployeeITDetails(this)" id="btnEnable" style="background-color:gray;cursor:pointer;" class="badge" >Disabled</button>';
+                            else
+                                return '<button  onclick="updateEmployeeITDetails(this)" id="btnDisable" style="background-color:green;cursor:pointer;" class="badge" >Enabled</button>';
+                        }
+                    }
+                    ,
+                     {
+                         "aTargets": [11],
+                         "mRender": function (data, type, row) {
+                             return '<span onclick="showDetails('+data+')" id="View' + row.Emp_Code + '" class="fa fa-bars"></span>';
+                         }
+                     }
+                      ,
+                     {
+                         "aTargets": [12],
+                         "mRender": function (data, type, row) {
+                             return '<input type="checkbox" id="' + row.Emp_Code + '" name="' + row.Emp_Code + '" class="checkboxcls spanedit" />';
+                         }
+                     }
+                ]
+
+        });
+
+
+    }
+
+    function EnableDisableDeclarations(opt) {
+
+        debugger
+        var SelectedData = []
+        var financialYear = $('#ddlFinYear').val();
+        SelectedData = CurrYear.filter(m => m.Financial_Year = financialYear);
+        var Selectedyear = SelectedData[0].Id;
+
+        if (declarationTableDetails.$('.checkboxcls').is(':checked')) {
+            $.each(financialYearDetails, function (i, val) {
+                if (declarationTableDetails.$('input[name="' + val.Emp_Code + '"]').is(':checked') == true)
+                {
+                    if (!opt) {
+
+                    }
+                    $.ajax({
+                     type: 'POST'
+                    , data: { Employee_ID: val.id, year: Selectedyear, IT_Declaration: opt, payable_tax: 0.00 }
+                    , url: '@Url.Content("~/ITDeclaration/ITDeclarationofEmployee")'
+                    , success: function (data) {
+                        if (data.result == 1) {
+                            toastr.success('Successfully Updated');
+                            declarationTableDetails.$('.checkboxcls').prop('checked', false);
+                            getFinancialYearDetails();
+                        }
+                        else {
+                            toastr.warning('Failed to Update');
+                            declarationTableDetails.$('.checkboxcls').prop('checked', false);
+                        }
+                    }
+                    });
+                }
+            });
+        }
+        else {
+            toastr.warning('Select employee(s) to update IT Declaration');
+        }
+    }
+
+    function showDetails(data) {
+        if ($('#ddlFinYear').val() == '' || $('#ddlFinYear').val() == null || $('#ddlFinYear').val() == 0) {
+            toastr.warning('Please Select Financial Year');
+            return false;
+        }
+        var selectedDetails = [];
+        selectedDetails = financialYearDetails.filter(a => a.id = data);
+        //if (selectedDetails[0].STATUS == 'Submission Pending' || selectedDetails[0].STATUS == 'Proof Submission Pending') {
+        //    toastr.warning('Employee Submission/Proof Submission is Pending. Kindly try after Submission');
+        //    return false;
+        //}
+         //window.location.href = '@Url.Action("ITDeclarationForm", "ITDeclaration")';
+        window.location.href = '@Url.Content("~/ITDeclaration/RedirectFromITDeclaration?EmpID=")' + data + '&FinancialYear=' + $('#ddlFinYear').val();
+    }
+
+    function updateEmployeeITDetails(row) {
+        if ($('#ddlFinYear').val() == '' || $('#ddlFinYear').val() == null || $('#ddlFinYear').val() == 0) {
+            toastr.warning('Please Select Financial Year');
+            return false;
+        }
+        debugger
+        var SelectedData = []
+        var financialYear = $('#ddlFinYear').val();
+        SelectedData = CurrYear.filter(m => m.Financial_Year = financialYear);
+        var Selectedyear = SelectedData[0].Id;
+
+        var rowval = row.closest("tr");
+        var row_data = $('#declarationTable').DataTable().row(rowval).data();
+        $.ajax({
+            type: 'POST'
+            , data: { Employee_ID: row_data.id, year: Selectedyear, IT_Declaration: row_data.IT_Declaration_Enabled ? false : true, payable_tax: 0.00 }
+                   , url: '@Url.Content("~/ITDeclaration/ITDeclarationofEmployee")'
+                   , success: function (data) {
+                       if (data.result == 1) {
+                           toastr.success('Successfully Updated');
+                           declarationTableDetails.$('.checkboxcls').prop('checked', false);
+                           getFinancialYearDetails();
+
+                       }
+                       else {
+                           toastr.warning('Failed to Update');
+                           declarationTableDetails.$('.checkboxcls').prop('checked', false);
+                       }
+                   }
+        });
+    }
+</script>

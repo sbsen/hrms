@@ -117,6 +117,7 @@ namespace MTS.Login.Controllers
 
                         Int64 roleid = userDetails.RoleId; ;                       
                         Session["RoleId"] = userDetails.RoleId;
+                        Session["MyRole"] = dt.Rows[0]["ROLE_NAME"].ToString();
                         
                        
                         SessionHelper.LogonUser = logonUserSession;

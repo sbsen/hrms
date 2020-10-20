@@ -5,12 +5,17 @@
 @System.Web.Optimization.Scripts.Render("~/bundles/jquery")
 @System.Web.Optimization.Styles.Render("~/bundles/bootstrapdt")
 @System.Web.Optimization.Scripts.Render("~/bundles/datatable")
+@System.Web.Optimization.Styles.Render("~/bundles/datepickercss")
+@System.Web.Optimization.Scripts.Render("~/bundles/datepicker")
 <script src="~/Scripts/ValidationFunction.js"></script>
 
 <script src="~/Scripts/DataTables/dataTables.buttons.min.js"></script>
 <script src="~/Scripts/DataTables/excel.min.js"></script>
 <script src="~/Scripts/DataTables/buttons.html5.min.js"></script>
+<script src="~/Scripts/daterangepicker.min.js"></script>
 <link href="~/Content/DataTables/css/buttons.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/daterangepicker.css" rel="stylesheet" />
+<script src="~/Scripts/DataTables/datatables.sorting.natural.js"></script>
 <style>
     .optRadio input[type=radio] {
         position: absolute;
@@ -42,6 +47,11 @@
         border-radius: 5px;
         overflow: hidden;
     }
+
+    .editor-field{
+        position:relative;
+        left:80px;
+    }
 </style>
 <div class="card">
     <div class="card-header">
@@ -51,12 +61,37 @@
         <div class="clearfix"></div>
         <div class="row">
             <div class="col-md-12 text-right m-b-15">
+                <div class="row text-left card-columns">
+                    <div class="col-md-4 text-right" style="position: relative;left: 92px;">
+                        <label>Date Of Join</label>
+                    </div>
+                    <div class="col-md-3 text-right">
+                        <div class="form-group">
+                            <div class="editor-field">
+                                @Html.TextBoxFor(m => m.FromDate, new { @class = "form-control ", @data = "date-end-date='0d'", @placeholder = "From Date" })
+                                @Html.ValidationMessageFor(m => m.FromDate)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <div class="editor-field">
+                                @Html.TextBoxFor(m => m.ToDate, new { @class = "form-control ", @placeholder = "To Date" })
+                                @Html.ValidationMessageFor(m => m.ToDate)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 text-right">
+                        <button type="button" class="btn-primary btn-sm " id="Filterdata"><span class="fa fa-search"></span> Search </button>
+                    </div>
+                </div>
+
                 <div class="radio-group optRadio tc">
                     <input type="radio" id="option-one" onclick="ActiveStatus('')" checked name="selector">
                     <label for="option-one">All</label>
-                    <input type="radio" id="option-two" onclick="ActiveStatus(true)" name="selector">
+                    <input type="radio" id="option-two" onclick="ActiveStatus('Active')" name="selector">
                     <label for="option-two">Active</label>
-                    <input type="radio" id="option-three" onclick="ActiveStatus(false)" name="selector">
+                    <input type="radio" id="option-three" onclick="ActiveStatus('InActive')" name="selector">
                     <label for="option-three">InActive</label>
                 </div>
             </div>
@@ -69,10 +104,59 @@
 
 <script>
     var groupTable;
+    var groupTableData;
     $(document).ready(function () {
         LoadDatatable();
-        LoadHolidayTable();
+        LoadHolidayTable();     
+        DateRange();
+        $('#Filterdata').on('click', function () {
+           // var from = $('#FromDate').val();
+           // var to = $('#ToDate').val();
+            var StartDate = new Date($('#FromDate').val());
+            var EndDate = new Date($('#ToDate').val());
+            {
+                $.ajax({
+                    type: "POST",
+                    data: {
+                        StartDate: StartDate.toISOString()
+                        , EndDate: EndDate.toISOString()
+                    },
+                    url: '@Url.Content("~/BankDetails/FilterBankdetails")',
+                    success: function (data) {
+                        groupTable.clear();
+                        groupTable.rows.add(JSON.parse(data));
+                        groupTable.draw();
+                    },
+                });
+            }
+
+        });
     });
+    function DateRange() {
+        var todayDate = new Date();
+        var end = new Date().getDate();
+        var yearrestrict = '@System.Configuration.ConfigurationManager.AppSettings["Year_restrict_count"]';
+        $('#FromDate').datepicker({
+            startDate: "-" + yearrestrict + "y",
+            endDate: '+1m',
+
+            autoclose: true
+        }).on('changeDate', function () {
+
+            $("#ToDate").val(this.value);
+            $('#ToDate').datepicker('setStartDate', new Date($(this).val()));
+        });
+
+        $('#ToDate').datepicker({
+            startDate: "-" + yearrestrict + "y",
+            endDate: '+1m',
+
+            autoclose: true
+        }).on('changeDate', function () {
+
+            $('#FromDate').datepicker('setEndDate', new Date($(this).val()));
+        });
+    }
     function LoadDatatable() {
 
         groupTable = $("#getbankdetails").DataTable({
@@ -93,12 +177,25 @@
                , { "mData": "Employee_Id", "bVisible": false, "sTitle": "Emp. Id", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }
                , { "mData": "Name", "sTitle": "Employee Name", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }
                 , { "mData": "Accountnumber", "sTitle": "Account Number", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }
-                 , { "mData": "Ifsc", "sTitle": "IFSC", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }
+                 , { "mData": "Ifsc", 'sType':'natural',"sTitle": "IFSC", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }
                , { "mData": "Bankname", "sTitle": " Bank Name", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }
                , { "mData": "Branchname", "sTitle": "Branch Name", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }
-               , { "mData": "Pancard", "sTitle": "PAN Card" }
-               , { "mData": "ACTIVE", "sTitle": "Active Status", "bVisible": false, "defaultContent": "<i>Not set</i>" }
+               , { "mData": "Pancard", 'sType': 'natural', "sTitle": "PAN Card" }
+                , { "mData": "ACTIVE", "sTitle": "Status", "sClass": "text-center" }//8
             ],
+            "aoColumnDefs": [
+              {
+                  "aTargets": [8],
+                  "mRender": function (row, type, data) {
+                      if (row) {
+                          return "<span class='badge badge-success badge-lg'>Active</span>"
+                      }
+                      else {
+                          return "<span class='badge badge-danger badge-lg' style='width:85%' value='InActive'>InActive</span>"
+                      }
+                  }
+              }
+            ]
 
         });
     }
@@ -109,6 +206,7 @@
             type: "GET",
             url: '@Url.Content("~/BankDetails/Read")',
             success: function (data) {
+                groupTableData = JSON.parse(data);
                 groupTable.clear();
                 groupTable.rows.add(JSON.parse(data));
                 groupTable.draw();
@@ -119,8 +217,21 @@
     }
 
     function ActiveStatus(status) {
-
-        groupTable.search(status).draw();
+        
+        if (status == "InActive") {
+            var activeEmployees = groupTableData.filter(a=>a.ACTIVE == false);
+            groupTable.clear();
+            groupTable.rows.add(activeEmployees).draw();
+        } else if (status == "Active") {
+            var activeEmployees = groupTableData.filter(a=>a.ACTIVE == true);
+            groupTable.clear();
+            groupTable.rows.add(activeEmployees).draw();
+        } else {
+            groupTable.clear();
+            groupTable.rows.add(groupTableData).draw();
+        }
+        //groupTable.search(status).draw();
+        //groupTable.search('');
 
     }
 </script>

@@ -13,10 +13,11 @@ using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.Extractor;
 using NPOI.XSSF.UserModel;
+using MTS.Controllers;
 
 namespace MTSINHR.Controllers
 {
-    public class ImportExcelController : Controller
+    public class ImportExcelController : SecureController
     {
         //
         // GET: /ImportExcel/

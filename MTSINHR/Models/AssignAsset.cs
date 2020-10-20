@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
@@ -7,22 +8,48 @@ namespace MTSINHR.Models
 {
     public class AssignAsset
     {
-        public Int64 AssetId { get; set; }
+        [Required]
+        [Display(Name = "Asset Classification")]
         public Int64 AssetTypeId { get; set; }
-        public string AssetType { get; set; }
+
+        [Required]
+        [Display(Name = "Item Code")]
+        public string ItemCode { get; set; }
+        
+        public string Description { get; set; }
+
+        [Required]
+        [Display(Name = "Category")]
         public Int64 AssetNameId { get; set; }
-        public string AssetName { get; set; }
+
+        [Required]
+        [Display(Name = "Assign Type")]
         public Int64 AssignTypeId { get; set; }
+
+        [Required]
+        [Display(Name = "Employee Name")]
         public Int64 EmployeeId { get; set; }
-        public string EmployeeName { get; set; }
+
+        [Display(Name = "Currently Assigned To")]
         public Int64 CurrentlyAssignedEmployeeId { get; set; }
-        public Int64 CurrentlyAssignedEmployeeTo { get; set; }
+
+        [Required]
+        [Display(Name = "Department")]
         public Int64 DepartmentId { get; set; }
-        public string DepartmentName { get; set; }
+
+        [Required]
+        [Display(Name = "Location")]
         public Int64 LocationId { get; set; }
-        public string LocationName { get; set; }
-        public string LocationDetails { get; set; }
-        public string ActionDate { get; set; }
+
+        [Display(Name = "Location Details")]
+        public Int64 LocationDetails { get; set; }
+
+
+       // [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0: dd-MMM-yy}")]
+        [Required]
+        [Display(Name = "Action Date")]
+        public DateTime ActionDate { get; set; }
+
         public string Notes { get; set; }
     }
 }

@@ -1,0 +1,337 @@
+﻿
+<script>
+    var button;
+    $(document).ready(function () {
+        button = $('#hdnButton').val();
+        button == 1 ? $("#btnAddManualLop").hide() : $("#btnAddManualLop").show();
+
+        $('#LeaveFrom').datepicker({
+            format: "mm/dd/yyyy",
+            endDate: '0m',
+            autoclose: true
+        }).on('changeDate', function () {
+            $('#LeaveTo').datepicker('setStartDate', $(this).val());
+            if ($('#LeaveTo').val() == '' || $('#LeaveTo').val() < $('#LeaveFrom').val()) {
+                $('#LeaveTo').datepicker('update', $(this).val()).trigger('changeDate');
+            }
+        })
+        $('#LeaveTo').datepicker({
+            format: "mm/dd/yyyy",
+            endDate: '0m',
+            autoclose: true
+        }).on('changeDate', function () {
+            if ($('#LeaveFrom').val() == '') {
+                $('#LeaveFrom').datepicker('update', $(this).val()).trigger('changeDate');
+            }
+            var start = $('#LeaveFrom').datepicker('getDate');
+            var end = $('#LeaveTo').datepicker('getDate');
+            var days = (end - start) / 1000 / 60 / 60 / 24;
+            $('#LOPDays').val(days + 1);
+        })
+        $('#LOPDays').on('keypress', function (e) {
+          var lopDays = $('#LOPDays').val();
+            if (!isNaN(parseInt(e.key))) {
+                return true;
+            }
+            if (e.key == '.' && !lopDays.includes('.')) {
+                return true;
+            }
+            return false;
+        })
+        BackToTable();
+        GetLossOfPayDetailsTableData();
+    })
+    function GetLossOfPayDetailsTableData() {
+        $.ajax({
+            type: 'POST',
+            async: false,
+            url: '@Url.Content("~/Payroll/GetEmployeeLossOfPayDetails")',
+            data: {
+                EmployeeId: $('#EmployeeId').val(),
+                Month: $('#PayrollMonth').val(),
+                Year: $('#PayrollYear').val()
+            },
+            success: function (data) {
+                var TableData = JSON.parse(data);
+                InitLossOfPayDetailsTable(TableData);
+            }
+        })
+    }
+
+    function InitLossOfPayDetailsTable(data) {
+        if ($.fn.DataTable.isDataTable('#LossOfPayDetailsTable')) {
+            $('#LossOfPayDetailsTable').dataTable().fnDestroy();
+        }
+        $('#LossOfPayDetailsTable').DataTable({
+            "bFilter": true,
+            "iDisplayLength": 10,
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "bProcessing": true,
+            "data": data,
+            "aoColumns": [
+                { "mData": "FromDate", "sTitle": "Employee Id", "sClass": "text-left", "bVisible": false },
+                { "mData": "Employee_Id", "sTitle": "Employee Id", "sClass": "text-left", "bVisible": false },
+                { "mData": "Id", "sTitle": "Id", "sClass": "text-left", "bVisible": false },
+                { "mData": "LeaveType", "sTitle": "Leave Type", "sClass": "text-left", "bVisible": false },
+                { "mData": "FromDate", "sTitle": "From", "sClass": "text-center","sWidth":"20%" },
+                { "mData": "ToDate", "sTitle": "To", "sClass": "text-center", "sWidth": "20%" },
+                { "mData": "Reason", "sTitle": "Reason", "sClass": "text-left", "sWidth": "20%" },
+                { "mData": "Numberofdays", "sTitle": "Lop Day(s)", "sClass": "text-right", "sWidth": "20%" },
+                { "mData": "AUTO_LOP", "sTitle": "Status", "sClass": "text-center", "sWidth": "10%" },
+                { "mData": "AUTO_LOP", "sTitle": "Action", "sClass": "text-center", "sWidth": "10%","bVisible":(button != 1) },
+            ],
+            "aoColumnDefs": [
+                {
+                    "aTargets": [4,5]
+                    , "mRender": function (data, type, row) {
+                        return dateFormat(data);
+                    }
+                },
+                {
+                    "aTargets": [7]
+                    , "mRender": function (data, type, row) {
+                        return data > 0 ? data : '';
+                    }
+                },
+                {
+                    "aTargets": [8]
+                    , "mRender": function (data, type, row) {
+                        if (data && row.Numberofdays > 0) {
+                            return '<span class="badge" style="background-color:green;font-size:13.5px;">Lop</span>'
+                        } else if (data  && row.Numberofdays <= 0) {
+                            return '<span class="badge" style="background-color:red;font-size:13.5px;">Lop-Ignored</span>'
+                        } else if (!data) {
+                            return '<span class="badge" style="background-color:green;font-size:13.5px;">Lop-Added</span>'
+                        }
+                    }
+                },
+                {
+                    "aTargets": [9]
+                    , "mRender": function (data, type, row) {
+                        if (data && row.Numberofdays > 0) {
+                            return '<span class="fa fa-times" style="cursor:pointer;" onclick="AddOrIgnoreLop(this)">&nbsp;Ignore</span>'
+                        } else if (data && row.Numberofdays <= 0) {
+                            return '<span class="fa fa-plus" style="cursor:pointer;"  onclick="AddOrIgnoreLop(this)">&nbsp;Consider</span>'
+                        } else if (!data) {
+                            return '<span class="fa fa-times" style="cursor:pointer;" onclick="AddOrIgnoreLop(this)">&nbsp;Remove</span>'
+                        }
+                    }
+                }
+            ]
+        })
+    }
+
+    function AddOrIgnoreLop(Current_Element) {
+        var CurrentRow = Current_Element.closest("tr");
+        var RowData = $('#LossOfPayDetailsTable').DataTable().row(CurrentRow).data();
+        var AddOrRemoveFlag;
+        if (RowData.AUTO_LOP && RowData.Numberofdays > 0) {
+            AddOrRemoveFlag = 3;
+        } else if (RowData.AUTO_LOP && RowData.Numberofdays <= 0) {
+            AddOrRemoveFlag = 4;
+        } else {
+            AddOrRemoveFlag = 2;
+        }
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Payroll/AddOrRemoveLop")',
+            data: {
+                EmployeeId: RowData.Employee_Id,
+                Month: $('#PayrollMonth').val(),
+                Year: $('#PayrollYear').val(),
+                LeaveFrom: RowData.FromDate,
+                LeaveTo: RowData.ToDate,
+                Numberofdays: RowData.Numberofdays,
+                Reason: RowData.Reason,
+                AutoLop: Boolean(RowData.AUTO_LOP),
+                AddOrRemoveFlag: AddOrRemoveFlag
+            },
+            success: function (data) {
+                GetLossOfPayDetailsTableData();
+            },
+            error: function (e) {
+            }
+        })
+    }
+
+    function AddManualLop() {
+        
+        if (ValidationCall()) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Payroll/AddOrRemoveLop")',
+                data: {
+                    EmployeeId: $('#EmployeeId').val(),
+                    Month: $('#PayrollMonth').val(),
+                    Year: $('#PayrollYear').val(),
+                    LeaveFrom: $('#LeaveFrom').val(),
+                    LeaveTo: $('#LeaveTo').val(),
+                    Numberofdays: $('#LOPDays').val(),
+                    Reason: $('#Reason').val() == null ? '' : $('#Reason').val(),
+                    AutoLop: false,
+                    AddOrRemoveFlag: 1
+                },
+                success: function (data) {
+                    if (data == 1) {
+                        GetLossOfPayDetailsTableData();
+                        BackToTable();
+                        $('#LeaveFrom').val('');
+                        $('#LeaveTo').val('');
+                        $('#LOPDays').val('');
+                        $('#Reason').val('');
+                    } else if (data == 2) {
+                        toastr.warning("Lop already exists for applied date");
+                    } else {
+                        toastr.error("Something went wrong");
+                    }
+
+                },
+                error: function (e) {
+                }
+            })
+        }
+        else {
+            toastr.warning('All fields are required!');
+        }
+        
+    }
+
+    function GoToManualLop() {
+        $('#AddLossOfPayDiv').show();
+        $('#LossOfPayDetailsDiv').hide();
+    }
+
+    function BackToTable() {
+        $('#AddLossOfPayDiv').hide();
+        $('#LossOfPayDetailsDiv').show();
+    }
+
+    function dateFormat(date) {
+        var d = new Date(date);
+        var month = ('0' + (d.getMonth() + 1)).slice(-2);
+        var date1 = ('0' + d.getDate()).slice(-2);
+        var DateFormat = month + '/' + date1 + '/' + d.getFullYear();
+        return DateFormat;
+    }
+
+    function gobacktoTable() {
+        button == 2 ? GeneratePayrollData() : ViewPayrollData('',1);
+    }
+        
+    function ValidationCall() {
+
+        if ($('#EmployeeId').val().trim() == null || $('#EmployeeId').val().trim() == '') {
+            return false;
+        }
+        else if ($('#PayrollMonth').val().trim() == null || $('#PayrollMonth').val().trim() == '') {
+            return false;
+        }
+        else if ($('#PayrollYear').val().trim() == null || $('#PayrollYear').val().trim() == '') {
+            return false;
+        }
+        else if ($('#LeaveFrom').val().trim() == null || $('#LeaveFrom').val().trim() == '') {
+            return false;
+        }
+        else if ($('#LeaveTo').val().trim() == null || $('#LeaveTo').val().trim() == '') {
+            return false;
+        }
+        else if ($('#LOPDays').val().trim() == null || $('#LOPDays').val().trim() == '') {
+            return false;
+        }       
+        else {
+            return true;
+        }
+
+    }
+
+</script>
+
+
+<div class="modal-dialog modal-lg">
+    <div class="modal-content">
+        <div class="modal-header card-header">
+            <div class="p-a-md p-l-10 fa fa-lg fa-edit">
+                &nbsp;
+                <b>Loss of pay details - </b><b id="EmpName"></b>
+            </div>
+            <button type="button" class="close" data-dismiss="modal" onclick="gobacktoTable()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body card-body">
+            <input type="text" id="EmployeeId" hidden />
+            <input type="text" id="PayrollMonth" hidden />
+            <input type="text" id="PayrollYear" hidden />
+            <input type="text" id="hdnButton" hidden />
+            <div id="LossOfPayDetailsDiv">
+                <div class="row">
+                    <div class="col-lg-6 p-l-30">
+                        <h6><b>Payroll Month : </b><a id="PayrollMontDisplay"></a></h6>
+                    </div>
+                    
+                    <div class="col-lg-6 p-r-30">
+                        <button class="btn btn-primary btn-sm pull-right" id="btnAddManualLop" onclick="GoToManualLop()"><i class="fa fa-plus-circle"></i>&nbsp;Add</button>
+                    </div>
+                    <div class="col-lg-12 p-t-10">
+                        <div class="MTS_Table">
+                            <table id="LossOfPayDetailsTable" class="table table-bordered table-hover tabel-sm table-responsive" width="100%"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="AddLossOfPayDiv">
+                <div class="row form-group p-t-10">
+
+                    <div class="col-lg-4 text-right">
+                        Employee :
+                    </div>
+                    <div class="col-lg-5">
+                        <input type="text" id="EmployeeName" class="form-control" disabled />
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-lg-4 text-right">
+                        Pay roll month :
+                    </div>
+                    <div class="col-lg-5">
+                        <input type="text" id="Month" onkeypress="return false;" class="form-control" disabled />
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-lg-4 text-right">
+                        Leave from :
+                    </div>
+                    <div class="col-lg-5">
+                        <input type="text" id="LeaveFrom" onkeypress="return false;" onpaste="return false;" autocomplete="off" class="form-control" />
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-lg-4 text-right">
+                        Leave to :
+                    </div>
+                    <div class="col-lg-5">
+                        <input type="text" id="LeaveTo" onkeypress="return false;" onpaste="return false;" autocomplete="off" class="form-control" />
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-lg-4 text-right">
+                        Reason :
+                    </div>
+                    <div class="col-lg-5">
+                        <input type="text" id="Reason" maxlength="100" onpaste="return false;" placeholder="Maximum 100 characters" class="form-control" />
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-lg-4 text-right">
+                        LOP Days :
+                    </div>
+                    <div class="col-lg-5">
+                        <input type="number" min="0.0" id="LOPDays" onpaste="return false;" class="form-control" />
+                    </div>
+                </div>
+                <div class="pull-right">
+                    <button class="btn btn-primary" onclick="AddManualLop()"><i class="fa fa-plus-circle"></i>&nbsp;Add</button>
+                    <button class="btn btn-default" onclick="BackToTable()"><i class="fa fa-backward"></i>&nbsp;Back</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

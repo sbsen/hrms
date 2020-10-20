@@ -5,6 +5,7 @@ using MTSINHR.Models;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using MTSEntBlocks.ExceptionBlock.Handlers;
+using System.Data;
 
 namespace MTSINHR.Controllers
 {
@@ -12,6 +13,7 @@ namespace MTSINHR.Controllers
     {
         public ActionResult LeaveType()
         {
+            ViewBag.leavetype = GetLeaveType();
             ViewBag.Department = GetDepartment();
             return View();
         }                             
@@ -25,14 +27,14 @@ namespace MTSINHR.Controllers
         public JsonResult Edit(LeaveType leave)
         {
             MTSHRDataLayer.LeaveType leavetype = new MTSHRDataLayer.LeaveType();
-            int result = leavetype.Update(leave.Id, leave.Leavetype, leave.Numberofdays,leave.Department);
+            int result = leavetype.Update(leave.Id, leave.Leavetype, leave.Numberofdays,leave.Department,leave.HolidayAsLeave);
             return Json(new { success = result }, JsonRequestBehavior.AllowGet);
         }
         [HttpPost]
         public JsonResult Add(LeaveType leave)
         {
             MTSHRDataLayer.LeaveType leavetype = new MTSHRDataLayer.LeaveType();
-            int result = leavetype.Create(leave.Leavetype, leave.Numberofdays,leave.Department);
+            int result = leavetype.Create(leave.Leavetype, leave.Numberofdays,leave.Department,leave.HolidayAsLeave);
             return Json(new { success = result }, JsonRequestBehavior.AllowGet);
         }
 
@@ -54,6 +56,26 @@ namespace MTSINHR.Controllers
                 BaseExceptionHandler.HandleException(ref exec);
             }
             return departmentlist;
+        }
+
+        private List<SelectListItem> GetLeaveType()
+        {
+            MTSHRDataLayer.Leave data = new MTSHRDataLayer.Leave();
+            List<SelectListItem> leavetype = new List<SelectListItem>();
+            try
+            {
+                DataTable leavenamelist = data.ReadLeavePolicy();
+                leavetype.Add(new SelectListItem() { Value = "", Text = "---- Select Leave type----" });
+                for (int i = 0; i < leavenamelist.Rows.Count; i++)
+                {
+                    leavetype.Add(new SelectListItem() { Value = leavenamelist.Rows[i]["LEAVE_CODE"].ToString(), Text = leavenamelist.Rows[i]["LEAVE_TYPE"].ToString() });
+                }
+            }
+            catch (Exception exec)
+            {
+                BaseExceptionHandler.HandleException(ref exec);
+            }
+            return leavetype;
         }
     }
 }

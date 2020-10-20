@@ -1,0 +1,839 @@
+﻿@model MTSINHR.Models.Payroll
+@{
+    ViewBag.Title = "Payroll";
+}
+@System.Web.Optimization.Scripts.Render("~/bundles/datatable")
+@System.Web.Optimization.Styles.Render("~/bundles/datepickercss")
+@System.Web.Optimization.Scripts.Render("~/bundles/datepicker")
+<link href="~/Content/css/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.min.js"></script>
+<link href="~/Content/bootstrap-datepicker.css" rel="stylesheet" />
+
+<style>
+    .nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
+        color: #495057;
+        background-color: #d1d0ceab;
+        border-color: #ddd #ddd #fff;
+    }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    .between {
+        border: 3px dotted #0099CC;
+        margin-left:10px;
+        margin-right:10px;
+    }
+       .requir {
+        border-left: 2px solid red !important;
+    }
+</style>
+
+
+<div class="card">
+    <div class="card-header text-center">
+        <label id="pageHeader">Salary Fitment</label>
+    </div>
+    <div class="card-body">
+
+        <div class="row" id="EmployeeDetailsList">
+            <div class="row col-lg-12">
+                <div class="col-lg-4 form-group row">
+                    <div class="col-lg-4">
+                        <label>Employee Name</label>
+                    </div>
+                    <div class="col-lg-8">
+                        <select type="text" class="form-control requir select2cls" id="drpdwnEmpName">
+                            <option value="0">--Select Employee Name--</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-4 form-group row">
+                    <div class="col-lg-4">
+                        <label>Employee ID</label>
+                    </div>
+                    <div class="col-lg-8">
+                        <input type="text" class="form-control  empcls" id="EmployeeID" />
+                    </div>
+                </div>
+                <div class="col-lg-4 form-group row">
+                    <div class="col-lg-4">
+                        <label>Employee Designation</label>
+                    </div>
+                    <div class="col-lg-8">
+                        <input type="text" id="EmpDesgn" class="form-control empcls monthlycls" />
+                    </div>
+                </div>
+            </div>
+            <div class="row col-lg-12">
+                <div class="col-lg-4 form-group row">
+                    <div class="col-lg-4">
+                        <label>Employee Department</label>
+                    </div>
+                    <div class="col-lg-8">
+                        <input type="text" class="form-control  empcls" id="EmployeeDept" />
+                    </div>
+                </div>
+
+                <div class="col-lg-4 form-group row">
+                    <div class="col-lg-4">
+                        <label>Date of Join</label>
+                    </div>
+                    <div class="col-lg-8">
+                        <input type="text" id="DOJ" class="form-control empcls  monthlycls" />
+                    </div>
+                </div>
+                <div class="col-lg-4 form-group row">
+                </div>
+            </div>
+           
+            <div class="row col-lg-12"><hr style="background-color:#ddd;" class="col-sm-12">
+               
+                <div class="col-lg-4 form-group row">
+                    <div class="col-lg-4">
+                        <label>Effective From</label>
+                    </div>
+                    <div class="col-lg-8">
+                        <input type="text" id="StartDatepicker" class="form-control requir  monthlycls" />
+                    </div>
+                </div>
+                <div class="col-lg-4 form-group row">
+                    <div class="col-lg-2">
+                      <input type="checkbox" id="restrictionPF" class="form-control requir  monthlycls" />
+                    </div>
+                    <div class="col-lg-10">
+                        <label>Override PF contribution restriction </label>
+                    </div>
+                </div>
+                <div class="col-lg-4 form-group row">
+                </div>
+                <div class="col-lg-4 form-group row">
+                </div>
+            </div>
+        </div>
+
+        <div class="row col-lg-12">
+            <div class="card p-b-15 col-lg-6 divstep" id="step2">
+                <div class="card-header">
+                    Earnings (Rs.)
+                </div>
+                <div class="card-body">
+                    <div class="row col-lg-12">
+                        <div class="col-lg-12 form-group row">
+                            <div class="col-lg-5">
+                                <label>Basic</label>
+                            </div>
+                            <div class="col-lg-7">
+                                <input type="number" class="form-control requir payrollInputs earningInputs" id="basicPay" />
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="row col-lg-12">
+                        <div class="col-lg-12 form-group row">
+                            <div class="col-lg-5">
+                                <label>House Rent Allowance</label>
+                            </div>
+                            <div class="col-lg-7">
+                                <input type="number" class="form-control requir payrollInputs earningInputs" id="houseRentAlln" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row col-lg-12">
+                        <div class="col-lg-12 form-group row">
+                            <div class="col-lg-5">
+                                <label>Special Allowance</label>
+                            </div>
+                            <div class="col-lg-7">
+                                <input type="number" class="form-control requir payrollInputs earningInputs" id="specialAlln" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row col-lg-12">
+                        <div class="col-lg-12 form-group row">
+                            <div class="col-lg-5">
+                                <label>Medical Allowance</label>
+                            </div>
+                            <div class="col-lg-7">
+                                <input type="number" class="form-control requir payrollInputs earningInputs" id="medicAlln" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row col-lg-12">
+                        <div class="col-lg-12 form-group row">
+                            <div class="col-lg-5">
+                                <label>Conveyance Allowance</label>
+                            </div>
+
+                            <div class="col-lg-7">
+                                <input type="number" class="form-control requir payrollInputs earningInputs" id="conveyAlln" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row col-lg-12">
+                        <div class="col-lg-12 form-group row">
+                            <div class="col-lg-5">
+                                <label>Food Allowance</label>
+                            </div>
+                            <div class="col-lg-7">
+                                <input type="number" class="form-control requir payrollInputs earningInputs" id="foodAlln" />
+
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+                    <div class="row col-lg-12">
+                        <div class="col-lg-12 form-group row">
+                            <div class="col-lg-5">
+                                <label>Gross Earnings</label>
+                            </div>
+                            <div class="col-lg-7">
+                                <input type="number" class="form-control requir readonly payrollInputs " disabled id="grossEarngs" />
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+            <div class="card p-b-15 col-lg-6 divstep" id="step3">
+                <div class="card-header">
+                    Deductions (Rs.)
+                </div>
+                <div class="card-body">
+                    <div class="row col-lg-12">
+                        <div class="col-lg-12 form-group row">
+                            <div class="col-lg-5">
+                                <label>Provident Fund</label>
+                            </div>
+                            <div class="col-lg-7">
+                                <input type="number" class="form-control requir payrollInputs readonly deductionInputs" id="pfAmt" disabled/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row col-lg-12">
+                        <div class="col-lg-12 form-group row">
+                            <div class="col-lg-5">
+                                <label>Professional Tax</label>
+                            </div>
+                            <div class="col-lg-7">
+                                <input type="number" class="form-control requir payrollInputs readonly deductionInputs" id="prfTax" disabled />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row col-lg-12">
+                        <div class="col-lg-12 form-group row">
+                            <div class="col-lg-5">
+                                <label>ESI</label>
+                            </div>
+                            <div class="col-lg-7">
+                                <input type="number" class="form-control requir payrollInputs readonly deductionInputs" id="esiAmt" disabled/>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row col-lg-12">
+                        <div class="col-lg-12 form-group row">
+                            <div class="col-lg-5">
+                                <label>Meal card</label>
+                            </div>
+                            <div class="col-lg-7">
+                                <input type="number" class="form-control requir payrollInputs deductionInputs" id="sodexoAmt" />
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <div class="row col-lg-12">
+                        <div class="col-lg-12 form-group row">
+                            <div class="col-lg-5">
+                                <label>Others</label>
+                            </div>
+                            <div class="col-lg-7">
+                                <input type="number" class="form-control requir payrollInputs deductionInputs" id="others" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row col-lg-12">
+                        <div class="col-lg-12 form-group row">
+                            <div class="col-lg-5">
+                                <label>Total Deductions</label>
+                            </div>
+                            <div class="col-lg-7">
+                                <input type="number" class="form-control  payrollInputs readonly requir" id="totalDeduction" disabled />
+                            </div>
+                        </div>
+
+                    </div>
+                    <hr style="background-color:black;">
+                    <div class="row col-lg-12">
+                        <div class="col-lg-12 form-group row">
+                            <div class="col-lg-5">
+                                <label>Net Monthly Salary</label>
+                            </div>
+                            <div class="col-lg-7">
+                                <input type="number" style="background-color: #eaeef3;" class="form-control readonly payrollInputs requir " disabled id="netSalary" />
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-12 m-t-10 p-b-15 p-r-15">
+        @*<button type="button" class="btn btn-primary float-right m-r-15" id="ConfirmData" onclick="SavePayrollDetails(1)">Submit</button>*@
+        <button type="button" class="btn btn-primary float-right m-r-15" id="DraftData" onclick="SavePayrollDetails()">Save As Draft</button>
+        <button type="button" class="btn btn-primary float-right m-r-15" id="ReviseData" onclick="RevisePayrollDetails()">Revise</button>
+        <button type="button" class="btn btn-warning btn-sm float-left m-l-15" id="btnApprovePayroll"><i class="fa fa-share"></i>&nbsp; Approval</button>
+     </div>
+
+    <div class="modal fade" id="moduleApprovalPartialView" style="width:inherit" data-backdrop="static">
+    </div>
+    <div>
+        <input type="hidden" class="moduleID" />
+        <input type="hidden" id="moduleOneParameter" />
+        <input type="hidden" id="empID" />
+    </div>
+        
+    </div>
+
+<script>
+    var EmployeesList = [];
+    var EmployeeDetails = [];
+    var EmpId;
+    var sOut;
+    var EmpDept;
+    var MonthVarianceTable;
+    var summarizedMonthVarianceTable;
+    var MonthVarianceData = [];
+    var summarizedMonthVarianceData = [];
+    var countEarning = 0;
+    var countDeduction = 0;
+    var EarningDetails = [];
+    var DeductionDetails = [];
+    var pfDeduction = [];
+    var esiDeduction = [];
+    var professionalTaxDeduction = [];
+    var approverFlag;
+    var flagFromInbox = 0;
+    var namelist;
+    var effective_Since;
+    var payrollID = 0;
+    $(document).ready(function () {
+
+        /// Dropdown On Change
+
+        $("#drpdwnEmpName").on('change', function (e) {
+
+            $('.field-validation-valid').text('');
+            $('.field-validation-valid').show();
+            $('.payrollInputs').val('');
+            if ($(this).val() == 0) {
+                $('.empcls').val('');
+                return false;
+            }
+            $('.monthlycls, .monthlyModalcls').val('');
+
+
+            if( '@ViewBag.EmpID' != null && '@ViewBag.EmpID' != '' && flagFromInbox == 1){
+
+                flagFromInbox += flagFromInbox;
+                EmpId = '@ViewBag.EmpID';
+                $("#drpdwnEmpName").val(Option.value= EmpId);
+                $('#drpdwnEmpName').select2('val', 0);
+                $(this).val(EmpId);
+                $("#drpdwnEmpName").select2('val', EmpId);
+
+                $('#pageHeader').text('@ViewBag.Description')
+            }
+            else{
+                EmpId = $(this).val();
+                $('.select2cls').select2('val', 0);
+                $(this).val(EmpId);
+                $("#drpdwnEmpName").select2('val', EmpId);
+            }
+
+            $('#empID').val(EmpId);
+            approverOrInitiatorCall();
+            getEmployeeDetails();
+            getPayrollDetails();
+            $('#StartDatepicker').datepicker( 'setStartDate' , '' );
+        });
+
+
+        $('.payrollInputs').val('').addClass('text-right');
+          $('.empcls').attr('disabled', true);
+
+        $('.select2cls').select2({ 'width': '100%' });
+
+
+        $('#restrictionPF').on('click', function () {
+            checkRestrictionPF();
+            $('.earningInputs').trigger('change');
+        });
+
+        GetDeductionCalculationDetails();
+
+
+        $("#StartDatepicker").datepicker({
+            autoclose: true,
+            minViewMode: 1,
+            format: 'MM-yyyy'
+        });
+
+        $('#ReviseData').hide();
+        GetEmployeesList();
+
+        if( '@ViewBag.EmpID' != null && '@ViewBag.EmpID' != ''){
+
+            flagFromInbox += 1;
+
+            EmpId = '@ViewBag.EmpID';
+            $("#drpdwnEmpName").val(Option.value= EmpId);
+
+            $("#drpdwnEmpName").trigger('change');
+
+            setTimeout(function () {
+                $("#drpdwnEmpName").select2('val', EmpId);
+            }, 1000);
+        }
+
+        $('#btnApprovePayroll').on('click', function () {
+
+            if(ValidationPayroll()){
+
+                $.ajax({
+                    type:'POST'
+                    , url:'@Url.Content("~/Module/PV_ModuleApproval")'
+                    , success: function(data){
+
+                        $("#moduleApprovalPartialView").html(data);
+                        $("#moduleOneParameter").val( $("#drpdwnEmpName").val() + ',' + effective_Since);
+                        $('#forwardto').val('');
+                        $('#remarks').val('');
+                        $('#moduleApprovalPartialView').modal('show');
+                    }
+                });
+
+            }
+            else{
+                toastr.info('All fields are required');
+            }
+
+        });
+
+
+    $('.earningInputs').on('change', function () {
+
+        if($('#sodexoAmt').val() == '' || $('#others').val() == ''){
+            $('#sodexoAmt').val(0);
+            $('#others').val(0);
+        }
+
+        var count = 0;
+
+        countEarning = 0;
+        for (var i = 0; i < $('.earningInputs').length; i++) {
+            if ($(this).val() != '') {
+                count = count + 1;
+                countEarning = countEarning + parseFloat($('#' + $('.earningInputs:visible')[i].id).val());
+            }
+        }
+
+        if (count == 6) {
+            $('#grossEarngs').val(countEarning);
+
+                $.each(pfDeduction, function (i) {
+                    var pf = 0;
+                    if ($('#basicPay').val() >= pfDeduction[i].EPF_BASIC_MAX_SALARY && $('#restrictionPF').is(':checked')) {
+                        pf = $('#basicPay').val() * pfDeduction[i].EPF_EMPLOYEE_CONTRIBUTION_PERCENTAGE / 100;
+                    }
+                    else if ($('#basicPay').val() >= pfDeduction[i].EPF_BASIC_MAX_SALARY && !$('#restrictionPF').is(':checked')) {
+                    pf = 15000 * pfDeduction[i].EPF_EMPLOYEE_CONTRIBUTION_PERCENTAGE / 100;
+                }
+                else if (($('#grossEarngs').val() - $('#houseRentAlln').val()) >= 15000) {
+                    pf = 15000 * pfDeduction[i].EPF_EMPLOYEE_CONTRIBUTION_PERCENTAGE / 100;
+                }
+                else if (($('#grossEarngs').val() - $('#houseRentAlln').val()) < 15000) {
+                    pf = ($('#grossEarngs').val() - $('#houseRentAlln').val()) * pfDeduction[i].EPF_EMPLOYEE_CONTRIBUTION_PERCENTAGE/100;
+                }
+                $('#pfAmt').val(Math.round(pf));
+
+
+
+                var esi = 0;
+
+                if ($('#grossEarngs').val() < esiDeduction[i].ESI_BASIC_SALARY) {
+                    esi = $('#grossEarngs').val() * esiDeduction[i].ESI_EMPLOYEE_CONTRIBUTION_PERCENTAGE / 100;
+                }
+                else {
+                    esi = 0;
+                }
+                $('#esiAmt').val(Math.round(esi));
+
+            });
+            $.each(professionalTaxDeduction, function (i) {
+                if ($('#grossEarngs').val() * 6 >= professionalTaxDeduction[i].TAX_RANGE_FROM && $('#grossEarngs').val() * 6 <= professionalTaxDeduction[i].TAX_RANGE_TO) {   //Duration cycle is half_yearly(so only multiply by 6)
+                    $('#prfTax').val(Math.round(professionalTaxDeduction[i].PT_AMOUNT / 6));
+                }
+            });
+
+            $('#netSalary').val(($('#grossEarngs').val()) - ($('#totalDeduction').val()))
+        }
+    });
+
+
+    $('.deductionInputs').on('change', function () {
+
+        countDeduction = 0;
+        for (var i = 0; i < $('.deductionInputs').length; i++) {
+            if ($(this).val() != '') {
+                countDeduction = countDeduction + parseFloat($('#' + $('.deductionInputs')[i].id).val());
+                if($('#' + $('.deductionInputs')[i].id).val() < 0)
+                    $('#' + $('.deductionInputs')[i].id).val(0);
+            }
+        }
+        $('#totalDeduction').val(countDeduction);
+
+        $('#netSalary').val(($('#grossEarngs').val()) - ($('#totalDeduction').val()))
+
+    });
+
+        $('.moduleID').val('');
+        $('.moduleID').val('@HRConstants.ModuleConstants.SalaryComponents');
+
+        $("#moduleApprovalPartialView").on("hidden.bs.modal", function () {
+
+            $("#drpdwnEmpName").trigger('change');
+            inboxCount();
+        });
+
+    });
+
+    $('.payrollInputs').on('focusout',function(){
+        $('.deductionInputs').trigger('change');
+    })
+
+    function RevisePayrollDetails(){
+
+        bootbox.confirm('Are you sure do you want to revise with another month?', function(result){
+            if(result){
+
+                $.ajax({
+                    type: 'POST'
+                    , data: {Empid: EmpId}
+                    , async: false
+                    , url: '@Url.Content("~/Payroll/RevisePayrollDetails")'
+                    , success : function(data){
+                        if(data == '1' ){
+                            $('#ReviseData').hide();
+                            $('#DraftData').show();
+                            $('.payrollInputs').attr('disabled', false);
+                            $('#grossEarngs').attr('disabled', true);
+                            $('.readonly').attr('disabled', true);
+                            $('#StartDatepicker').val('');
+                            $('#StartDatepicker').attr('disabled', false);
+                            //$('#btnApprovePayroll').hide();
+                            //$('#drpdwnEmpName').trigger('change');
+                            getPayrollDetails();
+
+                            setTimeout(function(){
+                                effective_Since = new Date(effective_Since);
+                                var setDate =new Date(effective_Since.getFullYear(),effective_Since.getMonth()+1,1)
+                                $('#StartDatepicker').datepicker( 'setStartDate' , setDate );
+                                $('#StartDatepicker').val(dateFormatMonthYear(setDate));
+                                $('#btnApprovePayroll').hide();
+                            },1000);
+
+
+                        }
+                        else{
+                            toastr.warning("Revision failed");
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    function getEmployeeDetails(){
+
+        $.ajax({
+            type: "get",
+            url: '@Url.Content("~/Payroll/GetEmployeeDetails")',
+            async: false,
+            data: { EmpId: EmpId },
+            success: function (data) {
+                EmployeeDetails = JSON.parse(data.result.Data);
+                //  $('#EmployeeName').val(EmployeeDetails[0]['Firstname']);
+                $('#EmployeeID').val(EmployeeDetails[0]['Employee_Id']);
+                $('#EmployeeDept').val(EmployeeDetails[0]['Department']);
+                $('#EmpDesgn').val(EmployeeDetails[0]['Designation']);
+                $('#DOJ').val(dateValueFormat(EmployeeDetails[0]['Dateofjoin']));
+            }
+        });
+
+    }
+
+    function getPayrollDetails(){
+        $.ajax({
+            type: "GET",
+            data: { EmpId: EmpId },
+            async:false,
+            @*url: '@Url.Content("~/Payroll/GetPayrollDetails")',*@ 
+            url: '@Url.Content("~/Payroll/GetEmployeePayrollDetails")',
+            success: function (data) {
+                EarningDetails = JSON.parse(data.result1);
+                DeductionDetails = JSON.parse(data.result2);
+
+                if (data.result1 != '[]' || data.result2 != '[]') {
+                    payrollID = EarningDetails[0].ID == DeductionDetails[0].ID ? EarningDetails[0].ID : 0 ;
+                    $('.readonly').attr('disabled', true);
+                    $('#basicPay').val(EarningDetails[0].BASIC_PAY);
+                    $('#houseRentAlln').val(EarningDetails[0].HOUSE_RENT_ALLOWANCE);
+                    $('#specialAlln').val(EarningDetails[0].SPECIAL_ALLOWANCE);
+                    $('#medicAlln').val(EarningDetails[0].MEDICAL_ALLOWANCE);
+                    $('#conveyAlln').val(EarningDetails[0].CONVEYANCE);
+                    $('#foodAlln').val(EarningDetails[0].FOOD_ALLOWANCE);
+                    $('#grossEarngs').val(EarningDetails[0].MONTHLY_GROSS);
+                    $('#pfAmt').val(DeductionDetails[0].PF_AMOUNT);
+                    $('#prfTax').val(DeductionDetails[0].PROFESSIONAL_TAX);
+                    $('#esiAmt').val(DeductionDetails[0].ESI_AMOUNT);
+                    $('#sodexoAmt').val(DeductionDetails[0].SUDEXO_PASS);
+                    $('#others').val(DeductionDetails[0].OTHERS_DEDUCTIONS);
+                    //  $('#totalDeduction').val()
+                    //  $('#netSalary').val()
+                    effective_Since = DeductionDetails[0].EFFECTIVE_SINCE;
+                    $('#StartDatepicker').val(dateFormatMonthYear(DeductionDetails[0].EFFECTIVE_SINCE)).attr('disabled', true);
+
+                    if (DeductionDetails[0].IS_PF_RESTRICTION_APPLICABLE) {
+                        $('#restrictionPF').attr('checked', true);
+                    }
+                    else {
+                        $('#restrictionPF').attr('checked', false);
+                    }
+                    if(approverFlag == 1 || approverFlag == 0){
+                        $('#btnApprovePayroll').show();
+                    }
+
+                    if (EarningDetails[0].ACTIVE == 1 || DeductionDetails[0].ACTIVE == 1) {
+
+                        if(EarningDetails[0].REVISED == 1 && DeductionDetails[0].REVISED == 1){
+                            $('.payrollInputs').attr('disabled', false);
+                            $('.readonly').attr('disabled', true);
+                            $('#StartDatepicker').attr('disabled', false);
+                            $('#restrictionPF').attr('disabled', false);
+                            $('#ReviseData').hide();
+                            $('#DraftData').show();
+                        }
+                        else{
+                            $('.payrollInputs').attr('disabled', true);
+                            $('#StartDatepicker').attr('disabled', true);
+                            $('#restrictionPF').attr('disabled', true);
+                            $('#ReviseData').show();
+                            $('#DraftData').hide();
+                        }
+
+                    }
+                    else {
+                        $('.payrollInputs').attr('disabled', false);
+                        $('.readonly').attr('disabled', true);
+                        $('#StartDatepicker').attr('disabled', false);
+                        $('#restrictionPF').attr('disabled', false);
+                        $('#ReviseData').hide();
+                        $('#DraftData').show();
+                    }
+
+
+                    $('.deductionInputs').trigger('change');
+                }
+                else {
+                    $('#totalDeduction').val('');
+                    $('#netSalary').val('');
+                    $('.payrollInputs').attr('disabled', false);
+                    $('#grossEarngs').attr('disabled', true);
+                    $('.readonly').attr('disabled', true);
+                    $('#ReviseData').hide();
+                    $('#StartDatepicker').attr('disabled', false);
+                    $('#restrictionPF').attr('checked', false).attr('disabled', false);
+                    $('#btnApprovePayroll').hide();
+                    $('#DraftData').show();
+                }
+
+            }
+        });
+    }
+
+    // GET PF/ESI/PROFESSIONAL TAX DEDUCTION DETAILS
+    function GetDeductionCalculationDetails() {
+        $.ajax({
+            type: "GET",
+            //  data: { EmpId: EmpId },
+            url: '@Url.Content("~/Payroll/GetDeductionCalculationDetails")',
+            success: function (data) {
+                pfDeduction = JSON.parse(data.result1);
+                esiDeduction = JSON.parse(data.result2);
+                professionalTaxDeduction = JSON.parse(data.result3);
+
+            }
+        });
+    }
+
+    function checkRestrictionPF() {
+        if ($("#restrictionPF").is(':checked')) {
+            $("#restrictionPF").val(true);
+        }
+        else {
+            $("#restrictionPF").val(false);
+        }
+    }
+    function SavePayrollDetails() {
+
+        if(ValidationPayroll()){
+
+            var data = {
+                EmpId: EmpId
+                , Basic_Pay: $('#basicPay').val().trim()
+                , HouseRentAllwn: $('#houseRentAlln').val().trim()
+                , SpecialAllwn: $('#specialAlln').val().trim()
+                , MedicalAllwn: $('#medicAlln').val().trim()
+                , ConveyanceAllwn: $('#conveyAlln').val().trim()
+                , FoodAllwn: $('#foodAlln').val().trim()
+                , GrossSalary: $('#grossEarngs').val().trim()
+                , PF: $('#pfAmt').val().trim()
+                , ProffesionalTax: $('#prfTax').val().trim()
+                , ESI: $('#esiAmt').val().trim()
+                , SodexoPass: $('#sodexoAmt').val().trim()
+                , Others: $('#others').val().trim()
+                , TotalDeduction: $('#totalDeduction').val().trim()
+                , NetSalary: $('#netSalary').val().trim()
+                , EffectiveSince: $('#StartDatepicker').val().trim()
+                , PF_Restriction: $('#restrictionPF').val().trim()
+            }
+
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Content("~/Payroll/SubmitPayrollDetails")',
+                data: { roll: data, payrollID: payrollID },
+                success: function (response) {
+                    if (parseInt(response.success) > 0) {
+                        toastr.success("successfully Saved");
+                        $('#drpdwnEmpName').trigger('change');
+                    }
+                    else {
+                        toastr.warning("Failed to Save");
+                    }
+                }
+            });
+
+        }
+
+    }
+
+    function getEmployeesName() {
+
+        $.each(EmployeesList, function (i) {
+            $("#drpdwnEmpName").append('<option value="' + EmployeesList[i].id + '">' + EmployeesList[i].Firstname + ' ' + EmployeesList[i].Lastname + '');
+        });
+
+    }
+    function GetEmployeesList() {
+        $.ajax({
+            type: "get",
+            async:false,
+            url: '@Url.Content("~/Payroll/GetEmployeesList")',
+            //  data: { EmpId: 64, type: 1, description: 2, Amount: 1000, month: "January-2019" },
+            success: function (data) {
+                EmployeesList = JSON.parse(data);
+                getEmployeesName();
+            }
+        });
+    }
+
+    function dateValueFormat(date) {
+        var d = new Date(date);
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                        "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var val = d.getDate() + "-" + months[d.getMonth()] + "-" + d.getFullYear();
+        return val;
+    }
+
+    function dateFormatMonthYear(date) {
+        var d = new Date(date);
+        var months = ["January", "February", "March", "April", "May", "June", "July",
+                        "August", "September", "October", "November", "December"];
+        effective_Since = months[d.getMonth()] + "-" + d.getFullYear();
+        return effective_Since;
+    }
+
+        
+    function ValidationPayroll() {
+
+        $('.field-validation-valid').text('');
+        $('.field-validation-valid').show();
+        for (var i = 1; i < $('.select2cls:visible').length; i = i + 2) {
+            if ($('#' + $(' .select2cls:visible')[i].id).val() == 0) {
+                $('<span class="field-validation-valid">' + ' This field is required...!</span>').css('color', 'red').insertAfter('#' + $(' .select2cls:visible')[i].id);
+            }
+        }
+        for (var i = 0; i < $('.payrollInputs:visible').length; i++) {
+            if ($('#' + $('.payrollInputs:visible')[i].id).val() == '') {
+                $('<span class="field-validation-valid">' + ' This field is required...!</span>').css('color', 'red').insertAfter('#' + $('.payrollInputs:visible')[i].id);
+            }
+        }
+        if ($('#StartDatepicker').val() == '') {
+            $('<span class="field-validation-valid">' + ' This field is required...!</span>').css('color', 'red').insertAfter($('#StartDatepicker'));
+        }
+        if ($('.field-validation-valid').text() != '') {
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
+
+
+    function approverOrInitiatorCall() {
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Content("~/Module/ReadApprovers")',
+            async:false,
+            success: function (data) {
+                
+                approverFlag = data.success;
+                if (data.success == (@HRConstants.UserFlagforApprovalConstants.Initiator) ) {
+                    $('#btnApprovePayroll').show();
+                    $('#btnApprove').hide();
+                    $('#btnReject').hide();
+                    approverFlag = 0;
+                }
+                else if (data.success == (@HRConstants.UserFlagforApprovalConstants.Approver) || data.success == (@HRConstants.UserFlagforApprovalConstants.Both) ) {
+                    $('#btnApprovePayroll').show();
+                    $('#btnApprove').show();
+                    $('#btnReject').show();
+                    approverFlag = 1;
+                }
+                else {
+                    $('#btnApprovePayroll').hide();
+                }
+            }
+        });
+
+    }
+</script>

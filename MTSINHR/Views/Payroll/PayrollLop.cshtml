@@ -1,0 +1,319 @@
+﻿
+@{
+    ViewBag.Title = "PayrollLop";
+}
+
+@System.Web.Optimization.Scripts.Render("~/bundles/datatable")
+@System.Web.Optimization.Styles.Render("~/bundles/datepickercss")
+@System.Web.Optimization.Scripts.Render("~/bundles/datepicker")
+<link href="~/Content/css/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.min.js"></script>
+<link href="~/Content/bootstrap-datepicker.css" rel="stylesheet" />
+
+<style>
+    .nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
+        color: #495057;
+        background-color: #d1d0ceab;
+        border-color: #ddd #ddd #fff;
+    }
+
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+
+<div class="card">
+    <div class="card-header text-center">
+        Payroll LOP
+    </div>
+    <div class="card-body">
+        <div>
+            <div class="col-md-12 row gap-top10" style="margin-top:20px;">
+                <div class="col-md-5 row">
+                    <div class="gap-bottom10 card" style="margin-top:10px;">
+                        <div class="row card-body">
+                            <div class="col-md-5 p-t-5">
+                                <label id="lblMonth">Payroll Month & Year:</label>
+                            </div>
+                            <div class="col-md-7">
+                                @*data-provide="datepicker"*@
+                                <div class="input-group date monthyear">
+                                    <input type="text" id="txtmonthyear" onkeypress="return false;" onkeydown="return false;" onblur="return false;" onkeyup="return false;" oncut="return false;" onpaste="return false;" placeholder="Month - Year" class="form-control input-sm">
+                                    <div class="input-group-addon">
+                                        <span class="fa fa-calendar"></span>
+                                    </div>
+                                </div>
+                                <span style="color: red; font: bolder;" id="ErrorMessage"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-5 row">
+                    <div class="gap-bottom10 card" id="dvIdAttandance" style="margin-top:10px;" title="Attendance Cut-Off Dates">
+                        <div class="row card-body">
+                            <div class="col-md-2 p-t-5">
+                                <label id="lblMonth"> From:</label>
+                            </div>
+                            <div class="col-md-4 pull-left">
+                                @*data-provide="datepicker"*@
+                                <div class="input-group">
+                                    <input type="text" id="txtFromdate" disabled="disabled" onkeypress="return false;" onpaste="return false;" class="form-control" />
+                                </div>
+                                <span style="color: red; font: bolder;" id="ErrorMessage"></span>
+                            </div>
+                            <div class="col-md-2 p-t-5">
+                                <label id="lblMonth"> To:</label>
+                            </div>
+                            <div class="col-md-4 pull-left">
+                                @*data-provide="datepicker"*@
+                                <div class="input-group">
+                                    <input type="text" id="txtTodate" onkeypress="return false;" onpaste="return false;" class="form-control" />
+                                </div>
+                                <span style="color: red; font: bolder;" id="ErrorMessage"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                 <div class="col-md-1 p-t-25 p-l-50">
+                     <button id="btnViewPayroll" class="btn btn-info btn-sm" onclick="ViewPayrollData('', 1)"><i class="fa fa-eye"></i>&nbsp; View</button> &nbsp;
+                 </div>
+             </div>
+                    <div class="text-center">
+                        <label id="lblpayrollstatus" class="hide label-warning">Payroll Month is Closed</label>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="col-md-12 row" style="margin-top:10px;">
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="col-md-12">
+                        <div class="row m-t-15">
+                            <div class="MTS_Table">
+                                <table id="PayrollLOPDetails" class="table table-bordered table-hover tabel-sm table-responsive content-scrollable" cellspacing="0" width="100%">
+
+                                    <thead>
+                                    </thead>
+                                    <tbody></tbody>
+                                    <tfoot>
+                                    </tfoot>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+    </div>
+</div>
+<div class="modal fade" id="EmployeeLOPDetailsModal" data-backdrop="static"></div>
+
+<script>
+    var groupTable;
+    $(document).ready(function () {
+        $(".monthyear").datepicker({
+            autoclose: true,
+            minViewMode: 1,
+            format: 'MM-yyyy'
+        }).on("change", function () {
+            checkPayrollData();
+            getAttandancefromdate();
+        });
+
+        getCurrentMonthDate();
+
+        $('#txtFromdate').datepicker({
+            format: "mm/dd/yyyy",
+            endDate: '0m',
+            autoclose: true
+        });
+
+        $('#txtTodate').datepicker({
+            format: "mm/dd/yyyy",
+            endDate: '0m',
+            autoclose: true
+        });
+
+
+        var Month = $('#txtmonthyear').val();
+        if (Month != "") {
+            getAttandancefromdate();
+            checkPayrollData();
+            ViewPayrollData(Month, 1);
+           
+        }
+
+    });
+
+
+    function checkPayrollData() {
+        var Month = $('#txtmonthyear').val();
+        if (Month != "") {
+            $.ajax({
+                url: '@Url.Action("CheckPayrollDetails", "Payroll")',
+                data: { 'Payroll_Month': Month, 'Flag': 0 },
+                async: false,
+                success: function (data) {
+                    if (data.result.Data == "1") {
+                        $("#btnViewPayroll").hide();
+                        $("#dvIdAttandance").hide();
+                        $("#lblpayrollstatus").show();
+                        return true;
+                    }
+                    else {
+                        $("#btnViewPayroll").show();
+                        $("#dvIdAttandance").show();
+                        $("#lblpayrollstatus").hide();
+                    }
+
+                }
+            });
+        }
+
+    }
+
+    function ViewPayrollData(Month, button) {
+        if (Month == "") {
+            var Month = $('#txtmonthyear').val();
+            if (Month == "") {
+                toastr.warning("Please Select Payroll Month & Year");
+                return false;
+            }
+        }
+        var Attandance_From = $('#txtFromdate').val();
+        var Attandance_To = $('#txtTodate').val();
+        if (Attandance_To == "" || Attandance_To == null) {
+            toastr.warning("Please select Attendance To Date");
+            return false;
+        }
+
+        if (new Date(Attandance_From) > new Date(Attandance_To)) {
+            toastr.warning("Attendance To should be greater than Attendance From");
+            return false;
+        }
+
+        // end - start returns difference in milliseconds
+        var diff = (new Date(Attandance_To) - new Date(Attandance_From));
+
+        // get days
+        var days = diff / 1000 / 60 / 60 / 24;
+        if (days > 25 && days < 35) {
+            //no issue
+        }
+        else {
+            toastr.warning("Attendance From and Attendance To should have difference between 25 to 35 days only");
+            return false;
+        }
+        $.ajax({
+            url: '@Url.Action("Read_Lop", "Payroll")',
+            data: { 'Payroll_Month': Month, 'AttandanceFrom': Attandance_From, 'AttandanceTo': Attandance_To },
+            async: false,
+            success: function (data) {
+                var ds = JSON.parse(data.result.Data);
+                drawdatatable(ds, button);
+            }
+        });
+
+    }
+
+    function getCurrentMonthDate() {
+        $.ajax({
+            url: '@Url.Action("GetPayrollMonth", "Payroll")',
+            async: false,
+            success: function (data) {
+                if (data.result != "" && data.result != null && data.result != undefined) {
+                    $("#txtmonthyear").val(data.result);
+                }
+                else {
+                    $("#txtmonthyear").val('');
+                }
+
+            }
+        });
+    }
+
+    function drawdatatable(ds, button) {
+        if ($.fn.DataTable.isDataTable('#PayrollLOPDetails')) {
+            $('#PayrollLOPDetails').dataTable().fnDestroy();
+        }
+        var Month = $('#txtmonthyear').val();
+        groupTable = $("#PayrollLOPDetails").DataTable({
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "iDisplayLength": 5,
+            "bFilter": true,
+            "bProcessing": true,
+            "data": ds,
+            "aoColumns":
+      [{ "mData": "Employee_Id", "sTitle": "SI.No","bSearchable":false, "bVisible": false, "sClass": "text-right" } //0
+      , { "mData": "Emp_No", "sTitle": "Employee No", "sClass": "text-left" }   //1
+      , { "mData": "Employee_Name", "sTitle": "Employee Name", "sClass": "text-left" }  //2
+      , { "mData": "LOP", "sTitle": "LOP Days", "sClass": "text-center" }//3
+
+      ],
+            "aoColumnDefs":
+          [
+               {
+                   "aTargets": [3]
+                  , "mRender": function (data, type, row) {
+                      var result = data == null || data == undefined ? 0 : data
+                      return '<span onclick="OpenEmployeeLOPDetails(this,' + button + ')" style="color:blue;cursor:pointer;text-decoration:underline">' + result + '</span>'
+                  }
+               }
+          ]
+        });
+    }
+
+    function OpenEmployeeLOPDetails(CurrentElement, button) {
+        var button = 3;
+        var CurrentRow = CurrentElement.closest("tr");
+        var RowData = $('#PayrollLOPDetails').DataTable().row(CurrentRow).data();
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Content("~/Payroll/Get_PV_EmployeeLossOfPayDetails")',
+            success: function (data) {
+                $('#EmployeeLOPDetailsModal').html(data);
+                $('#EmployeeId').val(RowData.Employee_Id);
+                $('#PayrollMonth').val(RowData.PAYROLL_MONTH);
+                $('#PayrollYear').val(RowData.PAYROLL_YEAR);
+                $('#Month').val(RowData.PAYROLL_MONTH + ' - ' + RowData.PAYROLL_YEAR);
+                $('#PayrollMontDisplay').html(RowData.PAYROLL_MONTH + ' - ' + RowData.PAYROLL_YEAR)
+                $('#EmployeeName').val(RowData.Employee_Name);
+                $('#EmpName').html(RowData.Employee_Name);
+                $('#hdnButton').val(button);
+                $('#LeaveFrom').datepicker('setStartDate', dateFormat(RowData.Dateofjoin));
+                $('#LeaveFrom').datepicker('setEndDate', dateFormat(RowData.PAYROLL_EOM));
+                $('#LeaveTo').datepicker('setStartDate', dateFormat(RowData.Dateofjoin));
+                $('#LeaveTo').datepicker('setEndDate', dateFormat(RowData.PAYROLL_EOM));
+                $('#EmployeeLOPDetailsModal').modal('show');
+            }
+        })
+    }
+
+    function getAttandancefromdate() {
+        var Month = $('#txtmonthyear').val();
+        $.ajax({
+            url: '@Url.Action("GetPayrollFromDate", "Payroll")',
+            data: { 'Payroll_Month': Month },
+            async: false,
+            success: function (data) {
+                if (data.result != "" && data.result != null && data.result != undefined) {
+                    var date = new Date(data.result);
+                    var result = ('0' + (date.getMonth() + 1)).slice(-2) + '/' + ('0' + date.getDate()).slice(-2) + '/' + date.getFullYear();
+                    $("#txtFromdate").val(result);
+                }
+                else {
+                    $("#txtFromdate").val('');
+                }
+                if (data.result2 != "" && data.result2 != null && data.result2 != undefined) {
+                    var date2 = new Date(data.result2);
+                    var result2 = ('0' + (date2.getMonth() + 1)).slice(-2) + '/' + ('0' + date2.getDate()).slice(-2) + '/' + date2.getFullYear();
+                    $("#txtTodate").val(result2);
+                }
+
+            }
+        });
+    }
+</script>

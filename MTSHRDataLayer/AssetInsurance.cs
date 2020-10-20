@@ -25,5 +25,13 @@ namespace MTSHRDataLayer
             return DataAccess.ExecuteDataSet("READ_ASSET_NAME");
 
         }
+        public int Upload_Amc_Insurance(params object[] parameterValues)
+        {
+            return Convert.ToInt32(DataAccess.ExecuteScalar("CREATE_AMC_INSURANCE_FILES", parameterValues));
+        }
+        public DataTable Read_Insurance(params object[] parameterValues)
+        {
+            return DataAccess.ExecuteDataTable("READ_AMC_INSURANCE", parameterValues);
+        }
     }
 }

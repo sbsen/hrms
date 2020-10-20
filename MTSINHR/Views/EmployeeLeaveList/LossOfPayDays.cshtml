@@ -1,4 +1,4 @@
-﻿@model LeaveApply.Models.Leave
+﻿@model MTSINHR.Models.Leave
 
 @{
     ViewBag.Title = "LossOfPayDays";
@@ -40,14 +40,33 @@
 
 
         });
+        $("#EmployeeName").on('change', function () {
+            
+            var id = $(this).val();
+            $.ajax({
+                type: "post",
+                url: "/EmployeeLeaveList/GetAllLeaveType",
+                data:{
+                    empid:id
+                },
+                success: function (result) {
+                    if (result.success == true) {
+                        $("#LeaveType").empty();
+                        $.each(JSON.parse(result.LeaveList), function (i, Val) { $("#LeaveType").append('<option value="' + Val.Value + '">' + Val.Text + '') });
+                        $("#LeaveType").val('@ViewBag.LeaveTypes');
+                    }
+                }
+            })
+
+        });
 
     });
     function back() {
 
-                window.location.href = '@Url.Action("EmployeeList", "EmployeeList")';
-            
-        }
-    
+        window.location.href = '@Url.Action("EmployeeList", "EmployeeList")';
+
+    }
+
     function ShowReport() {
 
         if ($("#lop").valid()) {
@@ -58,7 +77,7 @@
                 data: $("form").serialize(),
                 success: function (result) {
 
-                    debugger
+                   
                     if (result == 1) {
                         toastr.error("Lop Days Updated");
 

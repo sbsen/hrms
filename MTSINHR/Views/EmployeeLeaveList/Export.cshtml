@@ -1,4 +1,4 @@
-﻿@model LeaveApply.Models.Leave
+﻿@model MTSINHR.Models.Leave
 
 @{
     ViewBag.Title = "Export";
@@ -44,7 +44,7 @@
     });
 
     function ShowReport() {
-
+        $("#month").html($("#Month").val() + ' - ' + $("#Year").val());
         if ($("#Export").valid()) {
             $.ajax({
 
@@ -76,7 +76,7 @@
                                 { "mData": "Month", "sTitle": "Month" },
                                 { "mData": "year", "sTitle": "Year" },
                                 { "mData": "LeaveType", "sTitle": "Leave Type" },
-                               { "mData": "Numberofdays", "sTitle": "Number Of Days" },
+                                { "mData": "Numberofdays", "sTitle": "Leave Taken" },
                                   { "mData": "LeaveBalance", "sTitle": "Leave Balance" },
 
                                 ]
@@ -98,6 +98,9 @@
 
 </script>
 <div style="display: none" class="card">
+    <div class="card-header text-center">
+        Leave Availed and Balance for <span id="month"></span>
+    </div>
     <div class="card-body ">
         <div class="container-fluid">
             <div class="row">
@@ -119,7 +122,7 @@
 
     <div class="card card-shadow">
         <div class="card-header text-center">
-            Export
+            Export Leave List
         </div>
         <div class="card-body">
             <div class="label-600">

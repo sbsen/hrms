@@ -1,0 +1,557 @@
+﻿@model MTSINHR.Models.LeavePolicy
+
+<html>
+    <head>
+        @{
+            Layout = "~/Views/Shared/Layout_New.cshtml";
+        }
+        <link href="~/Content/css/select2.min.css" rel="stylesheet" />
+        <script src="~/Scripts/select2.min.js"></script>
+        <style>
+            .requir {
+                border-left: 2px solid red !important;
+            }
+        </style>
+
+        <script>
+            var leavePolicytable;
+            var id;
+            var dropDownText;
+            var dropDownValue;
+            var leavePolicyData = [];
+            var dwv;
+            //var noTogetherDD = [];
+            //var adjustLeaveDD = [];
+            $(document).ready(function () {
+
+                $('.select2cls').select2({ "width": "100%" });
+                $('#addLeavePolicy').hide();
+
+                LoadLeavePolicy();
+                $('input[type="number"]').on('keypress', function (e) { if (e.key == '-') { return false; } else if (e.key == '.') { return false; } else { return true; } });
+                $("#maxAllowedBalance").prop('disabled', true);
+
+                $("input[name='accural']").click(function () {
+                    if ($("input[name='accural']:checked").val() == "0") {
+                        $("#maxAllowedBalance").prop('disabled', false);
+                    }
+                    else {
+                        $("#maxAllowedBalance").prop('disabled', true);
+                    }
+                });
+
+                $('#adjustLeave').on('change', function (e) {
+                    
+                    var noTogetherDD = [];
+                    $('#noTogether option').each(function () {
+                        noTogetherDD.push($(this).val());
+                    })
+
+                    if ($('#adjustLeave').val() )
+                      $.each($('#adjustLeave').val(), function (i, value) {
+                          $("#noTogether option[value='" + value + "']").remove();
+                    });               
+
+                    if (e.removed) {
+                        var b = 1;
+                        for (var i = 0; i < noTogetherDD.length; i++) {
+                            if (noTogetherDD[i] == e.removed['id']) {
+                                b = 0;
+                                break;
+                            }
+                        }
+                        if (b == 1) {
+                            $("#noTogether").append('<option value="' + e.removed['id'] + '">' + e.removed['text'] + '');
+                        }
+                      }
+                           
+                });
+
+                $('#noTogether').on('change', function (e) {
+                    
+                    var adjustLeaveDD = [];
+                    $('#adjustLeave option').each(function () {
+                        adjustLeaveDD.push($(this).val());
+                    })
+
+                    $.each($('#noTogether').val(), function (i, value) {
+                        $("#adjustLeave option[value='" + value + "']").remove();
+                    });
+
+                    if (e.removed) {
+                        var b = 1;
+                        for (var i = 0; i < adjustLeaveDD.length; i++) {
+                            if (adjustLeaveDD[i] == e.removed['id']) {
+                                b = 0;
+                                break;
+                            }
+                        }
+                        if (b == 1) {
+                            $("#adjustLeave").append('<option value="' + e.removed['id'] + '">' + e.removed['text'] + '');
+                        }
+                    }
+                });
+
+                
+
+                
+
+                
+            });
+
+            function showAddpolicy() {
+                $('#title').text('Add');
+                $('#addLeavePolicy').show();
+                $('#readPolicyCard').hide();
+                $('#savebtn').show();
+                $('#updatebtn').hide();
+
+                $('#leavetype').val('');
+                $('#leaveCode').val('');
+                $('#leaveCode').prop('disabled', false);
+                $('#applicableAfter').val(0);
+                $('#gender').val(3);
+                $('#maritalStatus').val(3);
+                $('#accuralYes').prop("checked", false);
+                $('#accuralNo').prop("checked", false);
+                $('#maxAllowedBalance').val(0);
+                //$('#maxAllowedBalance').prop('disabled', true);
+                $('#consecutiveLeave').val('');
+                $('#adjustLeave').select2('val','');
+                $('#noTogether').select2('val', '');
+                $('#exceedDays').val('');
+            }
+
+            function addDropDownVal() {
+                
+                var adjustLeave = document.getElementById("adjustLeave");
+                var option = document.createElement("option");
+                option.text = dropDownText;
+                option.value = dropDownValue;
+                adjustLeave.add(option);
+                var noTogether = document.getElementById("noTogether");
+                var option1 = document.createElement("option");
+                option1.text = dropDownText;
+                option1.value = dropDownValue;
+                noTogether.add(option1);
+            }
+
+            function closeAddLeave() {
+                
+                addDropDownVal();
+                //$('#addLeavePolicy').hide();
+                //$('#readPolicyCard').show();
+                setTimeout(function () { location.reload(true); }, 1000);
+            }
+
+
+            function LoadLeavePolicy() {
+                if ($.fn.DataTable.isDataTable('#ReadLeavePolicy')) {
+                    $('#ReadLeavePolicy').dataTable().fnDestroy();
+                }
+                leavePolicytable = $("#ReadLeavePolicy").DataTable({
+                    "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+                    "iDisplayLength": 5,
+                    "bFilter": true,
+                    "bProcessing": true,
+                    "ajax": {
+                        type: "GET",
+                        url: '@Url.Content("~/LeavePolicy/ReadLeavePolicy")',
+                        dataSrc: function (data) {
+                            leavePolicyData = JSON.parse(data);
+                            return JSON.parse(data);
+                        }
+                    },
+                    "aoColumns": [
+                        { "mData": "ID", "sTitle": "ID", "sClass": "text-center", "sWidth": "2%", "bVisible": false }  //0
+                        , { "mData": "LEAVE_TYPE", "sTitle": "Leave Type", "sClass": "text-center" }  //1
+                        , { "mData": "LEAVE_CODE", "sTitle": "Leave Code", "sClass": "text-center" }  //2
+                        , { "mData": "ASSIGNED_AFTER", "sTitle": "Leave Code", "sClass": "text-center", "bVisible": false }  //3
+                        , { "mData": "APPLICABLE_FOR", "sTitle": "Leave Code", "sClass": "text-center", "bVisible": false }  //4
+                        , { "mData": "MARITAL_STATUS", "sTitle": "Leave Code", "sClass": "text-center", "bVisible": false }  //5
+                        , { "mData": "ACCURAL", "sTitle": "Leave Code", "sClass": "text-center", "bVisible": false }  //6
+                        , { "mData": "MAX_ALLOWED_BALANCE", "sTitle": "Leave Code", "sClass": "text-center", "bVisible": false }  //7
+                        , { "mData": "CONSECUTIVE_LEAVES", "sTitle": "Leave Code", "sClass": "text-center", "bVisible": false }  //8
+                        , { "mData": "ADJUSTMENT_LEAVE_AGAINST", "sTitle": "Leave Code", "sClass": "text-center", "bVisible": false }  //9
+                        , { "mData": "LEAVE_CANNOT_TAKE_TOGETHER", "sTitle": "Leave Code", "sClass": "text-center", "bVisible": false }  //10
+                        , { "mData": "ENABLE_UPLOAD_DOC_FOR_EXCEEDED_DAYS", "sTitle": "Leave Code", "sClass": "text-center", "bVisible": false }  //11
+                        , { "mData": "ID", "sTitle": "Edit", "sClass": "text-center", "sWidth": "2%", "orderable": false }  //12
+                    ],
+                    "aoColumnDefs": [{
+                        "aTargets": [4]
+                            , "mRender": function (data, type, row) {
+                                var result = (data == 1) ? 'Male' : (data == 2) ? 'Female' : (data == 3) ? 'Both' : 'N/A';
+                                return result;
+                            }
+                    },
+                    {
+                        "aTargets": [5]
+                            , "mRender": function (data, type, row) {
+                                var result = (data == 1) ? 'Single' : (data == 2) ? 'Married' : (data == 3) ? 'Both' : 'N/A';
+                                return result;
+                            }
+                    },
+                        {
+                        "aTargets": [12]
+                            , "mRender": function (data, type, row) {
+                                return '<span style="cursor: pointer !important;" onclick=editPolicy($(this).closest("tr")) class="fa fa-edit"></span>';
+                            }
+                    }]
+
+                });
+            }
+
+            function AddPolicy() {
+
+                if (ValidationCall())
+                {
+                    //var adjust = ($('#adjustLeave').val()).join();
+                    var data = {
+                        LeaveType: $('#leavetype').val().trim(),
+                        LeaveCode: $('#leaveCode').val().trim(),
+                        ApplicableAfter: $('#applicableAfter').val().trim(),
+                        ApplicableFor: $('#gender').val().trim(),
+                        MaritalStatus: $('#maritalStatus').val().trim(),
+                        Accural: $('#accuralYes').is(':checked') ? 1 : 0,
+                        MaxAllowBal: $('#accuralYes').is(':checked') ? $('#maxAllowedBalance').val().trim() : '',
+                        ConsecutiveLeave: $('#consecutiveLeave').val().trim(),
+                        ADJUSTMENT_LEAVE_AGAINST: ($('#adjustLeave').val()).join(),   // $('#adjustLeave').val(),
+                        LEAVE_CANNOT_TAKE_TOGETHER: ($('#noTogether').val()).join(),
+                        ENABLE_UPLOAD_DOC_FOR_EXCEEDED_DAYS: $('#exceedDays').val().trim(),
+                        PRORATA:$('input[name=pro_rata]:checked').val().trim()
+                    }
+
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Content("~/LeavePolicy/AddLeavepolicy")',
+                        async: false,
+                        contentType: "application/json",
+                        dataType: "json",
+                        data:
+                            JSON.stringify({ leavePolicy: data }),
+                        success: function (response) {
+                            if (parseInt(response.success) == 1) {
+                                //LoadLeavePolicy();
+                                toastr.success("Saved successfully");
+                                setTimeout(function () { location.reload(true); }, 1000);
+                                //$('#addLeavePolicy').hide();
+                                //$('#readPolicyCard').show();
+                                
+                            }
+                            else if (parseInt(response.success) == -1) {
+                                toastr.info("Leave code already taken.");
+                            }
+                            else {
+                                toastr.warning("Failed to save");
+                            }
+                        }
+                    });
+                }
+                    
+            }
+
+            function editPolicy(curTr) {
+                
+                var data = leavePolicytable.row(curTr).data();
+                
+
+                $('#readPolicyCard').hide();
+                $('#addLeavePolicy').show();
+                $('#title').text('Edit');
+                $('#savebtn').hide();
+                $('#updatebtn').show();
+
+                id = data.ID;
+                $('#leavetype').val(data.LEAVE_TYPE);
+                $('#leaveCode').val(data.LEAVE_CODE);
+                dropDownText = $('#leavetype').val();
+                dropDownValue = $('#leaveCode').val();
+                dwv = data.LEAVE_CODE;
+                $("#adjustLeave option[value='" + data.LEAVE_CODE + "']").remove();
+                $("#noTogether option[value='" + data.LEAVE_CODE + "']").remove();
+                $('#leaveCode').prop('disabled', true);
+                $('#applicableAfter').val(data.ASSIGNED_AFTER);
+                $('#gender').val(data.APPLICABLE_FOR);
+                $('#maritalStatus').val(data.MARITAL_STATUS);
+                if (data.ACCURAL == true) {
+                    $('#accuralYes').prop("checked", true);
+                    $('#maxAllowedBalance').val(data.MAX_ALLOWED_BALANCE);
+                    $('#maxAllowedBalance').prop('disabled', false);
+                }
+                else{
+                    $('#accuralNo').prop("checked", true);
+                    $('#maxAllowedBalance').val(data.MAX_ALLOWED_BALANCE);
+                    $('#maxAllowedBalance').prop('disabled', true);
+                }
+                $('#consecutiveLeave').val(data.CONSECUTIVE_LEAVES);
+                $('#adjustLeave').select2('val', '');
+                if (data.ADJUSTMENT_LEAVE_AGAINST != null) {
+                    //var adjust = (data.ADJUSTMENT_LEAVE_AGAINST).split(',');
+                    $('#adjustLeave').select2('val', (data.ADJUSTMENT_LEAVE_AGAINST).split(','));
+                }
+                $('#noTogether').select2('val', '');
+                if (data.LEAVE_CANNOT_TAKE_TOGETHER != null) {
+                    $('#noTogether').select2('val', (data.LEAVE_CANNOT_TAKE_TOGETHER).split(','));
+                }
+                //$("#adjustLeave option[value='" + data.ADJUSTMENT_LEAVE_AGAINST + "']").remove();
+                //$("#noTogether option[value='" + data.LEAVE_CODE + "']").remove();
+                $.each($('#adjustLeave').val(), function (i, value) {
+                    $("#noTogether option[value='" + data.ADJUSTMENT_LEAVE_AGAINST + "']").remove();
+                });
+                $.each($('#noTogether').val(), function (i, value) {
+                    $("#adjustLeave option[value='" + data.LEAVE_CANNOT_TAKE_TOGETHER + "']").remove();
+                });
+                $('#exceedDays').val(data.ENABLE_UPLOAD_DOC_FOR_EXCEEDED_DAYS);
+                if(data.PRORATA==true)
+                {
+                    $('input[id=prorataYes]').attr('checked', true);
+                }
+                else
+                {
+                    $('input[id=prorataNo]').attr('checked', true);
+                }
+
+                    
+                    $.each($('#noTogether').val(), function (i, value) {
+                        $("#adjustLeave option[value='" + value + "']").remove();
+                    });
+                    $.each($('#adjustLeave').val(), function (i, value) {
+                        $("#noTogether option[value='" + value + "']").remove();
+                    });
+            }
+
+
+            function UpdatePolicy() {
+
+                addDropDownVal();
+
+                if (ValidationCall()) {
+                    //var adjust = ($('#adjustLeave').val()).join();
+                    var data = {
+                        Id: id,
+                        LeaveType: $('#leavetype').val().trim(),
+                        LeaveCode: $('#leaveCode').val().trim(),
+                        ApplicableAfter: $('#applicableAfter').val().trim(),
+                        ApplicableFor: $('#gender').val().trim(),
+                        MaritalStatus: $('#maritalStatus').val().trim(),
+                        Accural: $('#accuralYes').is(':checked') ? 1 : 0,
+                        MaxAllowBal: $('#accuralYes').is(':checked') ? $('#maxAllowedBalance').val().trim() : '',
+                        ConsecutiveLeave: $('#consecutiveLeave').val().trim(),
+                        ADJUSTMENT_LEAVE_AGAINST: ($('#adjustLeave').val()).join(),
+                        LEAVE_CANNOT_TAKE_TOGETHER: ($('#noTogether').val()).join(),
+                        ENABLE_UPLOAD_DOC_FOR_EXCEEDED_DAYS: $('#exceedDays').val().trim(),
+                        PRORATA:$('input[name=pro_rata]:checked').val().trim(),
+                        Accural: $('#accuralYes').is(':checked') ? 1 : 0,
+                    }
+
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Content("~/LeavePolicy/UpdateLeavepolicy")',
+                        async: false,
+                        contentType: "application/json",
+                        dataType: "json",
+                        data:
+                            JSON.stringify({ leavePolicy: data }),
+                        success: function (response) {
+                            if (parseInt(response.success) == 1) {
+                                //LoadLeavePolicy();
+                                toastr.success("Updated successfully");
+                                setTimeout(function () { location.reload(true); }, 1000);
+                                //$('#addLeavePolicy').hide();
+                                //$('#readPolicyCard').show();
+                                
+                            }
+                            else {
+                                toastr.warning("Failed to update");
+                            }
+                        }
+                    });
+                }
+
+            }
+
+            function ValidationCall() {
+                
+                $('.field-validation-valid').text("");
+                $('.field-validation-valid').show();
+                if ($('#leavetype').val().trim() == null || $('#leavetype').val().trim() == '') {
+                    $("#ErrorLeaveType").text("This field is required");
+                }
+
+                if ($('#leaveCode').val().trim() == null || $('#leaveCode').val().trim() == '') {
+                    $("#ErrorLeaveCode").text("This field is required");
+                }
+
+                if ($('#applicableAfter').val().trim() == null || $('#applicableAfter').val().trim() == '') {
+                    $("#ErrorAAfter").text("This field is required");
+                }
+
+                if ($('#gender').val().trim() == null || $('#gender').val().trim() == '') {
+                    $("#ErrorGender").text("This field is required");
+                }
+
+                if ($('#maritalStatus').val().trim() == null || $('#maritalStatus').val().trim() == '') {
+                    $("#ErrorMS").text("This field is ErrorMS");
+                }
+
+                if ( !($('#accuralYes').is(':checked')) && !($('#accuralNo').is(':checked')) ) {
+                        $("#ErrorAccural").text("This field is required");
+                }
+
+                //if (!($('#prorataYes').is(':checked')) && !($('#prorataNo').is(':checked'))) {
+                //    $("#Errorprorata").text("This field is required");
+                //}
+
+                if ($('#accuralYes').is(':checked')) {
+                    if ($('#maxAllowedBalance').val().trim() == null || $('#maxAllowedBalance').val().trim() == "") {
+                        $("#ErrorMAB").text("This field is required");
+                    }
+                }
+
+                if (!$('input[name=pro_rata]').is(':checked')) {
+                    $("#Errorprorata").text("This field is required");
+                }
+
+                if ($(".field-validation-valid").text() == '') {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+
+        </script>
+    </head>
+
+    <body>
+
+        <div class="card p-b-15" id="addLeavePolicy">
+            <div class="card-header">
+                <span id="title"></span> Leave policy
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-4 form-group">
+                        <label>Leave type</label>
+                        <input type="text" class="form-control requir" id="leavetype" placeholder="Name" />
+                        <span class="field-validation-valid" id="ErrorLeaveType" style="color:red;font: bold; display: none"></span>
+                    </div>
+                    <div class="col-lg-4 form-group">
+                        <label>Leave code</label>
+                        <input type="text" class="form-control requir" onkeyup="this.value = this.value.toUpperCase();" id="leaveCode" />
+                        <span class="field-validation-valid" id="ErrorLeaveCode" style="color:red;font: bold; display: none"></span>
+                    </div>
+                    <div class="col-lg-4 form-group">
+                        <label>Applicable after ( Month(s) )</label>
+                        <input type="number" min="0"  class="form-control requir" id="applicableAfter" placeholder="No of months" /> 
+                        <span class="field-validation-valid" id="ErrorAAfter" style="color:red;font: bold; display: none"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-4 form-group">
+                        <label>Applicable for</label>
+                        <select id="gender" class="form-control requir">
+                            <option value="1">Male</option>
+                            <option value="2">Female</option>
+                            <option value="3" selected>Both (Male & Female)</option>
+                        </select>
+                        <span class="field-validation-valid" id="ErrorGender" style="color:red;font: bold; display: none"></span>
+                    </div>
+                    <div class="col-lg-4 form-group">
+                        <label>Marital status</label>
+                        <select id="maritalStatus" class="form-control requir">
+                            <option value="1">Single</option>
+                            <option value="2">Married</option>
+                            <option value="3" selected>Both</option>
+                        </select>
+                        <span class="field-validation-valid" id="ErrorMS" style="color:red;font: bold; display: none"></span>
+                    </div>
+                    <div class="col-lg-4 form-group">
+                        <label>Accural</label>
+                        <div class="row">
+                            <div class="col-lg-1"></div>
+                            <div class="col-lg-5">
+                                <input type="radio" name="accural" id="accuralYes" value="0"> Yes
+                            </div>
+                            <div class="col-lg-5">
+                                <input type="radio" name="accural" id="accuralNo" value="1"> No
+                            </div>
+                        </div>
+                        <span class="field-validation-valid" id="ErrorAccural" style="color:red;font: bold; display: none"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-4 form-group">
+                        <label>Pro-rata</label>
+                        <div class="row">
+                            <div class="col-lg-1"></div>
+                            <div class="col-lg-5">
+                                <input type="radio" name="pro_rata" id="prorataYes" value="1"> Yes
+                            </div>
+                            <div class="col-lg-5">
+                                <input type="radio" name="pro_rata" id="prorataNo" value="0"> No
+                            </div>
+                        </div>
+                        <span class="field-validation-valid" id="Errorprorata" style="color:red;font: bold; display: none"></span>
+                    </div>
+                    <div class="col-lg-4 form-group">
+                        <label>Max. allowed balance</label>
+                        <input type="number" min="0" class="form-control requir" id="maxAllowedBalance" placeholder="No of days" />
+                        <span class="field-validation-valid" id="ErrorMAB" style="color:red;font: bold; display: none"></span>
+                    </div>
+                    <div class="col-lg-4 form-group">
+                        <label>Max. no of consecutive leaves allowed</label>
+                        <input type="number" min="0" placeholder="No of days" class="form-control" id="consecutiveLeave" />
+                    </div>
+                  
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-4 form-group">
+                        <label>Adjust leave against (if balance not available)</label>
+                        @*<input type="text" class="form-control" />*@
+                        @Html.DropDownListFor(model => model.ADJUSTMENT_LEAVE_AGAINST, new System.Web.Mvc.SelectList(ViewBag.leavetype, "value", "Text"), new { @class = "form-control select2cls", @id = "adjustLeave", multiple = "multiple", placeholder = "--Select Leave Type--" })
+                    </div>
+                    <div class="col-lg-4 form-group">
+                        <label>This leave cannot be taken together with</label>
+                        @*<input type="text" class="form-control" />*@
+                        @Html.DropDownListFor(model => model.LEAVE_CANNOT_TAKE_TOGETHER, new System.Web.Mvc.SelectList(ViewBag.leavetype, "value", "Text"), new { @class = "form-control select2cls", @id="noTogether", multiple = "multiple", placeholder = "--Select Leave Type--" })
+                    </div>
+                    <div class="col-lg-4 form-group">
+                        <label>Enable Doc upload option if leave exceeds days</label> 
+                        <input type="number" min="0" placeholder="No of days" class="form-control" id="exceedDays" />
+                    </div>
+                  
+                </div>
+
+                <div class="pull-right p-t-15 p-b-10 p-r-10">
+                    <button type="button" class="btn btn-light m-r-5" onclick="closeAddLeave()">Close</button>
+                    <button type="button" class="btn btn-primary" id="savebtn" onclick="AddPolicy()">Save</button>
+                    <button type="button" class="btn btn-primary" id="updatebtn" onclick="UpdatePolicy()">Update</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card m-t-15" id="readPolicyCard">
+            <div class="card-header">
+                Leave policy
+            </div>
+            <div class="card-body">
+                <div class="text-right">
+                    <button type="button" class="btn btn-primary btn-sm" id="addPolicyBtn" onclick="showAddpolicy()"><span class="fa fa-plus-circle"></span>&nbsp;&nbsp;Add</button>
+                </div>
+                <div class="row m-t-15">
+                    <div class="MTS_Table">
+                        <table id="ReadLeavePolicy" class="table table-bordered table-hover tabel-sm table-responsive bg-th-blue" cellspacing="0" style="width:100%"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>
+
+
+

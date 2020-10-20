@@ -11,10 +11,11 @@ using System.Web.Mvc;
 using System.Data;
 using System.Text;
 using MTSEntBlocks.ExceptionBlock.Handlers;
+using MTS.Controllers;
 
 namespace MTSINHR.Controllers
 {
-    public class EmployeeDocumentsController : Controller
+    public class EmployeeDocumentsController : SecureController
     {
         //
         // GET: /EmployeeDocuments/
@@ -42,18 +43,20 @@ namespace MTSINHR.Controllers
             return docu;
         }
 
-
         public ActionResult ShowAllEmployeeDocuments()
         {
             string empid = Session["UserID"].ToString();
+            string roleId = Session["RoleId"].ToString();
             MTSHRDataLayer.EmployeeLeave EmployeeNamedata = new MTSHRDataLayer.EmployeeLeave();
-            var EmployeeNames = EmployeeNamedata.GetAllEmployeeNames();
+            var EmployeeNames = EmployeeNamedata.GetActiveEmployeeNames();
             List<SelectListItem> EmployeeNameList = new List<SelectListItem>();
             EmployeeNameList.Add(new SelectListItem() { Value = "", Text = "----Select Employee----" });
             for (int i = 0; i < EmployeeNames.Tables[0].Rows.Count; i++)
             {
                 string ID = EmployeeNames.Tables[0].Rows[i]["id"].ToString();
-                if (!ID.Equals(empid))
+                if (roleId != "4" && !ID.Equals(empid))
+                    EmployeeNameList.Add(new SelectListItem() { Text = EmployeeNames.Tables[0].Rows[i]["EmployeeName"].ToString(), Value = ID });
+                if (roleId == "4")
                     EmployeeNameList.Add(new SelectListItem() { Text = EmployeeNames.Tables[0].Rows[i]["EmployeeName"].ToString(), Value = ID });
             }
             TempData["EmployeeNames"] = EmployeeNameList;
@@ -83,6 +86,37 @@ namespace MTSINHR.Controllers
                         MTSHRDataLayer.EmployeeDocuments data_doc = new MTSHRDataLayer.EmployeeDocuments();
                         byte[] bytes = reader.ReadBytes((int)file.ContentLength);
                         int result = data_doc.Create(Employee_Id, docname, bytes, FileName);
+                        return Content("Success");
+                    }
+                }
+            }
+            catch (Exception exec)
+            {
+                BaseExceptionHandler.HandleException(ref exec);
+            }
+            return Content("Failed");
+        }
+
+        [HttpPost]
+        public ActionResult UpdateAddImageFiles()
+        {
+            try
+            {
+                //var Employee_Id = Session["UserID"];
+                var docname = Request.Params["docname"].ToString(); 
+                var EmployeeId = Request.Params["Employee_Id"].ToString();
+
+
+                if (Request.Files.Count > 0 && EmployeeId != "")
+                {
+                    var file = Request.Files[0];
+                    string FileName = file.FileName;
+                    if (file != null && file.ContentLength > 0)
+                    {
+                        BinaryReader reader = new BinaryReader(file.InputStream);
+                        MTSHRDataLayer.EmployeeDocuments data_doc = new MTSHRDataLayer.EmployeeDocuments();
+                        byte[] bytes = reader.ReadBytes((int)file.ContentLength);
+                        int result = data_doc.Create(EmployeeId, docname, bytes, FileName);
                         return Content("Success");
                     }
                 }

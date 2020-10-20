@@ -20,5 +20,8 @@ namespace MTSINHR.Models
 
         [Required]
         public Int64  Department { get; set; }
+
+        [Required]
+        public Int64 HolidayAsLeave { get; set; }
     }
 }

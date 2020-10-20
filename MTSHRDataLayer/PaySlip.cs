@@ -17,9 +17,21 @@ namespace MTSHRDataLayer
 
         }
 
+        public DataTable ReadEmployees(params object[] parameterValues)
+        {
+            return DataAccess.ExecuteDataTable("Read_Employees", parameterValues);
+
+        }
+
         public DataTable ReadAllPayslipEmployees(params object[] parameterValues)
         {
             return DataAccess.ExecuteDataTable("ALLEMPLOYEESINPAYSLIPTABLE", parameterValues);
+
+        }
+
+        public string ReadPanNumber(params object[] parameterValues)
+        {
+            return Convert.ToString(DataAccess.ExecuteScalar("READEMPLOYEE_PANNUMBER", parameterValues));
 
         }
     }

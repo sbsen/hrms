@@ -5,7 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace LeaveApply.Models
+namespace MTSINHR.Models
 {
     public class Leave
     {
@@ -54,14 +54,14 @@ namespace LeaveApply.Models
 
         public Int64 ApprovedBy { get; set; }
 
-        public float NumberOfDays { get; set; }
+        public decimal NumberOfDays { get; set; }
 
-        public float NumberOfDaysForMonth { get; set; }
+        public decimal NumberOfDaysForMonth { get; set; }
 
-        public float leavebalance { get; set; }
+        public decimal leavebalance { get; set; }
 
          [Display(Name = "Lop Days")]
-        public float lopDays { get; set; }
+        public decimal lopDays { get; set; }
         [Required]
         public string Year { get; set; }
 
@@ -75,5 +75,7 @@ namespace LeaveApply.Models
         public DateTime ReportMonth { get; set; }
 
         public string[] ReportDays { get; set; }
+
+        public bool isLOP { get; set; }
     }
 }

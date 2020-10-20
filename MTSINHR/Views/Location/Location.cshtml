@@ -27,14 +27,13 @@
                 [{
                     "aTargets": [2]
                     , "mRender": function (data, type, row) {
-                        return '<span onclick= editlocation($(this).closest("tr"))  class="fa fa-edit"></span>';
+                        return '<span style="cursor:pointer;" onclick= editlocation($(this).closest("tr"))  class="fa fa-edit"></span>';
                     }
                 }],
         });
     });
 
     function AddEdit(actionurl, formid) {
-        debugger
         if (checkForm(formid)) {
             $.ajax({
                 type: 'POST',
@@ -44,7 +43,6 @@
                     LocationName: $("#editlocation").val().trim()
                 },
                 success: function (response) {
-                    debugger
                     if (parseInt(response.success) == 1) {
 
                         $("#location").modal('hide');
@@ -63,7 +61,6 @@
     };
 
     function editlocation(curTr) {
-        debugger
         var data = groupTable.row(curTr).data();
         $("#url").val('@Url.Content("~/Location/Edit")');
         $(".field-validation-valid").text("");
@@ -74,7 +71,6 @@
     };
 
     function addLocation() {
-        debugger
         $("#url").val('@Url.Content("~/Location/Add")');
         $(".field-validation-valid").text("");
         $("#editlocation").val("");

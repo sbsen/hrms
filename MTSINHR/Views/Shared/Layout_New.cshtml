@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
+    @*<title>xtraCHEF</title>*@
     <title>MTS-HR</title>
     <meta http-equiv="x-ua-compatible" content="IE=10;IE=11;IE=Edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,12 +14,13 @@
     @System.Web.Optimization.Scripts.Render("~/bundles/bootstrap")
     @System.Web.Optimization.Scripts.Render("~/bundles/datatable")
     @System.Web.Optimization.Scripts.Render("~/bundles/datepicker")
-    <script src="~/Scripts/jquery.scrollbar.js"></script>
+    @*<script src="~/Scripts/jquery.scrollbar.js"></script>*@
     <script src="~/Scripts/toastr.min.js"></script>
     <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:200,300,400,500,600,700|Open+Sans:300,400,600,700" rel="stylesheet">
 
     <meta charset="utf-8" />
     <link rel="icon" href="~/Images/fav.png" type="image/png" sizes="16x16">
+    @*<link rel="icon" href="~/Images/xchefX.png" type="image/png" sizes="16x16">*@
     <style>
         .usernamediv {
             height: 20px;
@@ -27,6 +29,70 @@
             position: fixed;
             width: 100%;
             z-index: 1;
+        }
+
+        /*.numberCircle {
+            margin-left: -3px;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            padding-top: 2px;
+            position: absolute;
+            background: #01e675;
+            border: 2px solid #01e675;
+            color: white;
+            text-align: center;
+            font: 10px Arial, sans-serif;
+            font-weight: bold;
+        }*/
+
+
+        /*.sidebar-menu .treeview-menu > li.active > a {
+            color: #ffffff;
+            background-color: #66a6ff;
+            background-image: -webkit-gradient(linear, left top, left bottom, from(#66a6ff), to(#89f7fe));
+            background-image: -webkit-linear-gradient(right, #89f7fe, #66a6ff);
+        }*/
+        #divInbox {
+            display: block;
+            position: relative;
+            width: 35px;
+            height: 35px;
+            -webkit-border-radius: 50px;
+            -moz-border-radius: 50px;
+            border-radius: 50px;
+            background-color: #f5f5f5;
+            line-height: 35px;
+            display: inline-block;
+            text-align: center;
+            margin-right: 12px;
+        }
+
+        #Inbox {
+            color: #15a9f6;
+            position: relative;
+        }
+
+        #divInbox:hover {
+            background-color: #118cf1;
+            background-image: -webkit-gradient(linear, left top, left bottom, from(#1ad0fc), to(#118cf1));
+        }
+
+            #divInbox:hover #Inbox {
+                color: #fff;
+            }
+
+
+        .msg_notify {
+            background-color: #fa3e3e;
+            border-radius: 2px;
+            color: #fff;
+            padding: 1px 3px;
+            font-size: 10px;
+            position: absolute;
+            top: -3px;
+            right: -10px;
+            line-height: 10px;
         }
     </style>
 </head>
@@ -39,6 +105,7 @@
                     <a class="navbar-brand p0 m0" href="#">
                         <div class="brand-logo">
                             <img src="~/Images/logo.png" height="45">
+                            @*<img src="~/Images/xchef.png" height="45">*@
                         </div>
                     </a>
                 </div>
@@ -48,22 +115,30 @@
                             <em class="fa fa-bars bars"></em>
                         </a>
                     </li>
-
+                </ul>
+                <ul id="divInbox" class="navbar-nav">
+                    <li class="nav-item">
+                        <i id="Inbox" class="fa fa-envelope-open spanedit" onclick="window.location = '@Url.Content("~/Module/Module")'"></i>
+                        <span class="msg_notify"></span>
+                        <!--<i class="numberCircle"></i>-->
+                    </li>
                 </ul>
                 <ul class="navbar-nav flex-row">
                     <li class="nav-item dropdown">
-                        
-                            <a class="nav-link ur-profile dropdown-toggle" href="#" data-search-open="" data-toggle="dropdown">
-                                <span class="avatar"></span>
-                                <span class="user-name">@Session["Username"].ToString()</span>
-                            </a>
-                        <div class="custom-dropdown dropdown-menu" aria-labelledby="dropdownMenuLink">
-                           
-                            <a class="dropdown-item" href='@Url.Content("~/UserInformation/GetUserDetails")'><i class="fa fa-pencil"></i>&nbsp;&nbsp;<span>Edit Profile</span></a>
-                            
+
+                        @*<a class="nav-link ur-profile dropdown-toggle" href="#" data-search-open="" onclick="showDropdown()" data-toggle="dropdown">*@
+                        <a id="dropdownProfile" class="nav-link ur-profile dropdown-toggle" style="cursor:pointer;min-width:160px;" href="javascript:void(0)" data-search-open="">
+                            <span class="avatar"></span>
+                            <span class="user-name">@Session["Username"].ToString()</span>
+                        </a>
+                        <div id="dropdownProfileMenu" class="custom-dropdown dropdown-menu" style="right:0px !important;border: 8px solid rgba(0, 0, 0, 0.15);" aria-labelledby="dropdownMenuLink">
+
+                            <a class="dropdown-item"><i class="fa fa-id-badge"></i>&nbsp;&nbsp;<span> @Session["MyRole"] </span></a>
+
+                            <a class="dropdown-item" href='@Url.Content("~/UserInformation/GetUserDetails")'><i class="fa fa-user-plus"></i>&nbsp;&nbsp;<span>Edit Profile</span></a>
+
                             <a class="dropdown-item" href='@Url.Content("~/MTS.Login/Account/LogOff")'><i class="fa fa-sign-out"></i>&nbsp;&nbsp;<span>Log Out</span></a>
                         </div>
-                        
                     </li>
                 </ul>
             </nav>
@@ -73,19 +148,22 @@
                 <section class="sidebar">
                     <!-- Sidebar Menu-->
                     <ul class="sidebar-menu">
-                        @if (Session["RoleId"].ToString() == "1")
+                        @if (Session["RoleId"].ToString() == "1") //RoleId 1 Admin
                         {
-                            <li class="active"><a href='@Url.Content("~/Messages/AdminMessages")'><i class="fa fa-envelope"></i><span>Messages</span></a> </li>
-                            <li><a href='@Url.Content("~/EmployeeList/EmployeeList")'><i class="fa fa-dashboard"></i><span>Employee</span></a></li>
-                            <li class="treeview">
-                                <a href="#"><i class="fa fa-laptop"></i><span>Masters</span><i class="fa fa-caret-right pull-right"></i></a>
+                            <li><a href='@Url.Content("~/Messages/AdminMessages")'><i class="fa fa-dashboard"></i><span>Dashboard</span></a> </li>
+                            <li><a href='@Url.Content("~/EmployeeList/EmployeeList")'><i class="fa fa-user-o"></i><span>Employees</span></a></li>
+                            <li class="treeview ">
+                                <a href="#"><i class="fa fa-cogs"></i><span>Settings</span><i class="fa fa-caret-right pull-right"></i></a>
                                 <ul class="treeview-menu">
-                                    <li><a href='@Url.Content("~/HolidaysList/HolidaysList")' class="border0"><i class="fa fa-angle-right"></i><span>Holidays List</span></a></li>
+                                    <li><a href='@Url.Content("~/Messages/ConfigureMessages")' class="border0"><i class="fa fa-angle-right"></i><span>Configure Messages</span></a> </li>
+                                    <li><a href='@Url.Content("~/HolidaysList/HolidaysList")'><i class="fa fa-angle-right"></i><span>Holidays List</span></a></li>
                                     <li><a href='@Url.Content("~/Designation/Designation")'><i class="fa fa-angle-right"></i><span>Designation</span></a></li>
                                     <li><a href='@Url.Content("~/Language/Language")'><i class="fa fa-angle-right"></i><span>Language</span></a></li>
+                                    <li><a href='@Url.Content("~/LeavePolicy/LeavePolicy")'><i class="fa fa-angle-right"></i><span>Leave Policy</span></a></li>
                                     <li><a href='@Url.Content("~/LeaveType/LeaveType")'><i class="fa fa-angle-right"></i><span>Leave Type</span></a></li>
                                     <li><a href='@Url.Content("~/MaritalStatus/MaritalStatus")'><i class="fa fa-angle-right"></i><span>Marital Status</span></a></li>
                                     <li><a href='@Url.Content("~/Nationality/Nationality")'><i class="fa fa-angle-right"></i><span>Nationality</span></a></li>
+                                    <li><a href='@Url.Content("~/Policies/AddPolicy")'><i class="fa fa-angle-right"></i><span>Policies</span></a></li>
                                     <li><a href='@Url.Content("~/Qualification/Qualification")'><i class="fa fa-angle-right"></i><span>Qualification</span></a></li>
                                     <li><a href='@Url.Content("~/Relationship/Relationship")'><i class="fa fa-angle-right"></i><span>Relationship</span></a></li>
                                     <li><a href='@Url.Content("~/Session/Session")'><i class="fa fa-angle-right"></i><span>Session</span></a></li>
@@ -94,11 +172,12 @@
                                     <li><a href='@Url.Content("~/Location/Location")'><i class="fa fa-angle-right"></i><span>Location</span></a></li>
                                     <li><a href='@Url.Content("~/Department/Department")'><i class="fa fa-angle-right"></i><span>Department</span></a></li>
                                     <li><a href='@Url.Content("~/AssetsMaster/Assets")'><i class="fa fa-angle-right"></i><span>Asset</span></a></li>
-                                    <li><a href='@Url.Content("~/Vendors/vendors")'><i class="fa fa-angle-right"></i><span>Vendor</span></a></li>
+                                    @*<li><a href='@Url.Content("~/Vendors/vendors")'><i class="fa fa-angle-right"></i><span>Vendor</span></a></li>*@
+
                                 </ul>
                             </li>
                             <li class="treeview">
-                                <a href='@Url.Content("~/UserInformation/GetUserDetails")'><i class="fa fa-edit"></i><span>Edit Profile</span></a>
+                                <a href='@Url.Content("~/UserInformation/GetUserDetails")'><i class="fa fa-user-plus"></i><span>Edit Profile</span></a>
                             </li>
 
                             <li class="treeview">
@@ -110,6 +189,20 @@
                                 </ul>
                             </li>
 
+                            <li class="treeview ">
+                                <a href="#"><i class="fa fa-money"></i><span>Payroll</span><i class="fa fa-angle-right pull-right"></i></a>
+                                <ul class="treeview-menu ">
+                                    <li><a href='@Url.Content("~/Payroll/Payroll")'><i class="fa fa-angle-right"></i><span>Salary  Fitment</span></a></li>
+                                    <li><a href='@Url.Content("~/Payroll/MonthlyVariance")'><i class="fa fa-angle-right"></i><span>Monthly Variance</span></a></li>
+                                    <li><a href='@Url.Content("~/Payroll/PayrollLop")'><i class="fa fa-angle-right"></i><span>Payroll Lop</span></a></li>
+                                    <li>
+                                        <a href='@Url.Content("~/Payroll/PayrollCalculations")'><i class="fa fa-angle-right"></i><span>Payroll Process</span></a>
+                                    </li>
+                                    <li><a href='@Url.Content("~/Payroll/PayrollReport")'><i class="fa fa-angle-right"></i><span>Payroll Reports</span></a></li>
+                                </ul>
+
+                            </li>
+
                             <li class="treeview">
                                 <a href='@Url.Content("~/ShowHolidays/ShowHolidays")'><i class="fa fa-calendar"></i><span>Holidays</span></a>
                             </li>
@@ -117,106 +210,194 @@
                                 <a href='@Url.Content("~/EmployeeDocuments/ShowAllEmployeeDocuments")'><i class="fa fa-book"></i><span>Documents</span></a>
                             </li>
                             <li class="treeview">
-                                <a href='@Url.Content("~/Policies/UploadPolicy")'><i class="fa fa-upload"></i><span>Upload Policy</span></a>
-                            </li>
-                            <li class="treeview">
-                                <a href='@Url.Content("~/MTS.Login/Account/ChangePassword")'><i class="fa fa-user-o"></i><span>Change Password </span></a>
-                            </li>
-                            <li class="treeview">
-                                <a href='@Url.Content("~/PaySlip_Form16/PaySlip_Form16")'><i class="fa fa-institution"></i><span>PaySlip/Form16</span></a>
-                            </li>
-                            <li class="treeview">
-                                <a href='@Url.Content("~/ImportExcel/Import")'><i class="fa fa-download"></i><span>Import</span></a>
+                                <a href='@Url.Content("~/Policies/UploadPolicy")'><i class="fa fa-cloud-upload"></i><span>Upload Policy</span></a>
                             </li>
 
                             <li class="treeview">
-                                <a href="#"><i class="fa fa-bar-chart"></i><span>Asset</span><i class="fa fa-caret-right pull-right"></i></a>
-                                <ul class="treeview-menu">
-                                    <li><a href='@Url.Content("~/AssetDetails/AssetDetail")' class="border0"><i class="fa fa-angle-right"></i><span>Assets Details</span></a></li>
-                                    <li><a href='@Url.Content("~/Asset/AssignAsset")' class="border0"><i class="fa fa-angle-right"></i><span>Assign Assets</span></a></li>
-                                    <li><a href='@Url.Content("~/AssetMaintenanceDetails/AssetMaintenance")' class="border0"><i class="fa fa-angle-right"></i><span>Maintenance Details</span></a></li>
-                                    <li><a href='@Url.Content("~/AMC_Insurance/AMC_Insurance")' class="border0"><i class="fa fa-angle-right"></i><span>AMC/Insurance</span></a></li>
-                                    <li><a href='@Url.Content("~/AssetSale/Sale")' class="border0"><i class="fa fa-angle-right"></i><span>Sale</span></a></li>
+                                <a href='@Url.Content("~/PaySlip_Form16/PaySlip_Form16")'><i class="fa fa-file-text"></i><span>PaySlip/Form16</span></a>
+                            </li>
+                            <li class="treeview">
+                                <a href='@Url.Content("~/ImportExcel/Import")'><i class="fa fa-upload"></i><span>Import</span></a>
+                            </li>
+
+                            <li class="treeview ">
+                                <a href="#"><i class="fa fa-clock-o"></i><span>Attendance</span><i class="fa fa-caret-right pull-right"></i></a>
+                                <ul class="treeview-menu ">
+                                    <li><a href='@Url.Content("~/AttendanceLog/GetMonthlyAttendance")'><i class="fa fa-angle-right"></i><span>Attendance Log</span></a> </li>
+                                    <li><a href='@Url.Content("~/AttendanceLog/AttendanceLog")'><i class="fa fa-angle-right"></i><span>Attendance Log upload</span></a></li>
+
                                 </ul>
                             </li>
 
                             <li class="treeview">
-                                <a href="#"><i class="fa fa-folder-open-o"></i><span>Export</span><i class="fa fa-caret-right pull-right"></i></a>
+                                <a href="#"><i class="fa fa-clipboard"></i><span>Asset</span><i class="fa fa-caret-right pull-right"></i></a>
                                 <ul class="treeview-menu">
+                                    <li><a href='@Url.Content("~/AssetDashboard/AssetDashboard")' class="border0"><i class="fa fa-angle-right"></i><span>Dashboard</span></a></li>
+                                    <li><a href='@Url.Content("~/AssetDetails/AssetDetail")' class="border0"><i class="fa fa-angle-right"></i><span>Assets Details</span></a></li>
+                                    <li><a href='@Url.Content("~/Asset/AssignAsset")' class="border0"><i class="fa fa-angle-right"></i><span>Asset Entry</span></a></li>
+                                    <li><a href='@Url.Content("~/AssignAsset/AssetAssign")' class="border0"><i class="fa fa-angle-right"></i><span>Assign Asset</span></a></li>
+                                    <li><a href='@Url.Content("~/AssetMaintenanceDetails/MaintenanceAsset")' class="border0"><i class="fa fa-angle-right"></i><span>Maintenance Details</span></a></li>
+                                    <li><a href='@Url.Content("~/AMC_Insurance/AMC_InsuranceAsset")' class="border0"><i class="fa fa-angle-right"></i><span>AMC/Insurance</span></a></li>
+                                    <li><a href='@Url.Content("~/AssetSale/Sale")' class="border0"><i class="fa fa-angle-right"></i><span>Sale</span></a></li>
+                                    <li><a href='@Url.Content("~/AssetReport/AssetReport")' class="border0"><i class="fa fa-angle-right"></i><span>Asset Report</span></a></li>
+                                    <li><a href='@Url.Content("~/Vendors/vendors")'><i class="fa fa-angle-right"></i><span>Vendor</span></a></li>
+                                </ul>
+                            </li>
+
+                            <li class="treeview">
+                                <a href="#"><i class="fa fa-download"></i><span>Export</span><i class="fa fa-caret-right pull-right"></i></a>
+                                <ul class="treeview-menu ">
                                     <li><a href='@Url.Content("~/EmployeeLeaveList/Export")' class="border0"><i class="fa fa-angle-right"></i><span>Leave-List</span></a></li>
                                     <li><a href='@Url.Content("~/BankDetails/ReadBankDetails")' class="border0"><i class="fa fa-angle-right"></i><span>Bank Details</span></a></li>
                                 </ul>
                             </li>
-
                             <li class="treeview">
-                                <a href='@Url.Content("~/MTS.Login/Account/LogOff")'><i class="fa fa-sign-out"></i><span>Log Out</span></a>
+                                <a href="#"><i class="fa fa-line-chart"></i><span>Performance <span class="badge badge-danger" id="PendingCount_1">!</span></span><i class="fa fa-caret-right pull-right"></i></a>
+                                <ul class="treeview-menu">
+                                    <li><a href='@Url.Content("~/PerformanceAppraisal/AppraisalProcessDetails")' class="border0"><i class="fa fa-angle-right"></i><span>Appraisal Process Setup @*<span class="badge badge-dark" id=""></span>*@</span></a></li>
+                                    <li><a href='@Url.Content("~/PerformanceAppraisal/AppraisalMapping")' class="border0"><i class="fa fa-angle-right"></i><span>KRA/SKILL Taggingg </span></a></li>
+                                    @*<li><a href='@Url.Content("~/PerformanceAppraisal/SelfAppraisal")' class="border0"><i class="fa fa-angle-right"></i><span>Self Appraisal <span class="badge badge-dark" id="PendingCount3_1"></span></span></a></li>*@
+                                    <li><a href='@Url.Content("~/PerformanceAppraisal/TeamMembersAppraisal")' class="border0"><i class="fa fa-angle-right"></i><span>Team Members Appraisal <span class="badge badge-dark" id="PendingCount2_1"></span></span></a></li>
+                                    <li><a href='@Url.Content("~/PerformanceAppraisal/ModeratorReviewPage")' class="border0"><i class="fa fa-angle-right"></i><span>Moderator - Final Review<span class="badge badge-dark" id="PendingCount1_1"></span></span></a></li>
+                                </ul>
+                            </li>
+                            <li class="treeview">
+                                <a href='@Url.Content("~/ITDeclaration/ITDeclarationEmployeeDetails")'>
+                                    <i class="fa fa-bullhorn"></i><span>IT Declaration Details</span>
+                                </a>
+                            </li>
+                            <li class="treeview">
+                                <a href='@Url.Content("~/MTS.Login/Account/ChangePassword")'><i class="fa fa-key"></i><span>Change Password </span></a>
                             </li>
                             @*<li class="treeview">
-                                    <a href="#"><i class="fa fa-share"></i><span>MultiLavel Menu</span><i class="fa fa-caret-right  pull-right"></i></a>
-                                    <ul class="treeview-menu">
-                                        <li><a href="blank-page.html"><i class="fa fa-angle-right"></i>Level One</a></li>
-                                        <li class="treeview">
-                                            <a href="#"><i class="fa fa-angle-right"></i><span>Level One</span><i class="fa fa-caret-right  pull-right"></i></a>
-                                            <ul class="treeview-menu">
-                                                <li><a href="blank-page.html"><i class="fa fa-angle-right"></i>Level Two</a></li>
-                                                <li><a href="#"><i class="fa fa-angle-right"></i><span>Level Two</span></a></li>
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                </li>*@
+                <a href='@Url.Content("~/MTS.Login/Account/LogOff")'><i class="fa fa-sign-out"></i><span>Log Out</span></a>
+            </li>*@
+                            @*<li class="treeview">
+                <a href="#"><i class="fa fa-share"></i><span>MultiLavel Menu</span><i class="fa fa-caret-right  pull-right"></i></a>
+                <ul class="treeview-menu">
+                    <li><a href="blank-page.html"><i class="fa fa-angle-right"></i>Level One</a></li>
+                    <li class="treeview">
+                        <a href="#"><i class="fa fa-angle-right"></i><span>Level One</span><i class="fa fa-caret-right  pull-right"></i></a>
+                        <ul class="treeview-menu">
+                            <li><a href="blank-page.html"><i class="fa fa-angle-right"></i>Level Two</a></li>
+                            <li><a href="#"><i class="fa fa-angle-right"></i><span>Level Two</span></a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>*@
                         }
-                        else if (Session["RoleId"].ToString() == "2")
+                        else if (Session["RoleId"].ToString() == "2") //RoleId 2 Employee
                         {
                             <li>
-                                <a href='@Url.Content("~/Messages/ShowMessages")'><i class="fa fa-envelope"></i><span>Messages</span></a>
+                                <a href='@Url.Content("~/Messages/ShowMessages")'><i class="fa fa-dashboard"></i><span>Dashboard</span></a>
                             </li>
                             <li>
-                                <a href='@Url.Content("~/UserList/UserList")'><i class="fa fa-dashboard"></i><span>Employee</span></a>
+                                <a href='@Url.Content("~/UserList/UserList")'><i class="fa fa-user-o"></i><span>Employees</span></a>
                             </li>
                             <li>
-                                <a href='@Url.Content("~/UserInformation/GetUserDetails")'><i class="fa fa-edit"></i><span>Edit Profile</span></a>
+                                <a href='@Url.Content("~/UserInformation/GetUserDetails")'><i class="fa fa-user-plus"></i><span>Edit Profile</span></a>
                             </li>
 
-
-                            if (Session["DepartmentId"].ToString() == "2")
-                            {
-                                <li>
-                                    <a href='@Url.Content("~/LeaveApply/BPOLeaveApply")'><i class="fa fa-vcard-o"></i><span>Leave</span></a>
-                                </li>
-                            }
-                            else
-                            {
-                                <li>
-                                    <a href='@Url.Content("~/LeaveApply/LeaveApply")'><i class="fa fa-vcard-o"></i><span>Leave</span></a>
-                                </li>
-                            }
-
+                            @*if (Session["DepartmentId"].ToString() == "2")
+            {
+                <li>
+                    <a href='@Url.Content("~/LeaveApply/BPOLeaveApply")'><i class="fa fa-vcard-o"></i><span>Leave</span></a>
+                </li>
+            }
+            else
+            {
+                <li>
+                    <a href='@Url.Content("~/LeaveApply/LeaveApply")'><i class="fa fa-vcard-o"></i><span>Leave</span></a>
+                </li>
+            }*@
                             <li>
-                                <a href='@Url.Content("~/PaySlip_Form16/PaySlip_Form16")'><i class="fa fa-institution"></i><span>PaySlip/Form16</span></a>
+                                <a href='@Url.Content("~/LeaveApply/LeaveApply")'><i class="fa fa-vcard-o"></i><span>Leave</span></a>
+                            </li>
+
+                            <li class="treeview payrollModule">
+                                <a href="#"><i class="fa fa-money"></i><span>Payroll</span><i class="fa fa-angle-right pull-right"></i></a>
+                                <ul class="treeview-menu ">
+                                    <li><a href='@Url.Content("~/Payroll/Payroll")'><i class="fa fa-angle-right"></i><span>Salary  Fitment</span></a></li>
+                                    <li><a href='@Url.Content("~/Payroll/MonthlyVariance")'><i class="fa fa-angle-right"></i><span>Monthly Variance</span></a></li>
+                                    <li><a href='@Url.Content("~/Payroll/PayrollLop")'><i class="fa fa-angle-right"></i><span>Payroll Lop</span></a></li>
+                                    <li>
+                                        <a href='@Url.Content("~/Payroll/PayrollCalculations")'><i class="fa fa-calculator"></i><span>Payroll Process</span></a>
+                                    </li>
+                                    <li><a href='@Url.Content("~/Payroll/PayrollReport")'><i class="fa fa-file-text"></i><span>Payroll Reports</span></a></li>
+                                </ul>
+
+                            </li>
+                            <li>
+                                <a href='@Url.Content("~/ShowHolidays/ShowHolidays")'><i class="fa fa-calendar"></i><span>Holidays</span></a>
                             </li>
                             <li>
                                 <a href='@Url.Content("~/EmployeeDocuments/EmployeeDocuments")'><i class="fa fa-book"></i><span>Documents</span></a>
                             </li>
                             <li>
-                                <a href='@Url.Content("~/Policies/UploadPolicy")'><i class="fa fa-upload"></i><span>Upload Policy</span></a>
+                                <a href='@Url.Content("~/Policies/ShowAllPolicies")'><i class="fa fa-eye"></i><span>View Policies</span></a>
                             </li>
+                            if (Session["EmployeeId"].ToString() != "E0170")
+                            {
+                                <li class="treeview">
+                                    <a href='@Url.Content("~/ITDeclaration/ITDeclarationForm")'><i class="fa fa-bullhorn"></i><span>IT Declaration</span></a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="treeview">
+                                    <a href='@Url.Content("~/ITDeclaration/ITDeclarationEmployeeDetails")'><i class="fa fa-bullhorn"></i><span>IT Declaration Details</span></a>
+                                </li>
+                            }
+
                             <li>
-                                <a href='@Url.Content("~/ShowHolidays/ShowHolidays")'><i class="fa fa-calendar"></i><span>Holidays</span></a>
+                                <a href='@Url.Content("~/PaySlip_Form16/PaySlip_Form16")'><i class="fa fa-file-text"></i><span>PaySlip/Form16</span></a>
                             </li>
+                            if (Session["EmployeeId"].ToString() == "E0021" || Session["EmployeeId"].ToString() == "E0170")
+                            {
+                                <li class="treeview">
+                                    <a href="#"><i class="fa fa-clipboard"></i><span>Asset</span><i class="fa fa-caret-right pull-right"></i></a>
+                                    <ul class="treeview-menu">
+                                        <li><a href='@Url.Content("~/AssetDashboard/AssetDashboard")' class="border0"><i class="fa fa-angle-right"></i><span>Dashboard</span></a></li>
+                                        <li><a href='@Url.Content("~/AssetDetails/AssetDetail")' class="border0"><i class="fa fa-angle-right"></i><span>Assets Details</span></a></li>
+                                        <li><a href='@Url.Content("~/Asset/AssignAsset")' class="border0"><i class="fa fa-angle-right"></i><span>Asset Entry</span></a></li>
+                                        <li><a href='@Url.Content("~/AssignAsset/AssetAssign")' class="border0"><i class="fa fa-angle-right"></i><span>Assign Asset</span></a></li>
+                                        <li><a href='@Url.Content("~/AssetMaintenanceDetails/MaintenanceAsset")' class="border0"><i class="fa fa-angle-right"></i><span>Maintenance Details</span></a></li>
+                                        <li><a href='@Url.Content("~/AMC_Insurance/AMC_InsuranceAsset")' class="border0"><i class="fa fa-angle-right"></i><span>AMC/Insurance</span></a></li>
+                                        <li><a href='@Url.Content("~/AssetSale/Sale")' class="border0"><i class="fa fa-angle-right"></i><span>Sale</span></a></li>
+                                        <li><a href='@Url.Content("~/AssetReport/AssetReport")' class="border0"><i class="fa fa-angle-right"></i><span>Asset Report</span></a></li>
+                                    </ul>
+                                </li>
+                            }
+
+                            @*<li>
+                <a href='@Url.Content("~/Policies/UploadPolicy")'><i class="fa fa-upload"></i><span>Upload Policy</span></a>
+            </li>*@
+
+                            <li class="treeview">
+                                <a href="#"><i class="fa fa-line-chart"></i><span>Performance <span class="badge badge-danger" id="PendingCount_2">!</span></span><i class="fa fa-caret-right pull-right"></i></a>
+                                <ul class="treeview-menu">
+                                    @*<li><a href='@Url.Content("~/PerformanceAppraisal/AppraisalProcessDetails")' class="border0"><i class="fa fa-angle-right"></i><span>Appraisal Process Setup</span></a></li>
+                    <li><a href='@Url.Content("~/PerformanceAppraisal/AppraisalMapping")' class="border0"><i class="fa fa-angle-right"></i><span>KRA/SKILL Taggingg</span></a></li>*@
+                                    <li><a onclick="SelfAppraisalPageRedirect()" class="border0"><i class="fa fa-angle-right"></i><span>Self Appraisal <span class="badge badge-dark" id="PendingCount3_2"></span></span></a></li>
+                                    @*<li><a href='@Url.Content("~/PerformanceAppraisal/TeamMembersAppraisal")' class="border0"><i class="fa fa-angle-right"></i><span>Team Members Appraisal</span></a></li>*@
+                                </ul>
+                            </li>
+
                             <li>
-                                <a href='@Url.Content("~/MTS.Login/Account/ChangePassword")'><i class="fa fa-user"></i><span>Change Password</span></a>
+                                <a href='@Url.Content("~/MTS.Login/Account/ChangePassword")'><i class="fa fa-key"></i><span>Change Password</span></a>
                             </li>
-                            <li>
-                                <a href='@Url.Content("~/MTS.Login/Account/LogOff")'><i class="fa fa-sign-out"></i><span>Log Out</span></a>
-                            </li>
+
+                            @*<li>
+                <a href='@Url.Content("~/MTS.Login/Account/LogOff")'><i class="fa fa-sign-out"></i><span>Log Out</span></a>
+            </li>*@
                         }
 
-                        else if (Session["RoleId"].ToString() == "4")
+                        else if (Session["RoleId"].ToString() == "4")   //RoleId 4 HR
                         {
-                            <li class="active"><a href='@Url.Content("~/Messages/ShowMessages")'><i class="fa fa-envelope"></i><span>Messages</span></a> </li>
-                            <li><a href='@Url.Content("~/EmployeeList/EmployeeList")'><i class="fa fa-dashboard"></i><span>Employee</span></a></li>
+                            <li><a href='@Url.Content("~/Messages/ShowMessages")'><i class="fa fa-dashboard"></i><span>Dashboard</span></a> </li>
+                            <li><a href='@Url.Content("~/EmployeeList/EmployeeList")'><i class="fa fa-user-o"></i><span>Employees</span></a></li>
                             <li class="treeview">
-                                <a href="#"><i class="fa fa-laptop"></i><span>Masters</span><i class="fa fa-caret-right pull-right"></i></a>
+                                <a href="#"><i class="fa fa-cogs"></i><span>Settings</span><i class="fa fa-caret-right pull-right"></i></a>
                                 <ul class="treeview-menu">
                                     <li><a href='@Url.Content("~/HolidaysList/HolidaysList")' class="border0"><i class="fa fa-angle-right"></i><span>Holidays List</span></a></li>
                                     <li><a href='@Url.Content("~/Designation/Designation")'><i class="fa fa-angle-right"></i><span>Designation</span></a></li>
@@ -224,6 +405,7 @@
                                     <li><a href='@Url.Content("~/LeaveType/LeaveType")'><i class="fa fa-angle-right"></i><span>Leave Type</span></a></li>
                                     <li><a href='@Url.Content("~/MaritalStatus/MaritalStatus")'><i class="fa fa-angle-right"></i><span>Marital Status</span></a></li>
                                     <li><a href='@Url.Content("~/Nationality/Nationality")'><i class="fa fa-angle-right"></i><span>Nationality</span></a></li>
+                                    <li><a href='@Url.Content("~/Policies/AddPolicy")'><i class="fa fa-angle-right"></i><span>Policies</span></a></li>
                                     <li><a href='@Url.Content("~/Qualification/Qualification")'><i class="fa fa-angle-right"></i><span>Qualification</span></a></li>
                                     <li><a href='@Url.Content("~/Relationship/Relationship")'><i class="fa fa-angle-right"></i><span>Relationship</span></a></li>
                                     <li><a href='@Url.Content("~/Session/Session")'><i class="fa fa-angle-right"></i><span>Session</span></a></li>
@@ -236,16 +418,30 @@
                                 </ul>
                             </li>
                             <li>
-                                <a href='@Url.Content("~/UserInformation/GetUserDetails")'><i class="fa fa-edit"></i><span>Edit Profile</span></a>
+                                <a href='@Url.Content("~/UserInformation/GetUserDetails")'><i class="fa fa-user-plus"></i><span>Edit Profile</span></a>
                             </li>
 
                             <li class="treeview">
                                 <a href="#"><i class="fa fa-vcard-o"></i><span>Leave</span><i class="fa fa-caret-right pull-right"></i></a>
                                 <ul class="treeview-menu">
+                                    <li><a href='@Url.Content("~/LeaveApply/LeaveApply")' class="border0"><i class="fa fa-angle-right"></i><span>Leave Apply</span></a></li>
                                     <li><a href='@Url.Content("~/EmployeeLeaveList/LeaveList")' class="border0"><i class="fa fa-angle-right"></i><span>Leave List</span></a></li>
-                                    <li><a href='@Url.Content("~/EmployeeLeavePending/LeavePending")' class="border0"><i class="fa fa-angle-right"></i><span>Leave Requests</span></a></li>
                                     <li><a href='@Url.Content("~/EmployeeLeaveList/LossOfPayDays")' class="border0"><i class="fa fa-angle-right"></i><span>LOP Days</span></a></li>
                                 </ul>
+                            </li>
+
+                            <li class="treeview ">
+                                <a href="#"><i class="fa fa-money"></i><span>Payroll</span><i class="fa fa-angle-right pull-right"></i></a>
+                                <ul class="treeview-menu ">
+                                    <li class="hideToHR"><a href='@Url.Content("~/Payroll/Payroll")'><i class="fa fa-angle-right"></i><span>Salary  Fitment</span></a></li>
+                                    <li class="hideToHR"><a href='@Url.Content("~/Payroll/MonthlyVariance")'><i class="fa fa-angle-right"></i><span>Monthly Variance</span></a></li>
+                                    <li><a href='@Url.Content("~/Payroll/PayrollLop")'><i class="fa fa-angle-right"></i><span>Payroll Lop</span></a></li>
+                                    <li class="hideToHR">
+                                        <a href='@Url.Content("~/Payroll/PayrollCalculations")'><i class="fa fa-angle-right"></i><span>Payroll Process</span></a>
+                                    </li>
+                                    <li class="hideToHR"><a href='@Url.Content("~/Payroll/PayrollReport")'><i class="fa fa-angle-right"></i><span>Payroll Reports</span></a></li>
+                                </ul>
+
                             </li>
 
                             <li>
@@ -255,47 +451,84 @@
                                 <a href='@Url.Content("~/EmployeeDocuments/ShowAllEmployeeDocuments")'><i class="fa fa-book"></i><span>Documents</span></a>
                             </li>
                             <li>
-                                <a href='@Url.Content("~/Policies/UploadPolicy")'><i class="fa fa-upload"></i><span>Upload Policy</span></a>
-                            </li>
-                            <li>
-                                <a href='@Url.Content("~/MTS.Login/Account/ChangePassword")'><i class="fa fa-user"></i><span>Change Password </span></a>
-                            </li>
-                            <li>
-                                <a href='@Url.Content("~/PaySlip_Form16/PaySlip_Form16")'><i class="fa fa-institution"></i><span>PaySlip/Form16</span></a>
+                                <a href='@Url.Content("~/Policies/UploadPolicy")'><i class="fa fa-cloud-upload"></i><span>Upload Policy</span></a>
                             </li>
 
+                            <li>
+                                <a href='@Url.Content("~/PaySlip_Form16/PaySlip_Form16")'><i class="fa fa-file-text"></i><span>PaySlip/Form16</span></a>
+                            </li>
+                            @*<li>
+                <a href='@Url.Content("~/Payroll/PayrollCalculations")'><i class="fa fa-calculator"></i><span>Payroll Calculations</span></a>
+            </li>*@
+                            @*<li><a href='@Url.Content("~/Payroll/PayrollLop")'><i class="fa fa-calculator"></i><span>Payroll Lop</span></a></li>*@
+
+
+
                             <li class="treeview">
-                                <a href="#"><i class="fa fa-bar-chart"></i><span>Asset</span><i class="fa fa-caret-right pull-right"></i></a>
+                                <a href="#"><i class="fa fa-clock-o"></i><span>Attendance</span><i class="fa fa-caret-right pull-right"></i></a>
                                 <ul class="treeview-menu">
+                                    <li><a href='@Url.Content("~/AttendanceLog/GetMonthlyAttendance")'><i class="fa fa-angle-right"></i><span>Attendance Log</span></a> </li>
+                                    <li><a href='@Url.Content("~/AttendanceLog/AttendanceLog")'><i class="fa fa-angle-right"></i><span>Attendance Log upload</span></a></li>
+
+                                </ul>
+
+                            </li>
+                            <li class="treeview">
+                                <a href="#"><i class="fa fa-clipboard"></i><span>Asset</span><i class="fa fa-caret-right pull-right"></i></a>
+                                <ul class="treeview-menu">
+                                    <li><a href='@Url.Content("~/AssetDashboard/AssetDashboard")' class="border0"><i class="fa fa-angle-right"></i><span>Dashboard</span></a></li>
                                     <li><a href='@Url.Content("~/AssetDetails/AssetDetail")' class="border0"><i class="fa fa-angle-right"></i><span>Assets Details</span></a></li>
-                                    <li><a href='@Url.Content("~/Asset/AssignAsset")' class="border0"><i class="fa fa-angle-right"></i><span>Assign Assets</span></a></li>
-                                    <li><a href='@Url.Content("~/AssetMaintenanceDetails/AssetMaintenance")' class="border0"><i class="fa fa-angle-right"></i><span>Maintenance Details</span></a></li>
-                                    <li><a href='@Url.Content("~/AMC_Insurance/AMC_Insurance")' class="border0"><i class="fa fa-angle-right"></i><span>AMC/Insurance</span></a></li>
+                                    <li><a href='@Url.Content("~/Asset/AssignAsset")' class="border0"><i class="fa fa-angle-right"></i><span>Asset Entry</span></a></li>
+                                    <li><a href='@Url.Content("~/AssignAsset/AssetAssign")' class="border0"><i class="fa fa-angle-right"></i><span>Assign Asset</span></a></li>
+                                    <li><a href='@Url.Content("~/AssetMaintenanceDetails/MaintenanceAsset")' class="border0"><i class="fa fa-angle-right"></i><span>Maintenance Details</span></a></li>
+                                    <li><a href='@Url.Content("~/AMC_Insurance/AMC_InsuranceAsset")' class="border0"><i class="fa fa-angle-right"></i><span>AMC/Insurance</span></a></li>
                                     <li><a href='@Url.Content("~/AssetSale/Sale")' class="border0"><i class="fa fa-angle-right"></i><span>Sale</span></a></li>
+                                    <li><a href='@Url.Content("~/AssetReport/AssetReport")' class="border0"><i class="fa fa-angle-right"></i><span>Asset Report</span></a></li>
                                 </ul>
                             </li>
 
                             <li class="treeview">
-                                <a href="#"><i class="fa fa-folder-open-o"></i><span>Export</span><i class="fa fa-caret-right pull-right"></i></a>
+                                <a href="#"><i class="fa fa-download"></i><span>Export</span><i class="fa fa-caret-right pull-right"></i></a>
                                 <ul class="treeview-menu">
                                     <li><a href='@Url.Content("~/EmployeeLeaveList/Export")' class="border0"><i class="fa fa-angle-right"></i><span>Leave-List</span></a></li>
                                     <li><a href='@Url.Content("~/BankDetails/ReadBankDetails")' class="border0"><i class="fa fa-angle-right"></i><span>Bank Details</span></a></li>
                                 </ul>
                             </li>
-                            <li>
-                                <a href='@Url.Content("~/MTS.Login/Account/LogOff")'><i class="fa fa-sign-out"></i><span>Log Out</span></a>
+                            <li class="treeview">
+                                <a href="#"><i class="fa fa-line-chart"></i><span>Performance <span class="badge badge-danger" id="PendingCount_3"></span>!</span><i class="fa fa-caret-right pull-right"></i></a>
+                                <ul class="treeview-menu">
+                                    @*<li><a href='@Url.Content("~/PerformanceAppraisal/AppraisalProcessDetails")' class="border0"><i class="fa fa-angle-right"></i><span>Appraisal Process Setup</span></a></li>
+                    <li><a href='@Url.Content("~/PerformanceAppraisal/AppraisalMapping")' class="border0"><i class="fa fa-angle-right"></i><span>KRA/SKILL Taggingg</span></a></li>*@
+                                    <li><a onclick="SelfAppraisalPageRedirect()" class="border0"><i class="fa fa-angle-right"></i><span>Self Appraisal <span class="badge badge-dark" id="PendingCount3_3"></span></span></a></li>
+                                    @*<li><a href='@Url.Content("~/PerformanceAppraisal/TeamMembersAppraisal")' class="border0"><i class="fa fa-angle-right"></i><span>Team Members Appraisal</span></a></li>*@
+                                </ul>
                             </li>
+                            <li class="treeview itdecclass">
+                                <a href='@Url.Content("~/ITDeclaration/ITDeclarationForm")'><i class="fa fa-bullhorn"></i><span>IT Declaration</span></a>
+                            </li>
+                            @*<li class="treeview">
+                <a href="#"><i class="fa fa-bullhorn"></i><span>Performance</span><i class="fa fa-caret-right pull-right"></i></a>
+                <ul class="treeview-menu">
+                    <li><a href='@Url.Content("~/PerformanceAppraisal/SelfAppraisal")' class="border0"><i class="fa fa-angle-right"></i><span>Self Appraisal</span></a></li>
+                </ul>
+            </li>*@
+                            <li>
+                                <a href='@Url.Content("~/MTS.Login/Account/ChangePassword")'><i class="fa fa-key"></i><span>Change Password </span></a>
+                            </li>
+                            @*<li>
+                <a href='@Url.Content("~/MTS.Login/Account/LogOff")'><i class="fa fa-sign-out"></i><span>Log Out</span></a>
+            </li>*@
                         }
                         else
                         {
                             <li>
-                                <a href='@Url.Content("~/Messages/ShowMessages")'><i class="fa fa-envelope"></i><span>Messages</span></a>
+                                <a href='@Url.Content("~/Messages/ShowMessages")'><i class="fa fa-dashboard"></i><span>Dashboard</span></a>
                             </li>
                             <li>
-                                <a href='@Url.Content("~/UserList/UserList")'><i class="fa fa-dashboard"></i><span>Employee</span></a>
+                                <a href='@Url.Content("~/UserList/UserList")'><i class="fa fa-user-o"></i><span>Employees</span></a>
                             </li>
                             <li>
-                                <a href='@Url.Content("~/UserInformation/GetUserDetails")'><i class="fa fa-edit"></i><span>Edit Profile</span></a>
+                                <a href='@Url.Content("~/UserInformation/GetUserDetails")'><i class="fa fa-user-plus"></i><span>Edit Profile</span></a>
                             </li>
 
                             <li class="treeview">
@@ -307,26 +540,62 @@
 
                                 </ul>
                             </li>
+                            <li class="treeview payrollModule">
+                                <a href="#"><i class="fa fa-money"></i><span>Payroll</span><i class="fa fa-angle-right pull-right"></i></a>
+                                <ul class="treeview-menu ">
+                                    <li><a href='@Url.Content("~/Payroll/Payroll")'><i class="fa fa-angle-right"></i><span>Salary  Fitment</span></a></li>
+                                    <li><a href='@Url.Content("~/Payroll/MonthlyVariance")'><i class="fa fa-angle-right"></i><span>Monthly Variance</span></a></li>
+                                    <li><a href='@Url.Content("~/Payroll/PayrollLop")'><i class="fa fa-angle-right"></i><span>Payroll Lop</span></a></li>
+                                    <li>
+                                        <a href='@Url.Content("~/Payroll/PayrollCalculations")'><i class="fa fa-angle-right"></i><span>Payroll Process</span></a>
+                                    </li>
+                                    <li><a href='@Url.Content("~/Payroll/PayrollReport")'><i class="fa fa-angle-right"></i><span>Payroll Reports</span></a></li>
+                                </ul>
 
+                            </li>
                             <li>
                                 <a href='@Url.Content("~/ShowHolidays/ShowHolidays")'><i class="fa fa-calendar"></i><span>Holidays</span></a>
                             </li>
                             <li>
                                 <a href='@Url.Content("~/EmployeeDocuments/EmployeeDocuments")'><i class="fa fa-book"></i><span>Documents</span></a>
                             </li>
+
                             <li>
                                 <a href='@Url.Content("~/Policies/ShowAllPolicies")'><i class="fa fa-eye"></i><span>View Policies</span></a>
                             </li>
                             <li>
-                                <a href='@Url.Content("~/MTS.Login/Account/ChangePassword")'><i class="fa fa-user"></i><span>Change Password </span></a>
+                                <a href='@Url.Content("~/PaySlip_Form16/PaySlip_Form16")'><i class="fa fa-file-text"></i><span>PaySlip/Form16</span></a>
                             </li>
+                            <li class="treeview">
+                                <a href='@Url.Content("~/AttendanceLog/GetMonthlyAttendance")'><i class="fa fa-clock-o"></i><span>Attendance Log</span></a>
+                            </li>
+                            <li class="treeview">
+                                <a href="#"><i class="fa fa-line-chart"></i><span>Performance <span class="badge badge-danger" id="PendingCount">!</span></span><i class="fa fa-caret-right pull-right"></i></a>                                <ul class="treeview-menu">
+                                    @*<li><a href='@Url.Content("~/PerformanceAppraisal/AppraisalProcessDetails")' class="border0"><i class="fa fa-angle-right"></i><span>Appraisal Process Setup</span></a></li>
+                    <li><a href='@Url.Content("~/PerformanceAppraisal/AppraisalMapping")' class="border0"><i class="fa fa-angle-right"></i><span>KRA/SKILL Taggingg</span></a></li>*@
+                                    <li><a onclick="SelfAppraisalPageRedirect()" class="border0"><i class="fa fa-angle-right"></i><span>Self Appraisal <span class="badge badge-dark" id="PendingCount3_4"></span></span></a></li>
+                                    <li><a href='@Url.Content("~/PerformanceAppraisal/TeamMembersAppraisal")' class="border0"><i class="fa fa-angle-right"></i><span>Team Members Appraisal <span class="badge badge-dark" id="PendingCount2_2"></span></span></a></li>
+                                </ul>
+                            </li>
+                            <li class="treeview itdecclass">
+                                <a href='@Url.Content("~/ITDeclaration/ITDeclarationForm")'><i class="fa fa-bullhorn"></i><span>IT Declaration</span></a>
+                            </li>
+                            @*<li class="treeview">
+                <a href="#"><i class="fa fa-bullhorn"></i><span>Performance</span><i class="fa fa-caret-right pull-right"></i></a>
+                <ul class="treeview-menu">
+                    <li><a href='@Url.Content("~/PerformanceAppraisal/SelfAppraisal")' class="border0"><i class="fa fa-angle-right"></i><span>Self Appraisal</span></a></li>
+                    <li><a href='@Url.Content("~/PerformanceAppraisal/TeamMembersAppraisal")' class="border0"><i class="fa fa-angle-right"></i><span>Team Members Appraisal</span></a></li>
+                </ul>
+            </li>*@
                             <li>
-                                <a href='@Url.Content("~/PaySlip_Form16/PaySlip_Form16")'><i class="fa fa-institution"></i><span>PaySlip/Form16</span></a>
+                                <a href='@Url.Content("~/MTS.Login/Account/ChangePassword")'><i class="fa fa-key"></i><span>Change Password </span></a>
                             </li>
-
-                            <li>
-                                <a href='@Url.Content("~/MTS.Login/Account/LogOff")'><i class="fa fa-sign-out"></i><span>Log Out</span></a>
-                            </li>
+                            @*<li>
+                <a href='@Url.Content("~/AttendanceLog/Attendance_Log")'><i class="fa fa-newspaper-o"></i><span>Attendance Log</span></a>
+            </li>*@
+                            @*<li>
+                <a href='@Url.Content("~/MTS.Login/Account/LogOff")'><i class="fa fa-sign-out"></i><span>Log Out</span></a>
+            </li>*@
                         }
 
                     </ul>
@@ -342,13 +611,28 @@
         </div>
 
     </div>
-  
+
 
     <script>
+        var dataval3 = 0;
+        var Appraisal_Active_Stage = [];
+        ////$('.treeview').on('click', function () {
+        ////    $(this).slideToggle();
+        ////})
+
+
+        //// Remove active for all items.
+        //$('.page-sidebar-menu li').removeClass('active');
+
+        //// highlight submenu item
+        //$('li a[href="' + this.location.pathname + '"]').parent().addClass('active');
+
+        //// Highlight parent menu item.
+        //$('ul a[href="' + this.location.pathname + '"]').parents('li').addClass('active');
+
+
+
         $(function () {
-            debugger
-            var userName = "";
-            userName =  @Session["Username"].ToString()
             $('[data-toggle="tooltip"]').tooltip({
                 container: 'body'
             })
@@ -369,9 +653,8 @@
                 "showMethod": "fadeIn",
                 "hideMethod": "fadeOut"
             }
-            
-        })
 
+        })
         $(document).ajaxError(function (event, request, settings, exception) {
 
             if (request.status == 403) {
@@ -381,12 +664,20 @@
                 window.location.href = '@Url.Content("~/MTS.Login/Account/LogOn")'
             }
         });
-        jQuery(document).ready(function () {
-            jQuery('.scrollbar-macosx').scrollbar();
-        });
+        //jQuery(document).ready(function () {
+        //    jQuery('.scrollbar-macosx').scrollbar();
+        //});
     </script>
 
     <script>
+
+
+
+
+
+
+
+
         $.pushMenu = {
             activate: function (toggleBtn) {
 
@@ -472,15 +763,189 @@
             });
         };
         $.tree('.sidebar');
+
         $.pushMenu.activate("[data-toggle='offcanvas']");
+
+        $("body").addClass('sidebar-collapse').trigger('collapsed.pushMenu');
+
+        $(document).ready(function () {
+            var userName = document.getElementsByClassName("user-name")[0].innerText;
+            userName = userName.substring(0, 1).toUpperCase();
+            document.getElementsByClassName("avatar")[0].innerHTML = userName;
+        });
+
+        //function showDropdown()
+        //{
+
+
+        //    if($(".custom-dropdown").hasClass("show"))
+        //    {
+        //        $(".custom-dropdown").removeClass("show")
+
+        //    }
+
+        //    else
+        //    {
+        //        $(".custom-dropdown").addClass("show")
+
+        //    }
+
+        // }
+
+
+
+
 
 
         $(document).ready(function () {
-            debugger
-            var userName = document.getElementsByClassName("user-name")[0].innerText;
-            userName = userName.substring(0, 2).toUpperCase();
-            document.getElementsByClassName("avatar")[0].innerHTML = userName;
+            // Count fo inbox messages
+            inboxCount();
+
+            $('#dropdownProfile').click(function (event) {
+                event.stopPropagation();
+                $('#dropdownProfileMenu').slideToggle("fast");
+            });
+
+            $(document).click(function () {
+                $('#dropdownProfileMenu').slideUp("fast");
+            });
         });
+
+        function inboxCount() {
+
+            $.ajax({
+                type: 'POST'
+                , async: false
+                , data: { TableFlag: 1 }
+                , url: '@Url.Content("~/Module/ReadApprovalDetails")'
+                , success: function (data) {
+
+                    var result = JSON.parse(data.success);
+                    if (data.approversFlag >= 0) {
+
+                        $('.payrollModule').show();
+                        $('.hideToHR').show();
+                        $('#divInbox').show();
+
+                        if (data.approversFlag == 0 && data.rejectedCount > 0) {
+                            $('.msg_notify').text(data.rejectedCount);
+                        }
+                        else if (data.approversFlag == 1 && result.length > 99) {
+                            $('.msg_notify').text(result.length + '+');
+                        }
+                        else if (data.approversFlag == 1 && result.length > 0) {
+                            $('.msg_notify').text(result.length);
+                        }
+                        else {
+                            $('.msg_notify').hide();
+                        }
+
+                    }
+                    else {
+                        $('.payrollModule').hide();
+                        $('.hideToHR').hide();
+                        $('#divInbox').hide();
+                        $('.msg_notify').hide();
+                    }
+
+                }
+
+            });
+          
+            $.ajax({
+                type: 'POST'
+           , async: false
+           , url: '@Url.Content("~/PerformanceAppraisal/Get_Appraisal_Count")'
+           , success: function (data) {
+               var dataval1 = data.result;
+               var dataval2 = data.result1;
+               dataval3 = data.result2;
+               Appraisal_Active_Stage = JSON.parse(data.result3);
+               if (dataval1 > 0 || dataval2 > 0 || dataval3 > 0) {
+                   $("#PendingCount").show();
+                   $("#PendingCount_1").show();
+                   $("#PendingCount_2").show();
+                   $("#PendingCount_3").show();
+               }
+               else {
+                   $("#PendingCount").hide();
+                   $("#PendingCount_1").hide();
+                   $("#PendingCount_2").hide();
+                   $("#PendingCount_3").hide();
+               }
+               $("#PendingCount1_1").text(dataval1);
+               $("#PendingCount2_1").text(dataval2);
+               $("#PendingCount2_2").text(dataval2);
+               $("#PendingCount3_1").text(dataval3);
+               $("#PendingCount3_2").text(dataval3);
+               $("#PendingCount3_3").text(dataval3);
+               $("#PendingCount3_4").text(dataval3);
+
+           },
+                error: function (x, y, z) {
+                    console.log(x);
+                }
+            });
+
+            $.ajax({
+                type: 'POST'
+           , async: false
+           , url: '@Url.Content("~/ITDeclaration/getAssignedEmployees")'
+           , success: function (data) {
+               debugger
+               var Details = [];
+               Details = JSON.parse(data.result);
+               //  if (Details.includes(@Session["USERID"].ToString())) {
+               if (Details != null) {
+                   if(Details.length!=0)
+                   {
+                       @*for(var i=0;i<Details.length;i++)
+                       {
+                           if (Details[i].Employee_id==(@Session["USERID"].ToString())) {
+                               $(".itdecclass").show();
+                               break;
+                           }
+                           else {
+                               $(".itdecclass").hide();
+                           }
+                       }*@
+                       if (Details.some(value => value.Employee_id===(@Session["USERID"].ToString())))
+                       {
+                           $(".itdecclass").show();
+                       }
+                       else {
+                           $(".itdecclass").hide();
+                       }
+
+                   }
+               }
+               else {
+                   $(".itdecclass").hide();
+               }
+           },
+           error: function (x, y, z) {
+               console.log(x);
+           }
+            });
+
+
+        }
+
+        function SelfAppraisalPageRedirect() {
+            if ( Appraisal_Active_Stage.length == 0) {
+                toastr.warning("Currently Appraisal Process is closed for this login...!");
+                return false;
+            }
+            if (Appraisal_Active_Stage[0].APPRAISAL_ACTIVE_STAGE == 2 && Appraisal_Active_Stage.length != 0) {
+                window.location.href = '@Url.Content("~/PerformanceAppraisal/SelfAppraisal")';
+            }
+            //else {
+            //    toastr.warning("Currently Appraisal Process is closed for this login...!");
+            //    return false;
+            //}
+
+        }
+
     </script>
 </body>
 </html>

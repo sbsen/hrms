@@ -9,6 +9,7 @@
 @System.Web.Optimization.Scripts.Render("~/bundles/datatable")
 @System.Web.Optimization.Scripts.Render("~/bundles/datepicker")
 <script src="~/Scripts/ValidationFunction.js"></script>
+<script src="~/Scripts/DataTables/datatables.sorting.natural.js"></script>
 
 <script>
     var groupTable;
@@ -49,7 +50,7 @@
             "aoColumns": [
                   { "mData": "id", "sTitle": "S.No", "sClass": "text-right", "sWidth": "80px", "bVisible": false }
                  , { "mData": "HolidayReason", "sTitle": "Holiday Reason", "sClass": "text-left" }
-                 , { "mData": "DateOfHoliday", "sTitle": "Date of Holiday", "sClass": "text-left" }
+                 , { "mData": "DateOfHoliday", 'sType': 'date', "sTitle": "Date of Holiday", "sClass": "text-left" }
                  , { "mData": "DayNameofDate", "sTitle": "Day", "sClass": "text-left" }
             ],
         });

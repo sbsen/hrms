@@ -1,0 +1,141 @@
+﻿@model MTSINHR.Models.Attendance_Log
+@System.Web.Optimization.Scripts.Render("~/bundles/datatable")
+@*<script src="~/Scripts/DataTables/datatables.sorting.natural.js"></script>*@
+<style>
+    .coral_clr {
+        background-color: coral;
+        color: white !important;
+    }
+</style>
+<script>
+    $(document).ready(function () {
+
+        $('#backbtn').on('click', function () {
+            window.location.href = '@Url.Content("~/AttendanceLog/GetMonthlyAttendance")';
+        });
+
+        $("#MonthlyAttendanceTable").DataTable({
+           "iDisplayLength": 25,
+            "bFilter": true,
+            //"scrollX":true,
+            "bProcessing": true,
+            "ajax": {
+                type: "GET",
+                url: '@Url.Content("~/AttendanceLog/ReadMonthlyAttendanceDetails")',
+                dataSrc: function (data) {
+                    var AttendanceData = JSON.parse(data);
+                    if (AttendanceData.length != 0) {
+                        $("#AttendanceUpto label").text(dateFormat(AttendanceData[0].ATTENDANCE_UPTO));
+                    } else {
+                        $("#AttendanceUpto b").text("Attendance data not available !");
+                    }
+                    return AttendanceData
+                }
+            },
+            "aoColumns":
+                [
+                    { "mData": "EmployeeCode", "sTitle": "Employee Code", "sClass": "text-left" },//0
+                    { "mData": "EmployeeName", "sTitle": "Employee Name", "sClass": "text-left" },//1
+                    { "mData": "Department", "sTitle": "Department", "sClass": "text-left" },//2
+                    { "mData": "Duration", "sTitle": "Logged (In Hrs.)", "sType": "natural", "sClass": "text-right" },//3
+                    { "mData": "PresentDays", "sTitle": "Present", "sClass": "text-right" },//4
+                    { "mData": "PresentDays", "sTitle": "Deficit (In Hrs.)", "sType": "natural", "sClass": "text-right" },//5
+                    { "mData": "AbsentDays", "sTitle": "Absent/Holidays", "bVisible": false, "bSearchable": false, "sClass": "text-right" },//6
+                    { "mData": "OtherStatusCodes", "sTitle": "Others", "bVisible": false, "bSearchable": false, "sClass": "text-right" },//7
+                    { "mData": "PresentDaysOnly", "sTitle": "Present only", "bVisible": false, "bSearchable": false, "sClass": "text-right" },//8
+                    { "mData": "AbsentDaysOnly", "sTitle": "Absent only", "bVisible": false, "bSearchable": false, "sClass": "text-right" },//9
+                    { "mData": "HalfDays", "sTitle": "Half Day", "bVisible": false, "bSearchable": false, "sClass": "text-right" },//10
+                    { "mData": "EmployeeCode", "sTitle": "View", "sClass": "text-center", "bSortable": false },//11
+                    { "mData": "DurationInMins", "bVisible": false, "bSearchable": false }//12
+                    
+
+                ],
+            "aoColumnDefs":
+                [
+                    {
+                        "aTargets":[4]
+                        ,"mRender": function (data, type, row) {
+                            return data||'0'
+                        }
+                    },
+                     {
+                         "aTargets": [6]
+                        , "mRender": function (data, type, row) {
+                            return data || '0'
+                        }
+                     },
+                      {
+                          "aTargets": [7]
+                        , "mRender": function (data, type, row) {
+                            return data || '0'
+                        }
+                      },
+                    {
+                        "aTargets":[11]
+                        ,"mRender": function (data, type, row) {
+                            return '<button onclick=ViewDetails("'+data+'")><i class="fa fa-list"/></button>'
+                        }
+                    },
+                    {
+                        "aTargets": [5]
+                        , "mRender": function (data, type, row) {      // Deficit = Diff( Presentdays * 9 hrs - Logged hrs )
+                            //var RequiredDuration = (data * 9 * 60);
+                            //var Deficit = Math.abs(RequiredDuration - row.DurationInMins);
+                            if ((data * 540) < row.DurationInMins) {
+                                return '00h 00m'
+                            }
+                            else {
+                                return (parseInt(Math.abs((data * 540) - row.DurationInMins) / 60)).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + "h " + ((Math.abs((data * 540) - row.DurationInMins) % 60)).toLocaleString('en-US', { minimumIntegerDigits: 2, useGrouping: false }) + "m";  // 540 (In mins) = 9 hr * 60
+                            }
+                        }
+                    }
+                ],
+            "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+                if (aData.DurationInMins < aData.PresentDays * 540) {
+                    $('td:eq(5)', nRow).addClass('coral_clr');
+                }
+            }
+        })
+    });
+
+    function ViewDetails(EmployeeCode) {
+        $.ajax({
+            type: 'POST',
+            data: { EmpCode: EmployeeCode },
+            url:'@Url.Content("~/EmployeeEntry/SetEmployeeCode")',
+            success:function(result){
+                if(result=='success'){
+                    window.location.href = '@Url.Content("~/EmployeeEntry/ReadEmployeeEntry")';
+                }else{
+                    window.location.href = '@Url.Content("~/Attendancelog/MonthlyAttendanceDetails")';
+                }
+            }
+        })
+    }
+    function dateFormat(date) {
+        var d = new Date(date);
+        var month = ('0' + (d.getMonth() + 1)).slice(-2);
+        var date1 = ('0' + d.getDate()).slice(-2);
+        var DateFormat = month + '/' + date1 + '/' + d.getFullYear();
+        return DateFormat;
+    }
+</script>
+<div class="card">
+    <div class="card-header text-center">
+        @TempData["Title"]
+        @*//$('#txtMonth').text(AttendanceData[0].Nameofthemonth);
+        <span id="txtMonth"></span> - Monthly Attendance Details*@
+    </div>
+    <div class="card-body MTS_Table">
+        <div class="row p-t-10 p-b-10">
+            <div class="col-12">
+                <button class="pull-left btn btn-primary" id="backbtn"><i class="fa fa-arrow-circle-left">&nbsp;&nbsp;Back</i></button>
+                <div class="m-r-20 pull-right" style="font-size: 1.15rem;font-family:'Open Sans', sans-serif;" id="AttendanceUpto"><b style="color:#007bff;">Attendance data available upto : </b><label></label></div>
+            </div>
+        </div>
+        <div>
+            <table id="MonthlyAttendanceTable" class="table table-bordered" width="100%"></table>
+        </div>
+    </div>
+</div>
+

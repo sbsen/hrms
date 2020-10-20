@@ -13,6 +13,8 @@
 @System.Web.Optimization.Styles.Render("~/bundles/datepickercss")
 @*<link href="~/Content/toastr.min.css" rel="stylesheet" />
 <script src="~/Scripts/toastr.min.js"></script>*@
+<link href="~/Content/css/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.min.js"></script>
 <script>
     $(function () {
         $(".payslip_form16").click(function () {
@@ -20,10 +22,10 @@
             var yearcount = '@System.Configuration.ConfigurationManager.AppSettings["Year_restrict_count"]';
             var monthcount = '@System.Configuration.ConfigurationManager.AppSettings["Month_restrict_Payslip"]';
             var Form16countyear = '@System.Configuration.ConfigurationManager.AppSettings["Month_restrict_count"]';
-            var monthlimit = "-" + monthcount + "m";
-            var PreviousYear = (new Date).getFullYear() - yearcount;
-            var CurrentYear = (new Date).getFullYear();
-            var date = PreviousYear + ":" + CurrentYear;
+            //var monthlimit = "-" + monthcount + "m";
+            //var PreviousYear = (new Date).getFullYear() - yearcount;
+            //var CurrentYear = (new Date).getFullYear();
+            //var date = PreviousYear + ":" + CurrentYear;
 
             $('#Date').datepicker("destroy");
             var radiovalue = $(this).val();
@@ -43,9 +45,9 @@
                     format: "yyyy/MM",
                     viewMode: "years",
                     minViewMode: "months",
-                    startDate: date,
+                    startDate: "-" + yearcount + "y",
                     showWeekDays: false,
-                    endDate: monthlimit,
+                    endDate: "-" + Form16countyear + "y",
 
                 });
             }
@@ -196,6 +198,20 @@
                         @Html.ValidationMessageFor(model => model.Date)
                     </div>
                 </div>
+                @if (Session["RoleId"].ToString() == "1")
+                {
+                    <div class="form-group">
+                        <div class="editor-label">
+
+                            @Html.LabelFor(model => model.Employee_ID)
+                        </div>
+                        <div class="editor-field">
+                            @Html.DropDownListFor(model => model.Employee_ID, new System.Web.Mvc.SelectList(ViewBag.EmployeeList,"Value", "Text"), "Select Employee", new { @class = "form-control requir select2cls" })
+                            @Html.ValidationMessageFor(model => model.Employee_ID)
+                        </div>
+                    </div>
+                }
+
 
                 @*<div class="formRow field-validation-error f12size text-center">
                     <span class="errorspan" style="display: none">No File Generated</span>

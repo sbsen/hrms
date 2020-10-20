@@ -18,7 +18,9 @@ namespace MTSHRDataLayer
 
         public DataTable GetAllApprovedLeaveList(params object[] parameterValues)
         {
-            return DataAccess.ExecuteDataTable("Read_ApprovedLeaveList", parameterValues);
+            DataTable dt = null;
+            dt = DataAccess.ExecuteDataTable("Read_ApprovedLeaveList", parameterValues);
+            return dt;
         }
 
         public int Approve_Leave(params object[] parameterValues)

@@ -1,11 +1,4 @@
-﻿
-
-
-
-
-
-
-@model MTSINHR.Models.EmployeeDocuments
+﻿@model MTSINHR.Models.EmployeeDocuments
 @{
     ViewBag.Title = "EmployeeDocuments";
 }
@@ -122,7 +115,7 @@
         }).off('fileuploaddone').on('fileuploaddone', function (e, data) {
 
 
-            bootbox.alert("Document succefully uploaded");
+            bootbox.alert("Document successfully uploaded");
 
             $('#progress .progress-bar').css('width', '0%');
             $("#files").empty();
@@ -196,7 +189,7 @@ function ShowDocuments(returncontent) {
                  
                 </form>
             </div>
-
+            <span class="text-right" style="color:red">Upload File Type - .jpg,.jpeg,.png,.pdf</span>
             <div id="progress" class="progress">
                 <div class="progress-bar progress-bar-success"></div>
             </div>

@@ -38,7 +38,9 @@
                 type: 'Get',
                 url: '@Url.Content("~/EmployeeList/Read")',
                 dataSrc: function (data) {
-                    return JSON.parse(data);
+                    var date_array=JSON.parse(data);
+                    var filtered_array = date_array.filter(a=>a.Active == true)
+                   return filtered_array;
                 }
             },
             "aoColumns": [

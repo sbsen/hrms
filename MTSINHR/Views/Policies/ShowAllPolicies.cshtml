@@ -23,7 +23,7 @@
     });
     var returncontent;
     function ShowPolicies(returncontent) {
-        debugger;
+         
 
         if ($("#fileinfo").valid()) {
 
@@ -38,11 +38,11 @@
                     },
                
                 success: function (data) {
-                    debugger;
+                     
 
                     if (data == "Success") {
 
-                        window.location.href = '@Url.Action("ViewAllEmployeeDocuments", "Policies")';
+                        window.location.href = '@Url.Action("ViewAllPolicies", "Policies")';
 
                     }
                     else {

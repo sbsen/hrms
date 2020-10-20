@@ -1,0 +1,379 @@
+CREATE PROCEDURE [dbo].[FILTER_EMPLOYEEDETAILSONDOJ](
+@fromdate DATE,
+@todate DATE
+)
+AS
+BEGIN
+	SELECT E.id
+		,E.Employee_Id
+		,E.Firstname
+		,E.Lastname
+		,E.Gender
+		,CAST(Convert(VARCHAR(255), E.Dateofjoin, 110) AS VARCHAR(255)) AS 'Dateofjoin'
+		,E.ResignedOn
+		,convert(varchar(3),DATEDIFF(MONTH, E.Dateofjoin, GETDATE())/12) +' years '+
+		 convert(varchar(2),DATEDIFF(MONTH,E.Dateofjoin, GETDATE()) % 12)+ ' months' as Experience
+		,D.Designation
+		,MA.ROLEID
+		,MTLOG.Active
+		,STUFF((
+				SELECT ', ' + ml.Languagename
+				FROM EmployeeDetails AS Em
+				INNER JOIN MTS_Languages ml ON Employee_Id = E.id
+				WHERE ml.id IN (
+						SELECT cast(dropdowndata AS BIGINT)
+						FROM function_string_to_table(Em.Languagename, ',') AS Languages
+						)
+				FOR XML PATH('')
+				), 1, 1, '') AS Languages
+		,STUFF((
+				SELECT DISTINCT ', ' + ms.Skills
+				FROM Employee_Skills AS Es
+				INNER JOIN MTS_Skills ms ON Es.Employee_Id = E.id
+				WHERE ms.id IN (
+						SELECT cast(dropdowndata AS BIGINT)
+						FROM function_string_to_table(Es.Skill, ',') AS Skills
+						)
+				FOR XML PATH('')
+				), 1, 1, '') AS Skills
+	FROM Employee AS E
+	INNER JOIN MTS_Designation D ON D.id = E.Designation
+	INNER JOIN MTS_AUTHORITY AS MA ON E.id = MA.USERID
+	INNER JOIN MTS_LOGIN as MTLOG ON MTLOG.USERID=E.id
+	WHERE Dateofjoin BETWEEN @fromdate AND @todate
+END
+
+GO
+
+CREATE  PROCEDURE [dbo].[RESTRICT_EMPLOYEELEAVES](
+@empid INT
+,@checkdate DATE)
+AS
+BEGIN
+
+
+    IF  EXISTS(SELECT TODATE FROM EMPLOYEE_LEAVE WHERE EMPLOYEE_ID=@empid AND TODATE=@checkdate) 
+
+   SELECT LEAVETYPE FROM EMPLOYEE_LEAVE WHERE EMPLOYEE_ID=@empid AND TODATE=@checkdate
+
+   ELSE 
+
+   SELECT 0
+   
+END
+
+GO
+
+CREATE PROCEDURE [dbo].[MTS_CREATE_NEWPOLICY](
+@policyname varchar(255)
+)
+AS
+BEGIN
+     IF NOT EXISTS(
+ SELECT POLICYNAME FROM  MTS_HRPOLICIES WHERE POLICYNAME=@policyname
+    )
+      BEGIN
+            INSERT INTO MTS_HRPOLICIES VALUES(@policyname)
+            BEGIN
+		         SELECT 1 
+		     END
+      END
+
+ ELSE
+     BEGIN 
+         SELECT 0
+	 END
+END
+
+
+GO
+
+
+CREATE  PROCEDURE [dbo].[MTS_READ_ALLPOLICIES]
+AS
+BEGIN 
+SELECT ID,POLICYNAME FROM MTS_HRPOLICIES
+END
+
+
+GO
+
+CREATE  PROCEDURE [dbo].[UPDATE_HRPOLICIES](
+@id INT,@policyname VARCHAR(255)
+)
+AS
+BEGIN
+	IF NOT EXISTS (
+			SELECT POLICYNAME
+			FROM MTS_HRPOLICIES
+			WHERE POLICYNAME = @policyname
+			)
+	BEGIN
+		UPDATE MTS_HRPOLICIES
+		SET POLICYNAME = @policyname
+		WHERE id = @id
+
+		SELECT 1
+	END
+	ELSE
+	BEGIN
+		SELECT 0
+	END
+END
+
+
+GO
+
+CREATE  PROCEDURE [dbo].[CREATE_POLICY](
+	@documentid BIGINT
+	,@documentimage VARBINARY(max)
+	,@documentname varchar(255)
+)
+AS
+BEGIN
+	IF NOT EXISTS (
+			SELECT 1
+			FROM HR_POLICYDOCUMENTS
+			WHERE DocumentId = @documentid
+			)
+			BEGIN
+		INSERT INTO HR_POLICYDOCUMENTS
+		VALUES (
+			 @documentid
+			,@documentimage
+			,@documentname
+			)
+	END
+	ELSE
+	BEGIN
+		UPDATE HR_POLICYDOCUMENTS
+		SET DocumentImage = @documentimage, DocumentName = @documentname
+		WHERE  DocumentId = @documentid
+	END
+END
+
+GO
+
+CREATE  PROCEDURE [dbo].[READ_POLICYIMAGES](
+@documentid BIGINT
+)
+AS 
+BEGIN
+SELECT DocumentImage, DocumentName
+	FROM  HR_POLICYDOCUMENTS
+	WHERE DocumentId = @documentid
+		
+END
+
+
+GO
+
+CREATE  PROCEDURE [dbo].[CREATE_VENDORDETAILS] (
+	@vendor_Type INT
+	,@name VARCHAR(255)
+	,@vendor_Address VARCHAR(max)
+	,@phone VARCHAR(255)
+	,@contact_Person VARCHAR(max)
+	,@mobile_No VARCHAR(max)
+	,@email VARCHAR(max)
+	,@city VARCHAR(max)
+	)
+AS
+BEGIN
+	INSERT INTO MTS_VENDORS
+	VALUES (
+	     @vendor_Type
+	    ,@name
+		,@vendor_Address
+		,@phone	
+		,@contact_Person
+		,@mobile_No
+		,@email
+		,@city
+		)
+		
+		SELECT 1
+        
+END
+
+
+GO
+
+
+CREATE  PROCEDURE [dbo].[CREATE_ASSETDETAILS] (
+	@name VARCHAR(255)
+	,@product VARCHAR(255)
+	,@categoryid BIGINT
+	,@make VARCHAR(255)
+	,@model VARCHAR(255)
+	,@serialNumber VARCHAR(255)
+	,@purchasedOn DATETIME
+	,@locationId BIGINT
+	,@assignedTo BIGINT
+	,@discardedOn DATETIME
+	,@notes VARCHAR(max)
+	,@billDate DATETIME
+	,@billNumber VARCHAR(255)
+	,@saleCompany VARCHAR(255)
+	,@inUse BIT
+	)
+AS
+BEGIN
+	INSERT INTO MTS_AssetDetails
+	VALUES (
+		@name
+		,@product
+		,@categoryid
+		,@make
+		,@model
+		,@serialNumber
+		,@purchasedOn
+		,@locationId
+		,@assignedTo
+		,@discardedOn
+		,@notes
+		,@billDate
+		,@billNumber
+		,@saleCompany
+		,@inUse
+		)
+END
+
+
+GO
+
+
+CREATE  PROCEDURE [dbo].[READ_VENDORNAMES]
+AS
+BEGIN
+    SELECT ID,NAME FROM MTS_VENDORS
+END
+
+
+GO
+
+
+CREATE  PROCEDURE [dbo].[CREATE_INVOICE] ( @invoice VARBINARY(MAX)
+,@invoice_name VARCHAR(255))
+AS
+  BEGIN 
+       INSERT INTO ASSET_INVOICE_DETAILS VALUES (@invoice,@invoice_name)
+	  SELECT 1
+
+  END
+
+
+GO
+
+
+CREATE  PROCEDURE [dbo].[READ_LASTINVOICEID]
+AS
+BEGIN
+     SELECT TOP 1 ID FROM ASSET_INVOICE_DETAILS ORDER BY ID DESC
+END
+
+GO
+
+CREATE  PROCEDURE [dbo].[READ_ALLASSETENTRIES]
+AS
+BEGIN
+
+SELECT 
+ AD.ID
+ ,VENDOR_ID
+ ,MTSV.NAME AS  VENDOR_NAME
+ , PURCHASE_ORDER_NUMBER
+ , PURCHASED_ON
+ , BILL_NUMBER
+ , BILL_DATE
+ , ACAT.CATEGORYNAME AS ASSET_TYPE
+ , AST.ASSETNAME AS ASSET_NAME
+ , ASSET_DESCRIPTION
+ , COST
+ , COST_TYPE
+ , MAKE
+ , MODEL
+ , SERIAL_NUMBER
+ , IDENTIFICATION_CODE
+ , WARRANTY_MONTHS
+ , WARRANTY_STARTDATE
+ , WARRANTY_ENDDATE
+ , INVOICE_ID
+ , ASSETTYPE_ID
+ , ASSETNAME_ID
+
+ FROM ASSET_DETAILS AD
+ LEFT JOIN MTS_ASSETS AST ON AD.ASSET_NAMEID=AST.ID
+ LEFT JOIN MTS_ASSETCATEGORIES ACAT ON AST.ASSETTYPEID=ACAT.CATEGORYID
+ LEFT JOIN MTS_VENDORS MTSV ON MTSV.ID=AD.VENDOR_ID
+
+ END
+
+
+GO
+
+
+CREATE  PROCEDURE [dbo].[READ_EMPLOYEEALLLEAVEBALANCE](@empid BIGINT)
+AS 
+  BEGIN
+		DECLARE @GENDER BIGINT, @MARITALSTATUS BIGINT
+
+		SELECT @GENDER = gender, @MARITALSTATUS = maritalstatus
+		FROM Employee where id=@empid
+	IF @GENDER = 1
+	BEGIN
+		IF @MARITALSTATUS = 1
+		BEGIN
+		   SELECT E.Firstname+' '+E.Lastname AS Fullname,
+		   E.id AS Employee_Id,
+		   LT.Leavetype,
+		   ELB.Leavebalance AS Leavebalance
+		   FROM EmployeeLeaveBalance ELB
+		   INNER JOIN MTS_LeaveType LT ON LT.id=ELB.LeaveType
+		   INNER JOIN Employee E ON E.id=ELB.Employee_Id
+		   WHERE ELB.Employee_Id=@empid
+		   AND UPPER(LT.Leavetype) <> 'MATERNITY'
+		   AND UPPER(LT.Leavetype) <> 'PATERNITY'
+		END
+		ELSE IF @MARITALSTATUS <> 1
+		BEGIN
+		SELECT E.Firstname+' '+E.Lastname AS Fullname,
+		   E.id AS Employee_Id,
+		   LT.Leavetype,
+		   ELB.Leavebalance AS Leavebalance
+		   FROM EmployeeLeaveBalance ELB
+		   INNER JOIN MTS_LeaveType LT ON LT.id=ELB.LeaveType
+		   INNER JOIN Employee E ON E.id=ELB.Employee_Id
+		   WHERE ELB.Employee_Id=@empid
+		   AND UPPER(LT.Leavetype) <> 'PATERNITY'
+		END
+	 END
+	 ELSE
+	 	BEGIN
+		IF @MARITALSTATUS = 1
+		BEGIN
+		 SELECT E.Firstname+' '+E.Lastname AS Fullname,
+		   E.id AS Employee_Id,
+		   LT.Leavetype,
+		   ELB.Leavebalance AS Leavebalance
+		   FROM EmployeeLeaveBalance ELB
+		   INNER JOIN MTS_LeaveType LT ON LT.id=ELB.LeaveType
+		   INNER JOIN Employee E ON E.id=ELB.Employee_Id
+		   WHERE ELB.Employee_Id=@empid
+		   AND UPPER(LT.Leavetype) <> 'MATERNITY'
+		   AND UPPER(LT.Leavetype) <> 'PATERNITY'
+		END
+		ELSE
+		BEGIN IF @MARITALSTATUS <> 1
+		 SELECT E.Firstname+' '+E.Lastname AS Fullname,
+		   E.id AS Employee_Id,
+		   LT.Leavetype,
+		   ELB.Leavebalance AS Leavebalance
+		   FROM EmployeeLeaveBalance ELB
+		   INNER JOIN MTS_LeaveType LT ON LT.id=ELB.LeaveType
+		   INNER JOIN Employee E ON E.id=ELB.Employee_Id
+		   WHERE ELB.Employee_Id=@empid
+		   AND UPPER(LT.Leavetype) <> 'MATERNITY'
+		END
+	END
+END

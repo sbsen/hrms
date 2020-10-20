@@ -48,6 +48,12 @@ namespace MTSINHR.Controllers
             return Json(JsonConvert.SerializeObject(bank_Details.Read()), JsonRequestBehavior.AllowGet);
         }
 
+        public JsonResult FilterBankdetails(string StartDate, string EndDate)
+        {
+            MTSHRDataLayer.BankDetails employeedetails = new MTSHRDataLayer.BankDetails();
+            return Json(JsonConvert.SerializeObject(employeedetails.FilterBankdetails(StartDate, EndDate)), JsonRequestBehavior.AllowGet);
+        }
+
     }
 }
 

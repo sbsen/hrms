@@ -5,15 +5,62 @@
 @System.Web.Optimization.Scripts.Render("~/bundles/jquery")
 @System.Web.Optimization.Styles.Render("~/bundles/bootstrapdt")
 @System.Web.Optimization.Scripts.Render("~/bundles/datatable")
-@<script src="~/Scripts/ValidationFunction.js"></script>
+<script src="~/Scripts/ValidationFunction.js"></script>
 <script>
  
     function employeelist() {
         var url = '@Url.Action("EmployeeList", "EmployeeList")';
         window.location.href = url;
     }
+    function BankDetailsValidation() {
+        $('.field-validation-valid').text("");
+        $('.field-validation-valid').show();
+        if ($('#Bankname').val() == null || $('#Bankname').val() == '') {
+            $("#BanknameSpan").text("This field is required");
+            return false;
+        } else if ($('#Bankname').val() != null || $('#Bankname').val() != '') {
+            var regx = /^[A-Za-z ]+$/;
+            if (!regx.test($('#Bankname').val())) {
+                    $("#BanknameSpan").text("Please use character only");
+                    return false;
+                }
+        }
+        if ($('#Branchname').val() == null || $('#Branchname').val() == '') {
+            $("#BranchnameSpan").text("This field is required");
+            return false;
+        } else if ($('#Branchname').val() != null || $('#Branchname').val() != '') {
+            var regx = /^[A-Za-z ]+$/;
+            if (!regx.test($('#Branchname').val())) {
+                $("#BranchnameSpan").text("Please use character only");
+                return false;
+            }
+        }
+        if ($('#Accountnumber').val() == null || $('#Accountnumber').val() == '') {
+            $("#AccountnumberSpan").text("This field is required");
+            return false;
+        } else if ($('#Accountnumber').val() != null || $('#Accountnumber').val() != '') {
+            var regx = /^[0-9, ]+$/;
+            if (!regx.test($('#Accountnumber').val())) {
+                $("#AccountnumberSpan").text("Please use number only");
+                return false;
+            }
+        }
+        if ($('#Ifsccode').val() == null || $('#Ifsccode').val() == '') {
+            $("#IfsccodeSpan").text("This field is required");
+            return false;
+        } else if ($('#Ifsccode').val() != null || $('#Ifsccode').val() != '') {
+            var regx = /^[a-zA-Z0-9, ]+$/;
+            if (!regx.test($('#Ifsccode').val())) {
+                $("#IfsccodeSpan").text("Please use character and number");
+                return false;
+            }
+        }
+        return true;
+    }
     function add() {
-        if (checkForm('bankdetails')) {
+        
+        if (BankDetailsValidation()) {
+            //if (checkForm('bankdetails')) {
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/BankDetails/AddEdit")',
@@ -21,29 +68,31 @@
                 success: function (response) {
                     if (parseInt(response.success) == 1) {
 
-                        $("#errorspan").text("Succesfully Created")
-                        $("#errorspan").css({ 'color': 'green' });
-                        $("#errorspan").show()
+                        //$("#errorspan").text("Succesfully Created")
+                        //$("#errorspan").css({ 'color': 'green' });
+                        //$("#errorspan").show();
+                        toastr.success("Successfully Saved");
+                        var url = '@Url.Action("EmployeeList", "EmployeeList")';
+                        window.location.href = url;
 
                     } else {
                         $("#errorspan").text("Bank details Already Present")
                         $("#errorspan").css({ 'color': 'red' });
-                        $("#errorspan").show()
+                        $("#errorspan").show();
                     }
                 },
             });
-        }
-        else {
-            $("#errorspan").text("Please fill the details")
-            $("#errorspan").show()
+            //}
+            //else {
+            //    $("#errorspan").text("Please fill the details")
+            //    $("#errorspan").show()
+            //}
         }
     }
     $(document).ready(function () {
-        
         $("#Employee_Id").val('@ViewBag.empid')
         $("#Employee_Id").prop("readonly", true)
     });
-    
 </script>
 
 <form id="bankdetails">
@@ -56,12 +105,14 @@
             <div class="form-group">
                 <label>Bank Name</label>
                 <input type="text" class="form-control" name="Bankname" id="Bankname" maxlength="20" data-val-regex-pattern="^[a-zA-Z, ]+$" required />
+                <span id="BanknameSpan" class="field-validation-valid" style="color: red; font: bold; display: none"></span>
             </div>
 
             <div class="form-group">
 
                 <label>Branch Name</label>
                 <input type="text" class="form-control" name="Branchname" id="Branchname" maxlength="20" data-val-regex-pattern="^[a-zA-Z, ]+$" required />
+                <span id="BranchnameSpan" class="field-validation-valid" style="color: red; font: bold; display: none"></span>
 
             </div>
         </div>
@@ -69,12 +120,14 @@
             <div class="form-group">
                 <label>Account Number</label>
                 <input type="text" class="form-control" name="Accountnumber" id="Accountnumber" maxlength="15" data-val-regex-pattern="^[0-9, ]+$" required />
+                <span id="AccountnumberSpan" class="field-validation-valid" style="color: red; font: bold; display: none"></span>
             </div>
 
 
             <div class="form-group">
                 <label>IFSC </label>
                 <input type="text" class="form-control" name="Ifsccode" id="Ifsccode" maxlength="15" data-val-regex-pattern="^[a-zA-Z0-9, ]+$" required />
+                <span id="IfsccodeSpan" class="field-validation-valid" style="color: red; font: bold; display: none"></span>
             </div>
         </div>
         <div class="col-md-12">

@@ -1,10 +1,12 @@
-﻿@model  MTSINHR.Models.AssetsMaster
+﻿@model MTSINHR.Models.AssetsMaster
 @System.Web.Optimization.Scripts.Render("~/bundles/datatable")
 <script src="~/Scripts/ValidationFunction.js"></script>
 
 
 <script>
     var groupTable;
+    var data;
+    var TempId = 0;
     $(document).ready(function () {
         groupTable = $("#getasset").DataTable({
             "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
@@ -21,39 +23,41 @@
             },
             "aoColumns":
       [{ "mData": "Id", "sTitle": "ID", "sClass": "text-right", "sWidth": "80px" }
-      , { "mData": "Assetcode", "sTitle": "Asset Code", "sClass": "text-left" }
-      , { "mData": "Assetname", "sTitle": "Asset Name", "sClass": "text-left" }
-      , { "mData": "Depreciation", "sTitle": "Depreciation", "sClass": "text-center" }
+      //, { "mData": "Assetcode", "sTitle": "Asset Code", "sClass": "text-left" }
+      , { "mData": "Asset_Name", "sTitle": "Category", "sClass": "text-left" }
+      , { "mData": "Depreciation", "sTitle": "Depreciation %", "sClass": "text-center" }
        , { "mData": "Expectedlife", "sTitle": "Expected Useful Life", "sClass": "text-center" }
         , { "mData": "Salvagevalue", "sTitle": "Salvage Value", "sClass": "text-center" }
       , { "mData": "Id", "sTitle": "Edit", "sClass": "text-center", "sWidth": "1%", "orderable": true }
       ],
             "aoColumnDefs":
                 [{
-                    "aTargets": [6]
+                    "aTargets": [5]
                     , "mRender": function (data, type, row) {
-                        return '<span onclick= editAsset($(this).closest("tr"))  class="fa fa-edit"></span>';
+                        return '<span style="cursor:pointer;" onclick= editAsset($(this).closest("tr"))  class="fa fa-edit"></span>';
                     }
                 }],
+        });
+        $("#Assetname").prop('disabled', true); 
+        $("#AssettypeId").on("change", function () {
+            $("#Assetname").prop('disabled', false);
         });
     });
 
     function AddEdit(actionurl, formid) {
-        if (checkForm(formid)) {
-            debugger
+        if (validationCall()) {
             $.ajax({
                 type: 'POST',
                 url: actionurl,
                 data: {
-                    Id: $("#rowId").val(),
-                    Assetname: $("#Assetname").val().trim(),
-                    AssettypeId: $("#AssettypeId").val().trim(),
+                    Id:TempId,
+                    Assetname: $("#Assetname").val(),
+                    AssettypeId: $("#AssettypeId").val(),
                     AssetDepreciation: $("#Assetdepreciation").val(),
                     ExpectedLife: $("#Expectedlife").val().trim(),
                     SalvageValue: $("#Salvagevalue").val().trim()
                 },
                 success: function (response) {
-                    debugger
                     if (parseInt(response.success) == 1) {
                         $('#asset').modal('hide');
                         groupTable.ajax.reload();
@@ -65,39 +69,80 @@
                 },
                 error: function (a, b, c) {
                 }
-            });
+            })
+            TempId = 0;
         }
     };
 
     function editAsset(curTr) {
-        debugger
-        var data = groupTable.row(curTr).data();
+        $("#Assetname").prop('disabled', false);
+        data = groupTable.row(curTr).data();
+        TempId = data.Id;
         $("#url").val('@Url.Content("~/AssetsMaster/Edit")');
         $('.field-validation-valid').text("");
-        $("#rowId").val(data.Id);
-        $("#editassetname").val(data.Assetname);
-        $("#editassettypeId").val(data.AssettypeId);
-        $("#editdAssetdepreciation").val(data.AssetDepreciation);
-        $("#editExpectedlife").val(data.ExpectedLife);
-        $("#editSalvagevalue").val(data.SalvageValue);
+        $("#Assetname").val(data.Assetname);
+        $("#AssettypeId").val(data.AssettypeId);
+        $("#Assetdepreciation").val(data.Depreciation);
+        $("#Expectedlife").val(data.Expectedlife);
+        $("#Salvagevalue").val(data.Salvagevalue);
         $("#actiontitle").text("Edit Asset");
         $("#asset").modal('show');
     };
 
     function addAsset() {
-        debugger
+        $("#Assetname").prop('disabled', true);
+        $("#AssettypeId").on("change", function () {
+            $("#Assetname").prop('disabled', false);
+        });
         $("#url").val('@Url.Content("~/AssetsMaster/Add")');
         $('.field-validation-valid').text("");
-        $("#editassetname").val("");
-        $("#editassettypeId").val("");
-        $("#editdAssetdepreciation").val("");
-        $("#editExpectedlife").val("");
-        $("#editSalvagevalue").val("");
+        $("#Assetname").val("");
+        $("#AssettypeId").val("");
+        $("#Assetdepreciation").val("");
+        $("#Expectedlife").val("");
+        $("#Salvagevalue").val("");
         $("#actiontitle").text("Add Asset");
         $("#asset").modal('show');
     };
 
+    function validationCall() {
+        
+        $('.field-validation-valid').text("");
+        $('.field-validation-valid').show();
+        if ($('#AssettypeId').val() == null|| $('#AssettypeId').val() == '') {
+            
+            $("#AssettypeIdSpan").text("This field is required");
 
+            return false;
+        }
+
+        if ($('#Assetname').val() == null || $('#Assetname').val() == '') {
+           
+            $("#AssetnameSpan").text("This field is required");
+            return false;
+        }
+
+        if ($('#Assetdepreciation').val() == null || $('#Assetdepreciation').val() == '') {
+           
+            $("#AssetdepreciationSpan").text("This field is required");
+            return false;
+        }
+
+        if ($('#Expectedlife').val() == null || $('#Expectedlife').val() == '') {
+           
+            $("#ExpectedlifeSpan").text("This field is required");
+            return false;
+        }
+
+        if ($('#Salvagevalue').val() == null || $('#Salvagevalue').val() == '') {
+           
+            $("#SalvageValueSpan").text("This field is required");
+            return false;
+        }
+    
+            return true;
+        }
+    
 
 </script>
 
@@ -135,26 +180,49 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
-                <form id="AssetList">
+                <form id="AssetList" autocomplete="off">
                     <input type="hidden" id="rowId" value="">
-                    <input type="hidden" class="form-control" id="url" value="">
-                    <div>
-                        <div class="form-group">
-                            <div class="editor-label">
-                                Asset Type
-                            </div>
-                            <div class="editor-field">
-                                <div>
-                                    @Html.DropDownListFor(model => model.AssetTypeId, new System.Web.Mvc.SelectList(ViewBag.Asset, "Value", "Text"), new { @class = "form-control" })
-                                    @Html.ValidationMessageFor(model => model.AssetTypeId)
-                                </div>
-                            </div>
+                    <input type="hidden" class="form-control" id="url" value="">                 
+                    <div class="form-group">
+                            <label>Asset Classification</label>
+                            <select class="form-control" id="AssettypeId">
+                                <span class="field-validation-valid" style="color: red; font: bold; display: none"></span>
+                                @{
+                                    foreach (var item in ViewBag.Asset)
+                                    {
+
+                                        <option value="@item.Value">
+
+                                            @item.Text
+
+                                        </option>
+                                    }
+                                }
+                            </select>
+                        <span id="AssettypeIdSpan" class="field-validation-valid" style="color: red; font: bold; display: none"></span>
                         </div>
+                    <div class="form-group" >
+                        <label>Category</label>
+                        <select class="form-control" id="Assetname">
+                            <span class="field-validation-valid" style="color: red; font: bold; display: none"></span>
+                            @{
+                                foreach (var item in ViewBag.Assetname)
+                                {
+
+                                    <option value="@item.Value">
+
+                                        @item.Text
+
+                                    </option>
+                                }
+                            }
+                        </select>
+                        <span id="AssetnameSpan" class="field-validation-valid" style="color: red; font: bold; display: none"></span>
                     </div>
                     @*<div class="col-md-4">
                         <div class="form-group">
                             <div class="editor-label ">
-                                Asset Name
+                                Category
                             </div>
                             <div class="editor-field">
                                 <div style="width: 450px;">
@@ -163,31 +231,26 @@
                                 </div>
                             </div>
                         </div>
-                    </div>*@
+                    </div>*@                 
                     @*<div class="form-group">
-                        <label> Asset Type</label>
-                        <input type="text" class="form-control" name="AssettypeId" id="AssettypeId" />
-                        <span class="field-validation-valid" style="color: red; font: bold; display: none"></span>
-                    </div>*@
-                    <div class="form-group">
-                        <label>Asset Name </label>
+                        <label>Category </label>
                         <input type="text" class="form-control" name="Assetname" id="Assetname" />
                         <span class="field-validation-valid" style="color: red; font: bold; display: none"></span>
-                    </div>
+                    </div>*@
                     <div class="form-group">
                         <label>Depreciation %</label>
-                        <input type="text" class="form-control" name="Assetdepreciation" id="Assetdepreciation" />
-                        <span class="field-validation-valid" style="color: red; font: bold; display: none"></span>
+                        <input type="text" class="form-control" name="Assetdepreciation" id="Assetdepreciation" data-val-regex-pattern="^[0-9]+[.]+[0-9]+$" />
+                        <span id="AssetdepreciationSpan" class="field-validation-valid" style="color: red; font: bold; display: none"></span>
                     </div>
                     <div class="form-group">
                         <label>Expected Useful Life</label>
-                        <input type="text" class="form-control" name="Expectedlife" id="Expectedlife" />
-                        <span class="field-validation-valid" style="color: red; font: bold; display: none"></span>
+                        <input type="text" class="form-control" name="Expectedlife" id="Expectedlife" data-val-regex-pattern="^[0-9]+$" />
+                        <span id="ExpectedlifeSpan" class="field-validation-valid" style="color: red; font: bold; display: none"></span>
                     </div>
                     <div class="form-group">
                         <label>Salvage Value</label>
-                        <input type="text" class="form-control" name="SalvageValue" id="Salvagevalue" />
-                        <span class="field-validation-valid" style="color: red; font: bold; display: none"></span>
+                        <input type="text" class="form-control" name="SalvageValue" id="Salvagevalue" data-val-regex-pattern="^[0-9]+$" />
+                        <span id="SalvageValueSpan" class="field-validation-valid" style="color: red; font: bold; display: none"></span>
                     </div>
                 </form>
             </div>

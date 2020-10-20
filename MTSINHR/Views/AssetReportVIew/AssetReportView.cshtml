@@ -1,0 +1,568 @@
+﻿@model MTSINHR.Models.AssetReportView
+
+@System.Web.Optimization.Scripts.Render("~/bundles/datepicker")
+@System.Web.Optimization.Styles.Render("~/bundles/datepickercss")
+<link href="~/Content/viewer.min.css" rel="stylesheet" />
+<link href="~/Scripts/jQuery-File-Upload-9.19.2/css/jquery.fileupload.css" rel="stylesheet" />
+<script src="~/Scripts/jQuery-File-Upload-9.19.2/js/vendor/jquery.ui.widget.js"></script>
+<script src="~/Scripts/jQuery-File-Upload-9.19.2/js/load-image.all.min.js"></script>
+<script src="~/Scripts/jQuery-File-Upload-9.19.2/js/canvas-to-blob.js"></script>
+<script src="~/Scripts/jQuery-File-Upload-9.19.2/js/jquery.iframe-transport.js"></script>
+<script src="~/Scripts/jQuery-File-Upload-9.19.2/js/jquery.fileupload.js"></script>
+<script src="~/Scripts/jQuery-File-Upload-9.19.2/js/jquery.fileupload-process.js"></script>
+<script src="~/Scripts/jQuery-File-Upload-9.19.2/js/jquery.fileupload-image.js"></script>
+<script src="~/Scripts/jQuery-File-Upload-9.19.2/js/jquery.fileupload-audio.js"></script>
+<script src="~/Scripts/jQuery-File-Upload-9.19.2/js/jquery.fileupload-video.js"></script>
+<script src="~/Scripts/jQuery-File-Upload-9.19.2/js/jquery.fileupload-validate.js"></script>
+<script src="~/Scripts/viewer.min.js"></script>
+<script src="~/Scripts/bootbox.min.js"></script>
+<script src="~/Scripts/ValidationFunction.js"></script>
+
+
+
+
+<script>
+
+    var itemCode = '@TempData["ItemCode"]';
+    var Assetdetail = [];
+    @{ TempData.Keep("ItemCode"); }
+    //  var rowdetail = '@TempData["rowDetail"]';
+
+
+    $(document).ready(function () {
+        @*var AssetData = '@Html.Raw(ViewBag.AssetData)';
+        AssetData = JSON.parse(AssetData);
+        var activeState = AssetData.Table[0].Active;*@
+        //  Assetdetail = JSON.parse(rowdetail.replace(/&quot;/g, '"'));
+
+        if (itemCode != undefined && itemCode != null && itemCode != '') {
+            callAssetDetail();
+            loadAmcTable();
+            loadAssetSaleTable();
+            loadAssetMaintenance();
+            loadAssignAssetTable();
+
+            $('#AssetType').text(Assetdetail[0].AssetType);
+            $('#AssetName').text(Assetdetail[0].AssetName);
+            $('#ItemCode').text(Assetdetail[0].IDENTIFICATION_CODE);
+            $('#Description').text(Assetdetail[0].ASSET_DESCRIPTION);
+            $('#Make').text(Assetdetail[0].MAKE);
+            $('#SeralNumber').text(Assetdetail[0].SERIAL_NUMBER);
+            $('#PurchasedYear').text(Assetdetail[0].Purchased_year);
+            $('#CurrentlyAssignedTo').text(Assetdetail[0].AssignedTo);
+            $('#MaintenanceCost').text(Assetdetail[0].totalcost);
+
+            Assetdetail[0].VENDOR_NAME != null ? $('#VendorName').text(Assetdetail[0].VENDOR_NAME) : $('#VendorName').text('N/A');
+            Assetdetail[0].BILL_NUMBER != null ? $('#BillNumber').text(Assetdetail[0].BILL_NUMBER) : $('#BillNumber').text('N/A');
+            Assetdetail[0].BILL_DATE != null ? $('#BillDate').text(Assetdetail[0].BILL_DATE) : $('#BillDate').text('N/A');
+            Assetdetail[0].COST != null ? $('#Cost').text(Assetdetail[0].COST + ' (' + (Assetdetail[0].COST_TYPE == 0 ? 'Actual' : Assetdetail[0].COST_TYPE == 1 ? 'Appr0x' : 'N/A') + ')') : $('#Cost').text('N/A');
+            Assetdetail[0].MODEL != null ? $('#Model').text(Assetdetail[0].MODEL) : $('#Model').text('N/A');
+            Assetdetail[0].WARRANTY_STARTDATE != null ? $('#WarrentyStartDate').text(Assetdetail[0].WARRANTY_STARTDATE) : $('#WarrentyStartDate').text('N/A');
+            Assetdetail[0].WARRANTY_ENDDATE != null ? $('#WarrentyEndDate').text(Assetdetail[0].WARRANTY_ENDDATE) : $('#WarrentyEndDate').text('N/A');
+
+
+            if (Assetdetail[0].AssignedTo == null || Assetdetail[0].ACTIVE == 0) {
+                $('#CurrentlyAssignedTo').text("Not Assigned");
+            }
+            if (Assetdetail[0].totalcost == null) {
+                $('#MaintenanceCost').text("N/A");
+            }
+
+            if (Assetdetail[0].Purchased_year == null) {
+                $('#PurchasedYear').text("N/A");
+            }
+            if (Assetdetail[0].SERIAL_NUMBER == null) {
+                $('#SeralNumber').text("N/A");
+            }
+
+            if (Assetdetail[0].MAKE == null) {
+                $('#Make').text("N/A");
+            }
+            if (Assetdetail[0].ASSET_DESCRIPTION == null) {
+                $('#Description').text("N/A");
+            }
+            if (Assetdetail[0].IDENTIFICATION_CODE == null) {
+                $('#ItemCode').text("N/A");
+            }
+       
+
+        }
+    });
+    function loadAmcTable() {
+        var amctable;
+        amctable = $("#amctable").DataTable({
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "iDisplayLength": 5,
+            "bFilter": true,
+            "bProcessing": true,
+            "scrollX": true,
+            "order": [[14, "desc"]],
+            "ajax": {
+                "type": "GET",
+                "url": '@Url.Content("~/AssetReportView/ReadAmcDetails")',
+                "data": {
+                    "ItemCode": itemCode
+                },
+                "dataSrc": function (data) {
+                    return JSON.parse(data);
+                }
+            },
+            "aoColumns":
+      [{ "mData": "Id", "sTitle": "SI.No", "sClass": "text-right", "bVisible": false, "sWidth": "80px", "defaultContent": "<i>Not set</i>" }//0
+      , { "mData": "Assettype", "sTitle": "Asset Classification", "sClass": "text-left", "bVisible": false, "defaultContent": "<i>Not set</i>" }//1
+      , { "mData": "Assetname", "sTitle": "Category", "bVisible": false, "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//2
+      , { "mData": "Category", "sTitle": "Amc / Insurance Type", "bVisible": true, "sClass": "text-center", "defaultContent": "<i>Not set</i>" }//3
+      , { "mData": "Item_code", "sTitle": "Asset Code", "sClass": "text-center", "bVisible": false, "defaultContent": "<i>Not set</i>" }//4
+      , { "mData": "Vendor", "sTitle": "Vendor", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//5
+      , { "mData": "AmcType", "sTitle": "Amc Type", "bVisible": false, "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//6
+      , { "mData": "Insurancetype", "sTitle": "Insurance Type", "bVisible": false, "sClass": "text-center", "defaultContent": "<i>Not set</i>" }//7
+      , { "mData": "CHARGES", "sTitle": "Charges (Rs.)", "sClass": "text-right", "defaultContent": "<i>Not set</i>" }//8
+      , { "mData": "PremiumCharges", "sTitle": "Premium Charges", "bVisible": false, "sClass": "text-center", "defaultContent": "<i>Not set</i>" }//9
+      , { "mData": "PaymentType", "sTitle": "Payment Type", "bVisible": false, "sClass": "text-center", "defaultContent": "<i>Not set</i>" }//10
+      , { "mData": "PaymentRefDate", "sTitle": "Payment Ref Date", "sClass": "text-center", "defaultContent": "<i>Not set</i>" }//11
+      , { "mData": "PaymentRefNumber", "sTitle": "Payment Ref Number", "sClass": "text-right", "defaultContent": "<i>Not set</i>" }//12
+      , { "mData": "FromDate", "sTitle": "From", "bVisible": true, "sClass": "text-center", "defaultContent": "<i>Not set</i>" }//13
+      , { "mData": "ToDate", "sTitle": "To", "bVisible": true, "sClass": "text-center", "defaultContent": "<i>Not set</i>" }//14
+      , { "mData": "Notes", "sTitle": "Notes", "bVisible": false, "sClass": "text-center", "defaultContent": "<i>Not set</i>" }//15
+      , { "mData": "Item_code", "sTitle": "Download Invoice", "sClass": "text-center", "defaultContent": "<i>Not set</i>" }//16
+      , { "mData": "Id", "sTitle": "Download Amc", "sClass": "text-center", "defaultContent": "<i>Not set</i>" }//17
+      ],
+            "aoColumnDefs":
+          [
+
+                {
+                    "aTargets": [3]
+              , "mRender": function (data, type, row) {
+
+                  if (data == "1") {
+                      return "Amc";
+                  }
+                  else if (data == "2") {
+                      return "Insurance";
+                  }
+
+              }
+                },
+		              {
+		                  "aTargets": [11]
+              , "mRender": function (data, type, row) {
+                  return dateFormat(data)
+
+              }
+		              },
+              {
+                  "aTargets": [16]
+              , "mRender": function (data, type, row) {
+
+                  return '<button="" onclick="downloadFile(' + data + ',' + 1 + ')"><i class="fa fa-download"/></button>'
+
+              }
+              },
+          {
+              "aTargets": [17]
+              , "mRender": function (data, type, row) {
+                  return '<button="" onclick="downloadFile(' + data + ',' + 2 + ')"><i class="fa fa-download"/></button>'
+              }
+          },
+          ],
+            "createdRow": function (row, data, dataIndex) {
+                if (dateFormat(data.ToDate) >= dateFormat(Date())) {
+                    $(row).css('background-color', 'rgb(156, 253, 177)');
+                }
+
+            }
+        });
+    }
+
+    function loadAssetSaleTable() {
+        var assetsaletable;
+        var rowData = "";
+        assetsaletable = $("#assetsale").DataTable({
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "iDisplayLength": 5,
+            "bFilter": true,
+            "bProcessing": true,
+            "scrollX": true,
+            "ajax": {
+                type: "GET",
+                url: '@Url.Content("~/AssetReportView/ReadAssetSale")',
+                data: {
+                    "ItemCode": itemCode
+                },
+                dataSrc: function (data) {
+                    return JSON.parse(data);
+
+                }
+            },
+            "aoColumns":
+      [{ "mData": "Id", "sTitle": "SI.No", "sClass": "text-center", "bVisible": false, "sWidth": "80px", "defaultContent": "<i>Not set</i>" }//0
+      , { "mData": "DateOfSale", "sTitle": "Date Of Sale", "sClass": "text-center", "defaultContent": "<i>Not set</i>" }//1
+      , { "mData": "TypeOfSale", "sTitle": "Type Of Sale", "bVisible": false, "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//2
+      , { "mData": "SalePrice", "sTitle": "Sale Price RS.", "sClass": "text-right", "defaultContent": "<i>Not set</i>" }//3
+      , { "mData": "SoldTo", "sTitle": "Sold To", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//4
+      , { "mData": "ApporvedDate", "sTitle": "Approved Date", "sClass": "text-center", "defaultContent": "<i>Not set</i>" }//5
+      , { "mData": "ApporvedRef", "sTitle": "Approved Ref", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//6
+      , { "mData": "ApporvedBy", "sTitle": "Approved By", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//7
+      , { "mData": "Notes", "sTitle": "Notes", "bVisible": false, "sClass": "text-center", "defaultContent": "<i>Not set</i>" }//8
+      ],
+
+            "aoColumnDefs":
+         [
+             {
+                 "aTargets": [1]
+             , "mRender": function (data, type, row) {
+
+                 return dateFormat(data)
+
+             }
+             },
+             {
+                 "aTargets": [5]
+             , "mRender": function (data, type, row) {
+                 return dateFormat(data)
+
+             }
+             },
+         ],
+
+        });
+    }
+
+    function loadAssetMaintenance() {
+        var assetmaintenancetable;
+        var rowData = "";
+        assetsaletable = $("#assetmaintenance").DataTable({
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "iDisplayLength": 5,
+            "bFilter": true,
+            "bProcessing": true,
+            "scrollX": true,
+            "order": [[4, "desc"]],
+            "ajax": {
+                type: "GET",
+                url: '@Url.Content("~/AssetReportView/ReadAssetMaintenance")',
+                data: {
+                    "ItemCode": itemCode
+                },
+                dataSrc: function (data) {
+                    return JSON.parse(data);
+
+                }
+            },
+            "aoColumns":
+      [{ "mData": "Id", "sTitle": "SI.No", "sClass": "text-right", "bVisible": false, "sWidth": "80px", "defaultContent": "<i>Not set</i>" }//0
+      , { "mData": "CategoryName", "sTitle": "Asset Classification", "sClass": "text-left", "bVisible": false, "defaultContent": "<i>Not set</i>" }//1
+      , { "mData": "Assetname", "sTitle": "Category", "sClass": "text-left", "bVisible": false, "defaultContent": "<i>Not set</i>" }//2
+      , { "mData": "NAME", "sTitle": "Vendor", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//3
+      , { "mData": "Dateofpurchase", "sTitle": "Maintenance date", "bVisible": true, "sClass": "text-center", "defaultContent": "<i>Not set</i>" }//4
+      , { "mData": "MaintenanceCarried_out", "sTitle": "Maintenance Carried Out", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//5
+      , { "mData": "Cost", "sTitle": "Cost", "sClass": "text-right", "defaultContent": "<i>Not set</i>" }//6
+      , { "mData": "Notes", "sTitle": "Notes", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//7
+      ]
+        });
+    }
+
+    function callAssetDetail() {
+
+
+        $.ajax({
+            type: 'get',
+            url: '@Url.Content("~/AssetDetails/ReadAssetDetail")',
+            data: { "ItemCode": itemCode },
+            async: false,
+            success: function (data) {
+                Assetdetail = JSON.parse(data);
+                console.log(Assetdetail);
+            }
+        });
+    }
+
+
+
+
+
+
+
+
+
+    function loadAssignAssetTable() {
+        var assignedassetstable;
+        var rowData = "";
+
+        assignedassetstable = $("#assignedassetrecords").DataTable({
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "iDisplayLength": 5,
+            "bFilter": true,
+            "scrollX": true,
+            "order": [[8, "desc"]],
+            "bProcessing": true,
+            "ajax": {
+                type: "GET",
+                url: '@Url.Content("~/AssetReportView/ReadAssignAsset")',
+                data: {
+                    "ItemCode": itemCode
+                },
+                dataSrc: function (data) {
+                    return JSON.parse(data);
+                }
+            },
+            "aoColumns":
+      [
+        { "mData": "ID", "sTitle": "SI.No", "sClass": "text-right", "sWidth": "80px", "bVisible": false, "defaultContent": "<i>Not set</i>" }//0
+      , { "mData": "CategoryName", "sTitle": "Asset Classification", "sClass": "text-left", "bVisible": false, "defaultContent": "<i>Not set</i>" }//1
+      , { "mData": "Assetname", "sTitle": "Category", "sClass": "text-center", "bVisible": false, "defaultContent": "<i>Not set</i>" }//2
+      , { "mData": "ITEM_CODE", "sTitle": "Asset Code", "sClass": "text-left", "bVisible": false, "defaultContent": "<i>Not set</i>" }//3
+      , { "mData": "EMPLOYEE_NAME", "sTitle": "Assigned To", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//4
+      , { "mData": "Department", "sTitle": "Department", "bVisible": false, "sClass": "text-center", "defaultContent": "<i>Not set</i>" }//5
+      , { "mData": "LocationName", "sTitle": "Location Name", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//6
+      , { "mData": "PLACE_NAME", "sTitle": "Place Name", "bVisible": false, "sClass": "text-center", "defaultContent": "<i>Not set</i>" }//7
+      , { "mData": "ACTION_DATE", "sTitle": "From", "sClass": "text-center", "defaultContent": "<i>Not set</i>" }//8
+      , { "mData": "UNASSIGN_DATE", "sTitle": "To", "sClass": "text-center" }//9
+      , { "mData": "NOTES", "sTitle": "Notes", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//10
+      , { "mData": "ASSIGN_TYPEID", "sTitle": "Assign Type", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//11
+      ]
+        , "aoColumnDefs":
+        [
+             {
+                 "aTargets": [8]
+             , "mRender": function (data, type, row) {
+
+                 return dateFormat(data)
+
+             }
+             },
+             {
+                 "aTargets": [9]
+             , "mRender": function (data, type, row) {
+
+                 return data || '-'
+
+             }
+             },
+            {
+                "aTargets": [11]
+            , "mRender": function (data, type, row) {
+                if (data == "1")
+                    return "Allot To Employee"
+                else if (data == "2")
+                    return "Custody"
+                else if (data == "3")
+                    return "Transfer"
+                else if (data == "4")
+                    return "Return"
+            }
+            },
+        ],
+            "createdRow": function (row, data, dataIndex) {
+                if (data.UNASSIGN_DATE == null) {
+                    $(row).css('background-color', 'rgb(156, 253, 177)');
+                }
+
+            }
+        });
+    }
+</script>
+
+<div class="card">
+ 
+        <div class="shadow">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card-header text-center ">
+                        <div class="content-body"><h4>Asset Detail</h4></div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row m-t-15">
+                          
+                            <div class="col-md-4 col-lg-4">
+                                <label class="fz13">Asset Classification :</label>
+                                <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="AssetType"></label>
+                            </div>
+
+                            <div class="col-md-4 col-lg-4">
+                                <label class="fz13">Category :</label>
+                                <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="AssetName"></label>
+                            </div>
+
+                            <div class="col-md-4 col-lg-4">
+                                <label class="fz13">Item Code :</label>
+                                <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="ItemCode"></label>
+                            </div>
+                               
+                            <div class="col-md-4 col-lg-4">
+                                <label class="fz13">Make :</label>
+                                <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="Make"></label>
+                            </div>
+
+                            <div class="col-md-4 col-lg-4">
+                                <label class="fz13">Model :</label>
+                                <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="Model"></label>
+                            </div>
+
+                            <div class="col-md-4 col-lg-4">
+                                <label class="fz13">Serial Number :</label>
+                                <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="SeralNumber"></label>
+                            </div>
+
+                            <div class="col-md-4 col-lg-4">
+                                <label class="fz13">Currently Assigned To :</label>
+                                <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="CurrentlyAssignedTo"></label>
+                            </div>
+                            <div class="col-md-4 col-lg-4">
+                                <label class="fz13">Maintenance Cost Rs.(so far) :</label>
+                                <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="MaintenanceCost"></label>
+                            </div>
+
+                            <div class="col-md-12 col-lg-12">
+                                <label class="fz13">Description :</label>
+                                <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="Description"></label>
+                            </div>
+
+                        </div>
+
+                        <div class="m-t-5 col-12 border" style="border:2px;">
+                            <div class="shadow">
+                                <div class="row m-t-15">
+                                    <div class="col-md-4 col-lg-4">
+                                        <label class="fz13">Vendor Name :</label>
+                                        <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="VendorName"></label>
+                                    </div>
+
+                                    <div class="col-md-4 col-lg-4">
+                                        <label class="fz13">Bill Number :</label>
+                                        <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="BillNumber"></label>
+                                    </div>
+
+                                    <div class="col-md-4 col-lg-4">
+                                        <label class="fz13">Bill Date :</label>
+                                        <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="BillDate"></label>
+                                    </div>
+
+                                    <div class="col-md-4 col-lg-4">
+                                        <label class="fz13">Cost Rs. :</label>
+                                        <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="Cost"></label>
+                                    </div>
+
+                                    <div class="col-md-4 col-lg-4">
+                                        <label class="fz13">Warrenty StartDate :</label>
+                                        <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="WarrentyStartDate"></label>
+                                    </div>
+
+                                    <div class="col-md-4 col-lg-4">
+                                        <label class="fz13">Warrenty EndDate :</label>
+                                        <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="WarrentyEndDate"></label>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+   
+</div>
+
+<div class="card">
+    <div class="card-header text-center ">
+        Asset AMC/Insurance Details
+    </div>
+    <div class="card-body">
+        <div>
+            <div class="row">
+                <div class="MTS_Table">
+                    <table id="amctable" class="table table-bordered table-hover tabel-sm table-responsive" cellspacing="0" width="100%"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header text-center ">
+        Asset Maintenance
+    </div>
+    <div class="card-body">
+        <div>
+            <div class="row">
+                <div class="MTS_Table">
+                    <table id="assetmaintenance" class="table table-bordered table-hover tabel-sm table-responsive" cellspacing="0" width="100%"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header text-center ">
+        Asset Assigned History
+    </div>
+    <div class="card-body">
+        <div>
+            <div class="row">
+                <div class="MTS_Table">
+                    <table id="assignedassetrecords" class="table table-bordered table-hover tabel-sm table-responsive" cellspacing="0" width="100%"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header text-center ">
+        Asset Sale
+    </div>
+    <div class="card-body">
+        <div>
+            <div class="row">
+                <div class="MTS_Table">
+                    <table id="assetsale" class="table table-bordered table-hover tabel-sm table-responsive" cellspacing="0" width="100%"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+    function downloadFile(data, val) {
+
+        if (data != undefined && data != null && data != '') {
+            var postval = parseInt(data);
+            if (val == 1) {
+                var url = '@Url.Content("~/AssetReportView/GetInvoice")';
+            }
+            else if (val == 2) {
+                url = '@Url.Content("~/AssetReportView/GetAmc")';
+            }
+
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: { Documents: postval },
+
+                success: function (data) {
+                    
+                    if (data == "Success") {
+                        window.location.href = '@Url.Action("ViewDocuments", "AssetReportView")';
+                    }
+                    else {
+                        $(".errorspan").show();
+                        toastr.error("File not available");
+                    }
+                }
+            });
+        }
+    }
+    function dateFormat(date) {
+
+        var d = new Date(date);
+        var month = ('0' + (d.getMonth() + 1)).slice(-2);
+        var date1 = ('0' + d.getDate()).slice(-2);
+        var DateFormat = month + '/' + date1 + '/' + d.getFullYear();
+        return DateFormat;
+    }
+
+</script>

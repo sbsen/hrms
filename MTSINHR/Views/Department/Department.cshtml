@@ -27,7 +27,7 @@
                 [{
                     "aTargets": [2]
                     , "mRender": function (data, type, row) {
-                        return '<span onclick= editdepartment($(this).closest("tr"))  class="fa fa-edit"></span>';
+                        return '<span style="cursor:pointer;" onclick= editdepartment($(this).closest("tr"))  class="fa fa-edit"></span>';
                     }
                 }],
         });
@@ -44,7 +44,7 @@
                     
                 },
                 success: function (response) {
-                    debugger
+                   
                     if (parseInt(response.success) == 1) {
 
                         $("#department").modal('hide');
@@ -63,7 +63,7 @@
     };
 
     function editdepartment(curTr) {
-        debugger
+        
         var data = groupTable.row(curTr).data();
         $("#url").val('@Url.Content("~/Department/Edit")');
         $(".field-validation-valid").text("");
@@ -74,7 +74,7 @@
     };
 
     function addDepartment() {
-        debugger
+        
         $("#url").val('@Url.Content("~/Department/Add")');
         $(".field-validation-valid").text("");
         $("#editdepartment").val("");

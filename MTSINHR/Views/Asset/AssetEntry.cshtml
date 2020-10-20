@@ -1,8 +1,5 @@
-﻿@model MTSINHR.Models.Assets
+﻿@model MTSINHR.Models.AssetsEntry
 
-@{
-    ViewBag.Title = "AssetDetails";
-}
 @{
     List<SelectListItem> TypeItems = new List<SelectListItem>();
 
@@ -19,11 +16,17 @@
     });
 }
 
-
+@*@System.Web.Optimization.Scripts.Render("~/bundles/jquery")
+@System.Web.Optimization.Scripts.Render("~/bundles/datatable")
 @System.Web.Optimization.Scripts.Render("~/bundles/datepicker")
+
+@System.Web.Optimization.Styles.Render("~/bundles/bootstrapdt")
+@System.Web.Optimization.Scripts.Render("~/bundles/datatable")*@
 @System.Web.Optimization.Styles.Render("~/bundles/datepickercss")
+@System.Web.Optimization.Scripts.Render("~/bundles/datepicker")
+<script src="~/Scripts/moment.min.js"></script>
 <link href="~/Content/viewer.min.css" rel="stylesheet" />
-<link href="~/Scripts/jQuery-File-Upload-9.19.2/css/jquery.fileupload.css" rel="stylesheet" />
+<link href="~/Scripts/jQuery-File-Upload-9.19.2/css/jquery.fileupload.css" rel="stylesheet"/>
 <script src="~/Scripts/jQuery-File-Upload-9.19.2/js/vendor/jquery.ui.widget.js"></script>
 <script src="~/Scripts/jQuery-File-Upload-9.19.2/js/load-image.all.min.js"></script>
 <script src="~/Scripts/jQuery-File-Upload-9.19.2/js/canvas-to-blob.js"></script>
@@ -37,38 +40,102 @@
 <script src="~/Scripts/viewer.min.js"></script>
 <script src="~/Scripts/bootbox.min.js"></script>
 <script src="~/Scripts/ValidationFunction.js"></script>
+<script src="~/Scripts/daterangepicker.min.js"></script>
+<link href="~/Content/daterangepicker.css" rel="stylesheet" />
+<link href="~/Content/css/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.min.js"></script>
+<style>
+    .requir {
+        border-left: 2px solid red !important;
+    }
+    .text-wrap{
+    white-space:normal;
+}
+.width-200{
+    width:200px;
+}
 
-
-
-<h2>AssignAsset</h2>
-
-
-<form id="asset" method="post" enctype="multipart/form-data">
-    <div class="panel" id="assetdiv">
-        <div class="card">
-            <div class="card-header p-b-0">
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <div class="editor-label">
-                            <label>UploadInvoice</label>
+</style>
+<div id="assetentrydetails" class="collapse">
+    <div>
+        <div class="m-t-15">
+            <div class="card">
+                <div class="card-header">
+                    Asset Entry Details
+                </div>
+                <div class="card-body">
+                    <div class="editor-label">
+                        <label>Filter-Between PurchasedOn Date</label><br />
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <input type="text" name="datefilter" id="daterangefilter" onkeydown="return false" placeholder="MM/DD/YYYY - MM/DD/YYYY" class="form-control form-control-sm m-r-5" />
                         </div>
-                        <div>
-                            <span class="btn btn-success fileinput-button header">
-                                <i class="fa fa-plus"></i>
-                                <span>Select File</span>
-                                <input type="file" id="invoicefile" name="files[]" value="pick" onchange=AutoUpload() accept=".pdf,.png,.jpg,.jpeg" />
-                            </span>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-primary btn-sm" id="FilterAssets">Search</button>
                         </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-field ">
+                                    @Html.DropDownListFor(model => model.VendorNames, new System.Web.Mvc.SelectList(ViewBag.VendorNames, "Value", "Text"), new { @class = "form-control select2cls" })
+                                    @Html.ValidationMessageFor(model => model.VendorNames)
+                                </div>
+                            </div>
+                        </div>
+                        @*<div id="filter" class="col-md-2 ">
+                                <div>
+                                    <input type="text" name="datefilter" id="daterangefilter" class="form-control form-control-sm m-r-5" />
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-primary btn-sm" id="FilterAssets">Search</button>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <div class="editor-field ">
+                                        @Html.DropDownListFor(model => model.VendorNames, new System.Web.Mvc.SelectList(ViewBag.VendorNames, "Value", "Text"), new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.VendorNames)
+                                    </div>
+                                </div>
+                            </div>*@
                     </div>
                 </div>
-                <div class="card-title text-center">
-                    <label id="addedit"></label>
+                <div class="MTS_Table">
+                    <table id="getallassets" class="table table-bordered table-hover tabel-sm " cellspacing="0" width="100%"></table>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel" id="assetdiv">
+    <div class="card">
+        <div class="card-header p-b-0">
+            <div class="p-t-5 changeName">
+                @*Asset Entry <button class="btn btn-primary"  id ="collapse-btn" type="button" onclick="collapse()"  data-toggle="collapse" data-target="#assetentrydetails" aria-expanded="false" aria-controls="collapseExample"><i class="	fa fa-check"></i></button>*@
+                Asset Entry <button class="btn btn-primary btn-sm" id="collapse-btn" type="button" onclick="AdjustColumn()" data-toggle="collapse" data-target="#assetentrydetails" aria-expanded="false" aria-controls="collapseExample"><i class="fa fa-arrow-down"></i></button>
+
+            </div>
+            <div class="form-group pull-right">
+           
+                    <span class="btn-sm btn-success fileinput-button header ">
+                        <i class="fa fa-plus"></i>
+                        <span>Upload Invoice</span>
+                        <input type="file" id="invoicefile" name="files[]" value="pick" onchange=AutoUpload() accept=".pdf,.png,.jpg,.jpeg" />
+                    </span>
+              
+            </div>
+            <div class="form-group pull-right">
+                <span class="" style="color:red">choose .pdf,.png,.jpg,.jpeg files </span>
+            </div>
+            <div class="card-title text-center">
+                <label id="addedit"></label>
+            </div>
+      
+            </div>
+        <form id="assetentry" method="post" autocomplete="off">
             <div class="card-block">
                 <div class="content-align p15" style="background-color:#ecdcdc">
-
-
                     <div>
                         <div class="row">
                             <div class="col-md-4">
@@ -76,32 +143,9 @@
                                     <div class="editor-label">
                                         @Html.LabelFor(model => model.VendorName)
                                     </div>
-                                    <div class="editor-field ">
-                                        @Html.DropDownListFor(model => model.VendorName, new System.Web.Mvc.SelectList(ViewBag.VendorNames, "Value", "Text"), new { @class = "form-control" })
+                                    <div class="editor-field">
+                                        @Html.DropDownListFor(model => model.VendorName, new System.Web.Mvc.SelectList(ViewBag.VendorNames, "Value", "Text"), new { @class = "form-control requir select2cls" })
                                         @Html.ValidationMessageFor(model => model.VendorName)
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <div class="editor-label">
-                                        @Html.LabelFor(model => model.PurchaseOrderNumber)
-                                    </div>
-                                    <div class="editor-field ">
-                                        @Html.TextBoxFor(model => model.PurchaseOrderNumber, new { @class = "form-control" })
-                                        @Html.ValidationMessageFor(model => model.PurchaseOrderNumber)
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <div class="editor-label">
-                                        @Html.LabelFor(model => model.PurchasedOn)
-                                    </div>
-                                    <div class="editor-field ">
-                                        @Html.TextBoxFor(model => model.PurchasedOn, new { @class = "form-control" })
-                                        @Html.ValidationMessageFor(model => model.PurchasedOn)
                                     </div>
                                 </div>
                             </div>
@@ -110,8 +154,8 @@
                                     <div class="editor-label">
                                         @Html.LabelFor(model => model.BillNumber)
                                     </div>
-                                    <div class="editor-field ">
-                                        @Html.TextBoxFor(model => model.BillNumber, new { @class = "form-control" })
+                                    <div class="editor-field">
+                                        @Html.TextBoxFor(model => model.BillNumber, new { @class = "form-control requir" })
                                         @Html.ValidationMessageFor(model => model.BillNumber)
                                     </div>
                                 </div>
@@ -123,16 +167,43 @@
                                         @Html.LabelFor(model => model.BillDate)
                                     </div>
                                     <div class="editor-field">
-                                        @Html.TextBoxFor(model => model.BillDate, new { @class = "form-control" })
+                                        @Html.TextBoxFor(model => model.BillDate, new { @class = "form-control requir", onkeydown = "return false", placeholder = "MM/DD/YYYY" })
                                         @Html.ValidationMessageFor(model => model.BillDate)
                                     </div>
                                 </div>
                             </div>
 
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.PurchaseOrderNumber)
+                                    </div>
+                                    <div class="editor-field">
+                                        @Html.TextBoxFor(model => model.PurchaseOrderNumber, new { @class = "form-control ", })
+                                        @*@Html.ValidationMessageFor(model => model.PurchaseOrderNumber)*@
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(model => model.PurchasedOn)
+                                    </div>
+                                    <div class="editor-field">
+                                        @Html.TextBoxFor(model => model.PurchasedOn, new { @class = "form-control", onkeydown = "return false", placeholder = "MM/DD/YYYY" })
+                                        @*@Html.ValidationMessageFor(model => model.PurchasedOn)*@
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+
                         </div>
                     </div>
                 </div>
-                <div>
+                <div class="content-align p15">
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
@@ -140,7 +211,7 @@
                                     @Html.LabelFor(model => model.AssetType)
                                 </div>
                                 <div class="editor-field">
-                                    @Html.DropDownListFor(model => model.AssetType, new System.Web.Mvc.SelectList(ViewBag.CategoryNames, "Value", "Text"), new { @class = "form-control" })
+                                    @Html.DropDownListFor(model => model.AssetType, new System.Web.Mvc.SelectList(ViewBag.Asset, "Value", "Text"), new { @class = "form-control requir select2cls" })
                                     @Html.ValidationMessageFor(model => model.AssetType)
                                 </div>
                             </div>
@@ -151,7 +222,7 @@
                                     @Html.LabelFor(model => model.AssetName)
                                 </div>
                                 <div class="editor-field">
-                                    @Html.DropDownListFor(model => model.AssetName, new System.Web.Mvc.SelectList(ViewBag.AssetNames, "Value", "Text"), new { @class = "form-control" },new {disabled="disabled" })
+                                    @Html.DropDownListFor(model => model.AssetName, new System.Web.Mvc.SelectList(ViewBag.Assetname, "Value", "Text"), new { @class = "form-control requir select2cls", @disabled = "disabled" })
                                     @Html.ValidationMessageFor(model => model.AssetName)
                                 </div>
                             </div>
@@ -163,7 +234,7 @@
                                     @Html.LabelFor(model => model.AssetDescription)
                                 </div>
                                 <div class="editor-field">
-                                    @Html.TextAreaFor(model => model.AssetDescription, new { @class = "form-control" })
+                                    @Html.TextAreaFor(model => model.AssetDescription, new { @class = "form-control requir" })
                                     @Html.ValidationMessageFor(model => model.AssetDescription)
                                 </div>
                             </div>
@@ -175,7 +246,7 @@
                                     @Html.LabelFor(model => model.CostInRs)
                                 </div>
                                 <div class="editor-field">
-                                    @Html.TextBoxFor(model => model.CostInRs, new { @class = "form-control" })
+                                    @Html.TextBoxFor(model => model.CostInRs, new { @class = "form-control requir" })
                                     @Html.ValidationMessageFor(model => model.CostInRs)
                                 </div>
                             </div>
@@ -187,8 +258,8 @@
                                     @Html.LabelFor(model => model.CostType)
                                 </div>
                                 <div class="editor-field">
-                                    @Html.DropDownListFor(model => model.CostType, new System.Web.Mvc.SelectList(TypeItems, "Value", "Text"), new { @class = "form-control" })
-
+                                    @Html.DropDownListFor(model => model.CostType, new System.Web.Mvc.SelectList(TypeItems, "Value", "Text"), new { @class = "form-control requir select2cls" })
+                                    @Html.ValidationMessageFor(model => model.CostType)
                                 </div>
                             </div>
                         </div>
@@ -199,7 +270,7 @@
                                     @Html.LabelFor(model => model.Make)
                                 </div>
                                 <div class="editor-field">
-                                    @Html.TextBoxFor(model => model.Make, new { @class = "form-control" })
+                                    @Html.TextBoxFor(model => model.Make, new { @class = "form-control requir" })
                                     @Html.ValidationMessageFor(model => model.Make)
                                 </div>
                             </div>
@@ -246,22 +317,10 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <div class="editor-label">
-                                    @Html.LabelFor(model => model.WarrantyMonths)
-                                </div>
-                                <div class="editor-field">
-                                    @Html.TextBoxFor(model => model.WarrantyMonths, new { @class = "form-control" })
-                                    @Html.ValidationMessageFor(model => model.WarrantyMonths)
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <div class="editor-label">
                                     @Html.LabelFor(model => model.WarrantyStartDate)
                                 </div>
                                 <div class="editor-field">
-                                    @Html.TextBoxFor(model => model.WarrantyStartDate, new { @class = "form-control" })
+                                    @Html.TextBoxFor(model => model.WarrantyStartDate, new { @class = "form-control", onkeydown = "return false", placeholder = "MM/DD/YYYY" })
                                     @Html.ValidationMessageFor(model => model.WarrantyStartDate)
                                 </div>
                             </div>
@@ -272,7 +331,7 @@
                                     @Html.LabelFor(model => model.WarrantyEndDate)
                                 </div>
                                 <div class="editor-field">
-                                    @Html.TextBoxFor(model => model.WarrantyEndDate, new { @class = "form-control" })
+                                    @Html.TextBoxFor(model => model.WarrantyEndDate, new { @class = "form-control", onkeydown = "return false", placeholder = "MM/DD/YYYY" })
                                     @Html.ValidationMessageFor(model => model.WarrantyEndDate)
                                 </div>
                             </div>
@@ -281,140 +340,367 @@
                 </div>
 
                 <div class="pull-right p-b-10 p-r-10">
-                    <button type="button" id="cancel" onclick="back()" class="btn btn-light m-r-5">Close</button>
-                    <button type="button" id="add" class="btn btn-primary spanedit " onclick="AssetsAddEdit()">Save</button>
+                    <button type="button" id="cancel" onclick="@("window.location.href='" + @Url.Action("AssetDetail", "AssetDetails") + "'");" class="btn btn-light m-r-5">Close</button>
+                    @*<button type="button" id="add" class="btn btn-primary spanedit " onclick="AssetsEntryAddEdit()">Add & Continue</button>
+                    <button type="button" id="add" class="btn btn-primary spanedit " onclick="editAssetDetails()">Edit & Save</button>*@
+                    <button type="button" id="AddContinue" class="btn btn-primary spanedit " onclick="AssetsEntryAddEdit()">Add & Continue</button>
+                    <button type="button" id="EditSave" class="btn btn-success spanedit " onclick="editAssetDetails()">Edit & Save</button>
                 </div>
 
             </div>
+        </form>
+    </div>
+
+    <div id="invoicedetails" >
+        <div>
+            <div class="m-t-15">
+                <div class="card" >
+                    <div class="card-header" >
+                       Item Details
+                    </div>
+                    <div class="card-body" >
+                        <div class="editor-label" hidden >
+                            <label>Filter-Between PurchasedOn Date</label><br />
+                        </div>
+                        <div class="row" hidden>
+                            <div class="col-md-4">
+                                <input type="text" name="datefilter" id="daterangefilter" onkeydown="return false" placeholder="MM/DD/YYYY - MM/DD/YYYY" class="form-control form-control-sm m-r-5" />
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-primary btn-sm" id="FilterAssets">Search</button>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="editor-field ">
+                                        @Html.DropDownListFor(model => model.VendorNames, new System.Web.Mvc.SelectList(ViewBag.VendorNames, "Value", "Text"), new { @class = "form-control select2cls" })
+                                        @Html.ValidationMessageFor(model => model.VendorNames)
+                                    </div>
+                                </div>
+                            </div>
+                            @*<div id="filter" class="col-md-2 ">
+                                    <div>
+                                        <input type="text" name="datefilter" id="daterangefilter" class="form-control form-control-sm m-r-5" />
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="button" class="btn btn-primary btn-sm" id="FilterAssets">Search</button>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <div class="editor-field ">
+                                            @Html.DropDownListFor(model => model.VendorNames, new System.Web.Mvc.SelectList(ViewBag.VendorNames, "Value", "Text"), new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.VendorNames)
+                                        </div>
+                                    </div>
+                                </div>*@
+                        </div>
+                    </div>
+                    <div class="MTS_Table">
+                        <table id="getallassetdetails" class="table table-bordered table-hover tabel-sm " cellspacing="0" width="100%"></table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</form>
-<div>
-    <div class="row m-t-15">
-        <div class="MTS_Table">
-            <table id="getallassets" class="table table-bordered table-hover tabel-sm" cellspacing="0" width="100%"></table>
-        </div>
-    </div>
+
 </div>
+
+
+
+<style>
+    #filter {
+        position: relative;
+        top: 35px;
+    }
+</style>
 <script>
+ 
+ 
+    var assetTable;
     var data = [];
+    var invoiceTableDetails = [];
     $(document).ready(function () {
-        debugger;
         loadTable();
+        invoiceDetails();
+        $('.bars').on('click', function () {
+           
+            setTimeout(function () {
+              
+                $('#getallassets').DataTable().columns.adjust().draw(false);
+               // invoiceDetails();
+                $('#getallassetdetails').DataTable().columns.adjust().draw(false);
+            }, 300);
+        });
+        $('.select2cls').select2({ "width": "100%" });
+        $('#EditSave').hide();
+        $('#invoicedetails').hide();
+        $('#daterangefilter').daterangepicker({
+            autoUpdateInput: false,
+          //  opens: 'left',
+            locale: { cancelLabel: 'Clear' },
+           // autoUpdateInput: false,
+           // autoApply:true
+          //  validateOnBlur: false
+        });
+        $('#daterangefilter').val('');
+        $('#daterangefilter').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+        });
+        $('#daterangefilter').on('cancel.daterangepicker', function (ev, picker) {
+            
+            $('#daterangefilter').val('');
+            ReloadTable();
+        });
+       // loadTable();
+       
         var CurrentYear = (new Date).getFullYear();
         var monthcount = '@System.Configuration.ConfigurationManager.AppSettings["Month_restrict_count"]';
         var DOBlimit = '@System.Configuration.ConfigurationManager.AppSettings["Doblimit_count"]';
         var monthlimit = "-" + monthcount + "m";
         $('#PurchasedOn').datepicker({
-            format: 'dd/M/yyyy',
-
+            format: 'mm/dd/yyyy',
             changeMonth: true,
             changeYear: true,
             autoclose: true,
             endDate: monthlimit
+            }).keydown(function (e) {
+                
+                if (e.keyCode == 8 || e.keyCode == 46) {
+                    $('#PurchasedOn').val('');
+                }
+        });
+      
+
+        $('#VendorNames').on('change', function () {
+            var vendor = $('#VendorNames option:selected').text();
+            if (vendor == "----Select Vendor----")
+                $('#getallassets').DataTable().column(0).search("").draw();
+            else
+                $('#getallassets').DataTable().column(0).search(vendor).draw();
+        })
+        $('#WarrantyStartDate,#WarrantyEndDate').on('change', function () {
+            if (($('#WarrantyStartDate').val() == '' && $('#WarrantyEndDate').val() == '') || ($('#WarrantyStartDate').val() == null && $('#WarrantyEndDate').val() == null)) {
+                $('#WarrantyEndDate').removeClass('requir');
+                $('#WarrantyStartDate').removeClass('requir');
+            }
+            else {
+                $('#WarrantyEndDate').addClass('requir');
+                $('#WarrantyStartDate').addClass('requir');
+            }
+        });
+
+      
+        $('#BillDate').datepicker({
+            format: 'mm/dd/yyyy',
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            endDate: monthlimit
+        }).on('changeDate', function () {
+            $('#WarrantyStartDate').datepicker('setStartDate', new Date($(this).val()));
+            if ($(this).val() > $('#WarrantyStartDate').val()) {
+                $('#WarrantyStartDate').val('');
+                $('#WarrantyStartDate').trigger('changeDate');
+            }      
+        }).keydown(function (e) {
+            
+            if (e.keyCode == 8 || e.keyCode == 46) {
+                $('#BillDate').val('');
+            }
         });
 
         $('#WarrantyStartDate').datepicker({
-            format: 'dd/M/yyyy',
-
+            format: 'mm/dd/yyyy',
             changeMonth: true,
             changeYear: true,
             autoclose: true,
             endDate: monthlimit
+        }).on('changeDate', function () {
+            $('#WarrantyEndDate').datepicker('setStartDate', new Date($(this).val()));
+            if ($('#WarrantyStartDate').val() != '' && $('#WarrantyStartDate').val() != null) {
+                $('#WarrantyEndDate').addClass('requir');
+                $('#WarrantyStartDate').addClass('requir');
+                if ($(this).val() > $('#WarrantyEndDate').val()) {
+                    $('#WarrantyEndDate').val('');
+                }
+            }
+            else {
+                $('#WarrantyEndDate').val('');
+                $('#WarrantyStartDate').trigger('change');
+            }
+            
+
+        }).keydown(function (e) {
+            
+            if (e.keyCode == 8 || e.keyCode == 46) {
+                $('#WarrantyStartDate').val('');
+            }
         });
+
         $('#WarrantyEndDate').datepicker({
-            format: 'dd/M/yyyy',
-
+            format: 'mm/dd/yyyy',
             changeMonth: true,
             changeYear: true,
-            autoclose: true,
+            autoclose: true
 
+        }).on('changeDate', function () {
+            if ($('#WarrantyEndDate').val() != '' && $('#WarrantyEndDate').val() != null) {
+                $('#WarrantyEndDate').addClass('requir');
+                $('#WarrantyStartDate').addClass('requir');
+            }
+
+        }).keydown(function (e) {
+            
+            if (e.keyCode == 8 || e.keyCode == 46) {
+                $('#WarrantyEndDate').val('');
+            }
         });
 
-        $('#BillDate').datepicker({
-            format: 'dd/M/yyyy',
+        //$('#collapse-btn').on('click', function () {
+        //    
+        //    if ($("#assetentrydetails").hasClass("show")) {
+        //        setTimeout(1000,removeClass())
+        //    }
 
-            changeMonth: true,
-            changeYear: true,
-            autoclose: true,
-            endDate: monthlimit
+        //})
+       
+
+        $('#FilterAssets').on('click', function () {
+            
+            var StartDate = $('input[name="datefilter"]').val().split("-")[0];
+            var EndDate = $('input[name="datefilter"]').val().split("-")[1];
+            if ((StartDate != "" && StartDate != null) && (EndDate != "" && EndDate != null))
+            {
+
+                $.ajax({
+                    type: "POST",
+                    data: { StartDate: dateValueFormat(StartDate), EndDate: dateValueFormat(EndDate) },
+                    url: '@Url.Content("~/Asset/FilterAssets")',
+                    success: function (data) {
+                        $('#getallassets').DataTable().clear();
+                        $('#getallassets').DataTable().rows.add(JSON.parse(data));
+                        $('#getallassets').DataTable().draw();
+                    },
+                });
+            }
+
         });
-
-
-
-
-
     });
 
-    function loadTable() {
-        debugger;
-        groupTable = $("#getallassets").DataTable({
+    //function removeClass() {
+    //    $("#assetentrydetails").removeClass("show")
+    //}
+
+    function AdjustColumn() {
+        setTimeout(function () {
+            $("#getallassets").DataTable().columns.adjust().draw();
+
+        }, 100);
+    }
+
+    function invoiceDetails()
+    {
+        if ($.fn.DataTable.isDataTable('#getallassetdetails')) {
+            $('#getallassetdetails').dataTable().fnDestroy();
+        }
+        assetTableDetails = $("#getallassetdetails").DataTable({
             "dom": 'Bfrtip',
             //"data": "",
 
             "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
-            "iDisplayLength": 25,
+            "iDisplayLength": 10,
             "bFilter": true,
             "bProcessing": true,
+            "scrollX": true,
             "order": [[1, "asc"]],
-            "ajax": {
-                type: 'Get',
-                url: '@Url.Content("~/Asset/ReadAllAssetEntries")',
-                dataSrc: function (data) {
-                    debugger;
-                    return JSON.parse(data.result);
-                }
-            },
+            "data":invoiceTableDetails,
             "aoColumns": [
-                 // { "mData": "ID", "sTitle": "ID", "bVisible": false}
-                 { "mData": "VENDOR_NAME", "sTitle": "VendorName", "bVisible": false, "defaultContent": "<i>Not set</i>" }//0
+                  //{ "mData": "ID", "sTitle": "ID", "bVisible": false}
+                 { "mData": "VENDOR_NAME", "sTitle": "Vendor Name", "defaultContent": "<i>Not set</i>" }//"bVisible": false, //0
                  , { "mData": "VENDOR_ID", "sTitle": "ID", "bVisible": false }//1
-                , { "mData": "PURCHASE_ORDER_NUMBER", "sTitle": "PurchaseOrderNumber", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//2
-                , { "mData": "PURCHASED_ON", "sTitle": "PurchasedOn", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//3
+                , { "mData": "PURCHASE_ORDER_NUMBER", "sTitle": "Purchase Order Number", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//2
+                , { "mData": "BILL_DATE", 'sType': 'date', "sTitle": "Purchased On", "sClass": "text-center", "defaultContent": "<i>Not set</i>" }//3
                 , { "mData": "BILL_NUMBER", "sTitle": "Bill Number", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//4
                 , { "mData": "BILL_DATE", "sTitle": "Bill Date", "sClass": "text-left", "bVisible": false, "defaultContent": "<i>Not set</i>" }//5
-                , { "mData": "ASSET_TYPE", "sTitle": "Asset Type", "bVisible": false }//6
-                , { "mData": "ASSET_NAME", "sTitle": "Asset Name", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//7
+                , { "mData": "ASSET_TYPE", "sTitle": "Asset Classification", "bVisible": false }//6
+                , { "mData": "ASSET_NAME", "sTitle": "Category", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//7
                 , { "mData": "ASSET_DESCRIPTION", "sTitle": "Asset Description", "sClass": "text-center", "defaultContent": "<i>Not Set</i>" }//8
                 , { "mData": "COST", "sTitle": "Cost", "sClass": "text-center", "defaultContent": "<i>Not Set</i>" }//9
                 , { "mData": "COST_TYPE", "sTitle": "Cost Type", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//10
                 , { "mData": "MAKE", "sTitle": "Make", "sClass": "text-center", "bSortable": false, "sWidth": "1%", "orderable": false }//11
                 , { "mData": "MODEL", "sTitle": "Model", "sClass": "text-center", "bSortable": false, "sWidth": "1%", "orderable": false }//12
                 , { "mData": "SERIAL_NUMBER", "sTitle": "Serial Number", "sClass": "text-center", "bSortable": false, "bVisible": false, "sWidth": "1%", "orderable": false }//13
-                , { "mData": "IDENTIFICATION_CODE", "sTitle": "Identification Code", "sClass": "text-center", "bSortable": false, "bVisible": false, "orderable": false }//14
+                , { "mData": "IDENTIFICATION_CODE", "sTitle": "Asset Code", "sClass": "text-center", "bSortable": false, "bVisible": false, "orderable": false }//14
                 , { "mData": "WARRANTY_MONTHS", "sTitle": "Warranty Months", "sClass": "text-center", "bSortable": false, "bVisible": false, "orderable": false }//15
                 , { "mData": "WARRANTY_STARTDATE", "sTitle": "Warranty Start Date", "sClass": "text-center", "bSortable": false, "bVisible": false, "orderable": false }//16
                 , { "mData": "WARRANTY_ENDDATE", "sTitle": "Warranty End Date", "sClass": "text-center", "bSortable": false, "bVisible": false, "orderable": false }//17
                 , { "mData": "INVOICE_ID", "sTitle": "Invoice Id", "sClass": "text-center", "bSortable": false, "bVisible": false, "orderable": false }//18
-                , { "mData": "ASSETTYPE_ID", "sTitle": "Asset Type Id", "sClass": "text-center", "bSortable": false, "bVisible": false, "orderable": false }//19
-                , { "mData": "ASSETNAME_ID", "sTitle": "Asset Name Id", "sClass": "text-center", "bSortable": false, "bVisible": false, "orderable": false }//20
+                , { "mData": "ASSETTYPE_ID", "sTitle": "Asset Classification Id", "sClass": "text-center", "bSortable": false, "bVisible": false, "orderable": false }//19
+                , { "mData": "ASSETNAME_ID", "sTitle": "Category Id", "sClass": "text-center", "bSortable": false, "bVisible": false, "orderable": false }//20
                 , { "mData": "ID", "sTitle": "Edit", "sClass": "text-center", "bSortable": false, "sWidth": "1%", "orderable": false }//21
+                    
             ],
             "aoColumnDefs": [
 
    {
        "aTargets": [21]
        , "mRender": function (data, type, row) {
+
            return '<button="" onclick=Edit($(this).closest("tr"))><i class="fa fa-edit"/></button>'
        }
    },
+    
+
+     {
+         "aTargets": [2]
+       , "mRender": function (data, type, row) {
+
+           return data || 'N/A'
+       }
+     },
+
+
+
     {
         "aTargets": [3]
        , "mRender": function (data, type, row) {
-           var date = new Date(data);
-           var month = date.toLocaleString('en-us', { month: 'short' });
-           var purchasedOn = (date.getDate()) + "/" + month + "/" + date.getFullYear();
-           return purchasedOn;
+           //var date = new Date(data);
+           //var month = date.toLocaleString('en-us', { month: 'short' });
+           //var purchasedOn = (date.getDate()) + "/" + month + "/" + date.getFullYear();
+           if (data != null) {
+               // return dateFormat(data)
+               return data
+           }
+           else {
+               return 'N/A'
+           }
        }
     },
             {
                 "aTargets": [5]
        , "mRender": function (data, type, row) {
-           var date = new Date(data);
-           var month = date.toLocaleString('en-us', { month: 'long' });
-           var billDate = (date.getDate()) + "/" + month + "/" + date.getFullYear();
-           return billDate;
+           //var date = new Date(data);
+           //var month = date.toLocaleString('en-us', { month: 'long' });
+           //var billDate = (date.getDate()) + "/" + month + "/" + date.getFullYear();
+           return dateFormat(data)
        }
+            },
+            {
+                "aTargets": [8]
+                , "mRender": function (data, type, row) {
+                    if (data == '' || data == null) {
+                        return 'N/A'
+                    }
+                    else {
+                        return "<div class='text-wrap width-200'>" + data + "</div>"
+                    }
+                }
+            },
+            {
+                "aTargets": [12]
+                , "mRender": function (data, type, row) {
+                    return data || 'N/A'
+                }
             },
              {
                  "aTargets": [16]
@@ -447,25 +733,156 @@
 
         });
     }
+    function loadTable() {
+     
+        if ($.fn.DataTable.isDataTable('#getallassets')) {
+            $('#getallassets').dataTable().fnDestroy();
+        }
+        assetTable = $("#getallassets").DataTable({
+            "dom": 'Bfrtip',
+            //"data": "",
 
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "iDisplayLength": 10,
+            "bFilter": true,
+            "bProcessing": true,
+            "scrollX": true,
+            "order": [[1, "asc"]],
+            "ajax": {
+                type: 'Get',
+                url: '@Url.Content("~/Asset/ReadAllAssetEntries")',
+                dataSrc: function (data) {
+                    invoiceTableDetails = JSON.parse(data.result2);
+                    return JSON.parse(data.result1);
+                }
+            },
+            "aoColumns": [
+               
+                 { "mData": "VENDOR_NAME", "sTitle": "Vendor Name", "defaultContent": "<i>Not set</i>", "sWidth": "15%", "sClass": "text-left" }//"bVisible": false, //0               
+                , { "mData": "PURCHASE_ORDER_NUMBER", "sTitle": "Purchase Order Number", "sClass": "text-right", "defaultContent": "<i>Not set</i>", "sWidth": "15%" }//1
+                , { "mData": "BILL_DATE", 'sType': 'date', "sTitle": "Purchased On", "sClass": "text-center", "defaultContent": "<i>Not set</i>", "sWidth": "15%" }//2
+                , { "mData": "BILL_NUMBER", "sTitle": "Bill Number", "sClass": "text-right", "defaultContent": "<i>Not set</i>", "sWidth": "15%" }//3
+                , { "mData": "PURCHASED_ON", "sTitle": "Purchase Order Date", "sClass": "text-left", "bVisible": false, "defaultContent": "<i>Not set</i>", "sWidth": "15%" }//4
+              , { "mData": "COST", "sTitle": "Total Cost", "sClass": "text-right", "defaultContent": "<i>Not Set</i>", "sWidth": "15%" }//5
+               , { "mData": "VENDOR_ID", "sTitle": "View Item Details", "sClass": "text-center","bSortable": false, "sWidth": "1%" }//6
+                , { "mData": "VENDOR_ID", "sTitle": "Add More Items", "sClass": "text-center", "bSortable": false, "sWidth": "1%", "orderable": false }//7
+            ],
+            "aoColumnDefs": [
+
+   {
+       "aTargets": [6]
+       , "mRender": function (data, type, row) {
+         
+           return '<button="" onclick="ViewDetails(this)" ><i class="fa fa-table"/></button>'
+       }
+   },
+   {
+       "aTargets": [7]
+       , "mRender": function (data, type, row) {
+
+
+           return '<button="" onclick=addNewEntry(this)><i class="fa fa-plus"/></button>'
+       }
+   },
+   ]
+
+
+        });
+    }
+    function addNewEntry(thisval)
+    {
+      
+        var rowval = thisval.closest("tr");
+        var row_data = $('#getallassets').DataTable().row(rowval).data();
+        $('.field-validation-error').html('');
+        $("#VendorName").val(row_data.VENDOR_ID);
+        $("#VendorName").select2('val', row_data.VENDOR_ID);
+        $("#PurchaseOrderNumber").val(row_data.PURCHASE_ORDER_NUMBER);
+        //var date = new Date(data.PURCHASED_ON);
+        //var month = date.toLocaleString('en-us', { month: 'short' });
+        //var purchasedOn = (date.getDate()) + "/" + month + "/" + date.getFullYear();
+        if (row_data.PURCHASED_ON != null) {
+            $("#PurchasedOn").datepicker('update', dateFormat(row_data.PURCHASED_ON));
+        }
+        else {
+            $("#PurchasedOn").val('');
+        }
+        $("#BillNumber").val(row_data.BILL_NUMBER);
+        //var date = new Date(data.BILL_DATE);
+        //var month = date.toLocaleString('en-us', { month: 'short' });
+        //var billDate = (date.getDate()) + "/" + month + "/" + date.getFullYear();
+        $("#BillDate").datepicker('update', dateFormat(row_data.BILL_DATE));
+        $('#AddContinue').show();
+        $('#EditSave').hide();
+        $('#AssetType').val("");
+        $("#AssetType").select2('val', '');
+
+        $('#AssetName').val("");
+        $("#AssetName").select2('val', '');
+
+        $('#AssetDescription').val("");
+        $('#CostInRs').val("");
+        $('#CostType').val("0");
+        $('#Make').val("");
+        $('#Model').val("");
+        $('#SerialNumber').val("");
+        $('#IdentificationCode').val("");
+        $('#WarrantyMonths').val("");
+        $('#WarrantyStartDate').val("");
+        $('#WarrantyEndDate').val("");
+        $("html, body").animate({ scrollTop: $("#assetdiv").position().top }, "fast");
+       // $("#WarrantyEndDate").trigger('change');
+    }
+   
+
+
+  
+    function ViewDetails(thisval)
+    {
+       
+        $('#invoicedetails').show();
+        invoiceDetails();
+        var rowval = thisval.closest("tr");
+        var row_data = $('#getallassets').DataTable().row(rowval).data();
+        assetTableDetails.columns(0).search(row_data.VENDOR_NAME).columns(4).search(row_data.BILL_NUMBER).columns(5).search(row_data.BILL_DATE).draw();
+        $("html, body").animate({ scrollTop: $("#invoicedetails").position().top }, "fast");
+    }
     function Edit(selectedRowIndex) {
-        debugger;
-        data = groupTable.row(selectedRowIndex).data();
+      
+             $('.field-validation-error').html('');
+             //$('#assetentrydetails').trigger('click');
+             //$('#assetentrydetails').toggleClass('show');
+        $('#AddContinue').hide();
+        $('#EditSave').show();
+        data = $('#getallassetdetails').DataTable().row(selectedRowIndex).data();
         $("#VendorName").val(data.VENDOR_ID);
+        $("#VendorName").select2('val', data.VENDOR_ID);
         $("#PurchaseOrderNumber").val(data.PURCHASE_ORDER_NUMBER);
-        var date = new Date(data.PURCHASED_ON);
-        var month = date.toLocaleString('en-us', { month: 'short' });
-        var purchasedOn = (date.getDate()) + "/" + month + "/" + date.getFullYear();
-
-        $("#PurchasedOn").val(purchasedOn);
+        //var date = new Date(data.PURCHASED_ON);
+        //var month = date.toLocaleString('en-us', { month: 'short' });
+        //var purchasedOn = (date.getDate()) + "/" + month + "/" + date.getFullYear();
+        if (data.PURCHASED_ON != null) {
+            $("#PurchasedOn").datepicker('update', dateFormat(data.PURCHASED_ON));
+        }
+        else {
+            $("#PurchasedOn").val('');
+        }
         $("#BillNumber").val(data.BILL_NUMBER);
-
-        var date = new Date(data.BILL_DATE);
-        var month = date.toLocaleString('en-us', { month: 'short' });
-        var billDate = (date.getDate()) + "/" + month + "/" + date.getFullYear();
-        $("#BillDate").val(billDate);
+        //var date = new Date(data.BILL_DATE);
+        //var month = date.toLocaleString('en-us', { month: 'short' });
+        //var billDate = (date.getDate()) + "/" + month + "/" + date.getFullYear();
+        $("#BillDate").datepicker('update', dateFormat(data.BILL_DATE));
         $("#AssetType").val(data.ASSETTYPE_ID);
-        $("#AssetName").val(data.ASSETNAME_ID);
+        $("#AssetType").select2('val', data.ASSETTYPE_ID);
+        setAssetName(data.ASSETTYPE_ID);
+        
+        $("#AssetName").attr("disabled", false);
+        setTimeout(function () {
+            $("#AssetName").val(data.ASSETNAME_ID);
+            $("#AssetName").select2('val', data.ASSETNAME_ID);
+       }, 18);
+
+        editdocument_uploaded = data.INVOICE_ID;
         $("#AssetDescription").val(data.ASSET_DESCRIPTION);
         $("#CostInRs").val(data.COST);
         $("#CostType").val(data.COST_TYPE);
@@ -474,126 +891,123 @@
         $("#SerialNumber").val(data.SERIAL_NUMBER);
         $("#IdentificationCode").val(data.IDENTIFICATION_CODE);
         $("#WarrantyMonths").val(data.WARRANTY_MONTHS);
-
-        var date = new Date(data.WARRANTY_STARTDATE);
-        var month = date.toLocaleString('en-us', { month: 'short' });
-        var warrantyStartDate = (date.getDate()) + "/" + month + "/" + date.getFullYear();
-        $("#WarrantyStartDate").val(warrantyStartDate);
-
-        var date = new Date(data.WARRANTY_ENDDATE);
-        var month = date.toLocaleString('en-us', { month: 'short' });
-        var warrantyEndDate = (date.getDate()) + "/" + month + "/" + date.getFullYear();
-        $("#WarrantyEndDate").val(warrantyEndDate);
-        $("#assetdiv").scrollTop();
+        
+        //var date = data.WARRANTY_STARTDATE;
+        //var month = date.toLocaleString('en-us', { month: 'short' });
+        //var warrantyStartDate = (date.getDate()) + "/" + month + "/" + date.getFullYear();
+        if (data.WARRANTY_STARTDATE != null) {
+            $("#WarrantyStartDate").datepicker('update', dateFormat(data.WARRANTY_STARTDATE));
+        }
+        else {
+            $("#WarrantyStartDate").val('');
+        }
+        //var date = data.WARRANTY_ENDDATE;
+        //var month = date.toLocaleString('en-us', { month: 'short' });
+        //var warrantyEndDate = (date.getDate()) + "/" + month + "/" + date.getFullYear();
+        if (data.WARRANTY_ENDDATE != null) {
+            $("#WarrantyEndDate").datepicker('update', dateFormat(data.WARRANTY_ENDDATE));
+        }
+        else {
+            $("#WarrantyEndDate").val('');
+        }
+        $("html, body").animate({ scrollTop: $("#assetdiv").position().top }, "fast");
+        $("#WarrantyEndDate").trigger('change');
     }
-    $("#AssetType").on('change', function () {
+    var document_uploaded = '';
+    var editdocument_uploaded = '';
+    function AutoUpload() {
+        
+        var formData = new FormData();
+        var fileInput = document.getElementById('invoicefile');
+        formData.append(fileInput.files[0].name, fileInput.files[0]);
 
-        var assetTypeId = $("#AssetType").val();
+        //formData.append("#file",File)
         $.ajax({
-            url: '@Url.Content("~/Asset/GetAllAssetNames")',
+            url: '@Url.Content("~/Asset/GetFormData")',
             type: "POST",
-            data: assetTypeId,
-            success: $.each(AssetList, function (Text, Value) {
-                $("AssetName").prop("disabled", false);
-                mySelect.append(
-                    $('<option></option>').val(Value).html(Text)
-                );
-              
-            })
-        });
+            data: formData,
 
+            success: function (result) {
+               
+               if (result == "Success") {
+                    toastr.success("Invoice Added successfully");
+                } else if (Number.isInteger(parseInt(result))) {
+                    toastr.success("Invoice Added successfully");
+                    document_uploaded = parseInt(result);
+                    editdocument_uploaded = parseInt(result);
 
+                } else {
+                    document_uploaded = '';
+                    $(".errorspan").show();
+                }
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        })
+    }
+    var assetDetails = [];
+    function AssetsEntryAddEdit() {
+        $('#AddContinue').attr("disabled", true);
+      
+        var id = data.ID;
+        var vendorName = $("#VendorName").val();
+        var assetType = $("#AssetType").val();
+        var assetName = $("#AssetName").val();
+        var costType = $("#CostType").val();
+        var purchaseOrderNumber = $("#PurchaseOrderNumber").val().trim();
+        var purchasedOn = $("#PurchasedOn").val().trim();
+        var billNumber = $("#BillNumber").val().trim();
+        var billDate = $("#BillDate").val();
+        var assetDescription = $("#AssetDescription").val().trim();
+        var costInRs = $("#CostInRs").val().trim();
+        var make = $("#Make").val().trim();
+        var model = $("#Model").val().trim();
+        var serialNumber = $("#SerialNumber").val().trim();
+        var identificationCode = $("#IdentificationCode").val().trim();
+        var warrantyMonths = "";
+        var warrantyStartDate = $("#WarrantyStartDate").val();
+        var warrantyEndDate = $("#WarrantyEndDate").val();
+        var assetTypeId = $("#AssetType").val();
+        var assetNameId = $("#AssetName").val();
+        assetDetails = {
 
-        function AutoUpload() {
-            debugger;
-            var formData = new FormData();
-            var fileInput = document.getElementById('invoicefile');
-            formData.append(fileInput.files[0].name, fileInput.files[0]);
+            Id: id,
+            VendorName: vendorName,
+            PurchaseOrderNumber: purchaseOrderNumber,
+            PurchasedOn: dateValueFormat(purchasedOn),
+            BillNumber: billNumber,
+            BillDate: dateValueFormat(billDate),
+            AssetType: assetType,
+            AssetName: assetName,
+            AssetDescription: assetDescription,
+            CostInRs: costInRs,
+            CostType: costType,
+            Make: make,
+            Model: model,
+            SerialNumber: serialNumber,
+            IdentificationCode: identificationCode,
+            WarrantyMonths: warrantyMonths,
+            WarrantyStartDate: dateValueFormat(warrantyStartDate),
+            WarrantyEndDate: dateValueFormat(warrantyEndDate),
+            AssetTypeId: assetTypeId,
+            AssetNameId: assetNameId,
+            InvoiceId: document_uploaded
 
-            //formData.append("#file",File)
-            $.ajax({
-                url: '@Url.Content("~/Asset/GetFormData")',
-                type: "POST",
-                data: formData,
-
-                success: function (result) {
-
-                    if (result == "Failed") {
-                        $(".errorspan").show();
-                    }
-                    else if (result == "Success") {
-
-                        toastr.success("Invoice Added successfully");
-                    }
-
-                },
-                cache: false,
-                contentType: false,
-                processData: false
-            })
         }
 
-        function AssetsAddEdit() {
-
-            debugger
-
-            var assetDetails = [];
-            var id = data.ID;
-            var vendorName = $("#VendorName").val();
-            var assetType = $("#AssetType").val();
-            var assetName = $("#AssetName").val();
-            var costType = $("#CostType").val();
-            var purchaseOrderNumber = $("#PurchaseOrderNumber").val();
-            var purchasedOn = $("#PurchasedOn").val();
-            var billNumber = $("#BillNumber").val();
-            var billDate = $("#BillDate").val();
-            var assetDescription = $("#AssetDescription").val();
-            var costInRs = $("#CostInRs").val();
-            var make = $("#Make").val();
-            var model = $("#Model").val();
-            var serialNumber = $("#SerialNumber").val();
-            var identificationCode = $("#IdentificationCode").val();
-            var warrantyMonths = $("#WarrantyMonths").val();
-            var warrantyStartDate = $("#WarrantyStartDate").val();
-            var warrantyEndDate = $("#WarrantyEndDate").val();
-            var assetTypeId = $("#AssetType").val();
-            var assetNameId = $("#AssetName").val();
-
-            assetDetails = {
-                Id: id,
-                VendorName: vendorName,
-                PurchaseOrderNumber: purchaseOrderNumber,
-                PurchasedOn: purchasedOn,
-                BillNumber: billNumber,
-                BillDate: billDate,
-                AssetType: assetType,
-                AssetName: assetName,
-                AssetDescription: assetDescription,
-                CostInRs: costInRs,
-                CostType: costType,
-                Make: make,
-                Model: model,
-                SerialNumber: serialNumber,
-                IdentificationCode: identificationCode,
-                WarrantyMonths: warrantyMonths,
-                WarrantyStartDate: warrantyStartDate,
-                WarrantyEndDate: warrantyEndDate,
-                AssetTypeId: assetTypeId,
-                AssetNameId: assetNameId
-
-            }
-
-            //var url = '@Url.Content("~/Asset/AddAssetDetails")';
-            // var formData = new FormData($('#asset')[0]);
-
-
-
+        //var url = '@Url.Content("~/Asset/AddAssetDetails")';
+        // var formData = new FormData($('#asset')[0]);
+        if ($("#assetentry").valid() && WarrentyValidation()) {
+          
             $.ajax({
                 type: "POST",
+                //data: $('#asset').serialize(),
+                async: false,
                 data: { '_asset': assetDetails },
                 url: '@Url.Content("~/Asset/AddAssetDetails")',
                 success: function (data) {
-
+                    
                     if (data == 0) {
                         $(".errorspan").show();
                     }
@@ -601,16 +1015,219 @@
                         if ($.fn.DataTable.isDataTable('#getallassets')) {
                             $('#getallassets').dataTable().fnDestroy();
                             loadTable();
+                            invoiceDetails();
+                            toastr.success("Saved successfully");
+                            $('#AssetType').val("");
+                            $("#AssetType").select2('val', '');
+
+                            $('#AssetName').val("");
+                            $("#AssetName").select2('val', '');
+
+                            $('#AssetDescription').val("");
+                            $('#CostInRs').val("");
+                            $('#CostType').val("0");
+                            $('#Make').val("");
+                            $('#Model').val("");
+                            $('#SerialNumber').val("");
+                            $('#IdentificationCode').val("");
+                            $('#WarrantyMonths').val("");
+                            $('#WarrantyStartDate').val("");
+                            $('#WarrantyEndDate').val("");
                         }
-
-
-
+                    }
+                    else if (data == 2) {
+                        toastr.error("The Asset code you entered already exists");
                     }
                 }
 
-            })
-
+            });
 
         }
-    })
+        $('#AddContinue').attr("disabled", false);
+
+    }
+    function setAssetName(value) {
+        
+        $.ajax({
+            type: "POST",
+            url: '@Url.Content("~/Asset/AssetName")',
+            data: { id: value },
+            async:false,
+            success: function (result) {
+                if (result.success == true) {
+                    $("#AssetName").empty();
+                    $("#AssetName").attr("disabled", false);
+                    $.each(JSON.parse(result.AssetList), function (i, Val) { $("#AssetName").append('<option value="' + Val.Value + '">' + Val.Text + '') });
+                }
+            }
+        })
+
+    }
+
+    function editAssetDetails()
+    {
+        $('#EditSave').attr("disabled", true);
+      
+        var id = data.ID;
+        var vendorName = $("#VendorName").val().trim();
+        var assetType = $("#AssetType").val();
+        var assetName = $("#AssetName").val();
+        var costType = $("#CostType").val();
+        var purchaseOrderNumber = $("#PurchaseOrderNumber").val().trim();
+        var purchasedOn = $("#PurchasedOn").val().trim();
+        var billNumber = $("#BillNumber").val().trim();
+        var billDate = $("#BillDate").val();
+        var assetDescription = $("#AssetDescription").val().trim();
+        var costInRs = $("#CostInRs").val().trim().trim();
+        var make = $("#Make").val().trim();
+        var model = $("#Model").val().trim();
+        var serialNumber = $("#SerialNumber").val().trim();
+        var identificationCode = $("#IdentificationCode").val().trim();
+        var warrantyMonths = "";
+        var warrantyStartDate = $("#WarrantyStartDate").val();
+        var warrantyEndDate = $("#WarrantyEndDate").val();
+        var assetTypeId = $("#AssetType").val();
+        var assetNameId = $("#AssetName").val();
+
+        assetDetails = {
+
+            Id: id,
+            VendorName: vendorName,
+            PurchaseOrderNumber: purchaseOrderNumber,
+            PurchasedOn: dateValueFormat(purchasedOn),
+            BillNumber: billNumber,
+            BillDate: dateValueFormat(billDate),
+            AssetType: assetType,
+            AssetName: assetName,
+            AssetDescription: assetDescription,
+            CostInRs: costInRs,
+            CostType: costType,
+            Make: make,
+            Model: model,
+            SerialNumber: serialNumber,
+            IdentificationCode: identificationCode,
+            WarrantyMonths: warrantyMonths,
+            WarrantyStartDate: dateValueFormat(warrantyStartDate),
+            WarrantyEndDate: dateValueFormat(warrantyEndDate),
+            AssetTypeId: assetTypeId,
+            AssetNameId: assetNameId,
+            InvoiceId: document_uploaded
+
+        }
+
+        if ($("#assetentry").valid()&& WarrentyValidation()) {
+          
+            $.ajax({
+                type: "POST",
+                //data: $('#asset').serialize(),
+                async: false,
+                data: { '_asset': assetDetails },
+                url: '@Url.Content("~/Asset/EditAssetDetails")',
+                success: function (data) {
+                    
+                    if (data == 0) {
+                        $(".errorspan").show();
+                    }
+                    else if (data == 1) {
+                        if ($.fn.DataTable.isDataTable('#getallassets')) {
+                            $('#getallassets').dataTable().fnDestroy();
+                            loadTable();
+                            invoiceDetails();
+                            toastr.success("Saved successfully");
+                            $('#assetentry')[0].reset();
+                        
+                            $('#assetentry .select2cls').select2('val', '');
+                            $('#AssetType').select2('val', '');
+                            $('#AssetName ').select2('val', '');
+                            
+                            $('#AddContinue').show();
+                            $('#EditSave').hide();
+                        }
+                    }        
+                }
+
+            });
+
+        }
+        $('#EditSave').attr("disabled", false);
+    }
+
+        $("#AssetType").on('change', function () {
+         
+            if ($("#AssetType").val() != null && $("#AssetType").val() != '') {
+                var getValue = $(this).val();
+                setAssetName(getValue);
+                $("#AssetName").attr("disable", false);
+            }
+            else {
+                $("#AssetName").val('');
+                $('#AssetName').select2('val', '');
+                $("#AssetName").attr("disabled", true);
+            }
+
+            //$.ajax({
+            //    type: "POST",
+            //    url: "/Asset/AssetName/",
+            //    data: { id: getValue },
+            //    success: function (result) {
+            //        if (result.success == true) {
+            //            $("#AssetName").empty();
+            //            $("#AssetName").attr("disabled", false);
+            //            $.each(JSON.parse(result.AssetList), function (i, Val) { $("#AssetName").append('<option value="' + Val.Value + '">' + Val.Text + '') });
+            //        }
+            //    }
+            //})
+        });
+    function WarrentyValidation() {
+        var warrentyValidity = true;
+
+        if ($('#WarrantyStartDate').val() != '' && $('#WarrantyStartDate').val() != null) {
+            if ($('#WarrantyEndDate').val() == '' || $('#WarrantyEndDate').val() == null) {
+                warrentyValidity = false;
+                bootbox.alert("Warranty End date is required");
+            }
+            else {
+                warrentyValidity = true;
+            }
+        }
+        if ($('#WarrantyEndDate').val() != '' && $('#WarrantyEndDate').val() != null) {
+            if ($('#WarrantyStartDate').val() == '' || $('#WarrantyStartDate').val() == null) {
+                warrentyValidity = false;
+                bootbox.alert("Warranty start date is required");
+            }
+            else {
+                warrentyValidity = true;
+            }
+        }
+        return warrentyValidity;
+    }
+    function dateFormat(date) {
+
+        var d = new Date(date);
+        var month = ('0' + (d.getMonth() + 1)).slice(-2);
+        var date1 = ('0' + d.getDate()).slice(-2);
+        var DateFormat = month + '/' + date1 + '/' + d.getFullYear();
+        return DateFormat;
+    }
+    function ReloadTable() {
+        
+        $.ajax({
+            type: "GET",
+            url: '@Url.Content("~/Asset/ReadAllAssetEntries")',
+            success: function (data) {
+
+                $('#getallassets').DataTable().clear();
+                $('#getallassets').DataTable().rows.add(JSON.parse(data.result1));
+                $('#getallassets').DataTable().draw();
+            }
+        });
+    }
+    function dateValueFormat(date) {
+        var d = new Date(date);
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                        "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var val = d.getDate() + "-" + months[d.getMonth()] + "-" + d.getFullYear();
+        return val;
+    }
+
 </script>

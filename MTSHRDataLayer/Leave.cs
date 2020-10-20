@@ -21,5 +21,47 @@ namespace MTSHRDataLayer
             return DataAccess.ExecuteDataTable("EmployeeLeaveList");
 
         }
+
+        public DataTable ReadLeavePolicy()
+        {
+            DataTable dt = null;
+            try
+            {
+                dt =  DataAccess.ExecuteDataTable("READ_LEAVE_POLICY");
+            }
+            catch(Exception e)
+            {
+                e.Data.Clear();
+            }
+            return dt;
+        }
+        
+        public int AddLeavePolicy(params object[] parameterValues)
+        {
+            int rowsaffected = 0;
+            try
+            {
+                rowsaffected = DataAccess.ExecuteNonQuery("ADD_LEAVE_POLICY", parameterValues);
+            }
+            catch (Exception e)
+            {
+                e.Data.Clear();
+            }
+            return rowsaffected;
+        }
+
+        public int UpdateLeavePolicy(params object[] parameterValues)
+        {
+            int rowsaffected = 0;
+            try
+            {
+                rowsaffected = DataAccess.ExecuteNonQuery("UPDATE_LEAVE_POLICY", parameterValues);
+            }
+            catch (Exception e)
+            {
+                e.Data.Clear();
+            }
+            return rowsaffected;
+        }
     }
 }

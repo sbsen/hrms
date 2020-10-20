@@ -24,7 +24,7 @@ namespace MTSHRDataLayer
 
         public int UpdatePolicies(params object[] parameterValues)
         {
-            return Convert.ToInt16(DataAccess.ExecuteScalar("Update_HrPolicies", parameterValues));
+            return Convert.ToInt16(DataAccess.ExecuteScalar("MTS_Update_HrPolicies", parameterValues));
         }
 
 

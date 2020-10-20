@@ -25,7 +25,20 @@ namespace MTSHRDataLayer
         public DataTable Read(params object[] parameterValues)
         {
             return DataAccess.ExecuteDataTable("READ_ALL_HOLIDAYSLIST", parameterValues);
+        }
 
+        public DataTable ReadUpCommingHoliday(params object[] parameterValues)
+        {
+            return DataAccess.ExecuteDataTable("READ_UPCOMMING_HOLIDAYSLIST", parameterValues);
+        }
+        
+        public DataSet getMtsHolidaysList()
+        {
+            return DataAccess.ExecuteDataSet("READ_ALL_MTS_HOLIDAYSLIST");
+        }
+        public int CreateMtsHolidaysList(params object[] parameterValues)
+        {
+            return Convert.ToInt16(DataAccess.ExecuteScalar("CREATE_MTS_HOLIDAYSLIST", parameterValues));
         }
     }
 }

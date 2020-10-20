@@ -1,0 +1,132 @@
+ALTER PROCEDURE [dbo].[READ_EMPLOYEEDETAILS]
+AS
+BEGIN
+	SELECT E.id
+		,E.Employee_Id
+		,E.Firstname
+		,E.Lastname
+		,E.Gender
+		,CAST(Convert(VARCHAR(255), E.Dateofjoin, 110) AS VARCHAR(255)) AS 'Dateofjoin'
+		,E.ResignedOn
+		,convert(varchar(3),DATEDIFF(MONTH, E.Dateofjoin, GETDATE())/12) +' years '+
+		 convert(varchar(2),DATEDIFF(MONTH,E.Dateofjoin, GETDATE()) % 12)+ ' months' as Experience
+		,D.Designation
+		,MA.ROLEID
+		,MTLOG.Active
+		,STUFF((
+				SELECT ', ' + ml.Languagename
+				FROM EmployeeDetails AS Em
+				INNER JOIN MTS_Languages ml ON Employee_Id = E.id
+				WHERE ml.id IN (
+						SELECT cast(dropdowndata AS BIGINT)
+						FROM function_string_to_table(Em.Languagename, ',') AS Languages
+						)
+				FOR XML PATH('')
+				), 1, 1, '') AS Languages
+		,STUFF((
+				SELECT DISTINCT ', ' + ms.Skills
+				FROM Employee_Skills AS Es
+				INNER JOIN MTS_Skills ms ON Es.Employee_Id = E.id
+				WHERE ms.id IN (
+						SELECT cast(dropdowndata AS BIGINT)
+						FROM function_string_to_table(Es.Skill, ',') AS Skills
+						)
+				FOR XML PATH('')
+				), 1, 1, '') AS Skills
+	FROM Employee AS E
+	INNER JOIN MTS_Designation D ON D.id = E.Designation
+	INNER JOIN MTS_AUTHORITY AS MA ON E.id = MA.USERID
+	INNER JOIN MTS_LOGIN as MTLOG ON MTLOG.USERID=E.id
+END
+
+GO
+
+ALTER PROCEDURE [dbo].[EMPLOYEE_LEAVEAPPLY] (
+	@empid BIGINT
+	,@leavetype BIGINT
+	,@fromdate DATE
+	,@fromsession BIGINT
+	,@todate DATE
+	,@tosession BIGINT
+	,@reason VARCHAR(255)
+	,@managerid BIGINT
+	,@numberofdays FLOAT
+	)
+AS
+BEGIN
+	DECLARE @TEMPLATEID BIGINT = (
+			SELECT TemplateID
+			FROM MTS_EmailTemplate
+			WHERE TemplateName = 'EMAIL_REQUEST_LEAVE'
+			)
+	DECLARE @manageremail VARCHAR(255) = (
+			SELECT Email
+			FROM Employee
+			WHERE id = @managerid
+			)
+	DECLARE @empemail VARCHAR(255) = (
+			SELECT Email
+			FROM Employee
+			WHERE id = @empid
+			)
+	DECLARE @employeeid VARCHAR(255) = (
+			SELECT Employee_Id
+			FROM Employee
+			WHERE id = @empid
+			)
+	DECLARE @empname VARCHAR(255) = (
+			SELECT Firstname + ' ' + Lastname AS EmployeeName
+			FROM Employee
+			WHERE id = @empid
+			)
+	DECLARE @dateofjoin DATE = (
+			SELECT DateofJoin
+			FROM Employee
+			WHERE id = @empid
+			)
+	DECLARE @EMAILSP VARCHAR(255) = cast(@manageremail AS VARCHAR(255)) + ',' + cast(@empemail AS VARCHAR(255)) + ',' + cast(@employeeid AS VARCHAR(255)) + ',' + cast(@empname AS VARCHAR(255)) + ',' + cast(@dateofjoin AS VARCHAR(255)) + ',' + cast(@fromdate AS VARCHAR(255)) + ',' + cast(@todate AS VARCHAR(255)) + ',' + cast(@numberofdays AS VARCHAR(255)) + ',' + cast(@reason AS VARCHAR(255))
+
+	BEGIN
+		IF EXISTS (
+				SELECT * FROM Employee_Leave
+				WHERE @fromdate BETWEEN Employee_Leave.FromDate AND Employee_Leave.ToDate
+					And Employee_Id=@empid And Approval <> 3 and Approval <> 4
+				)
+				Begin
+			SELECT 0
+			End
+	
+	Else
+	Begin
+	INSERT INTO Employee_Leave (
+		Employee_Id
+		,LeaveType
+		,FromDate
+		,LeaveFromSession
+		,ToDate
+		,LeaveToSession
+		,Reason
+		,Approval
+		,Managerid
+		,Numberofdays
+		)
+	VALUES (
+		@empid
+		,@leavetype
+		,@fromdate
+		,@fromsession
+		,@todate
+		,@tosession
+		,@reason
+		,1
+		,@managerid
+		,@numberofdays
+		)
+
+	EXEC MTS_ADDEMAILMASTERENTRY @TEMPLATEID
+		,@EMAILSP
+
+	SELECT 1
+	End
+END
+END

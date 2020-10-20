@@ -25,27 +25,71 @@
 <script src="~/Scripts/jQuery-File-Upload-9.19.2/js/jquery.fileupload-validate.js"></script>
 <script src="~/Scripts/bootbox.min.js"></script>
 <script src="~/Scripts/ValidationFunction.js"></script>
-
+<link href="~/Content/css/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.min.js"></script>
 <script>
+    var LeavebalanceData=[];
+    var LeaveTypeData=[];
+    var deptID;
+    var maxLimit=0;
     $(document).ready(function () {
-
-    
-           
-            $('.datepickerclass').datepicker({
-                changeMonth: true,
-                changeYear: true,
-                autoclose: true,
-                todayHighlight: true,
-                endDate: '+0d',
-                format: 'dd/M/yyyy',
-            })
+        $('#addLeavePolicyNew').hide();
+        $('#addLeavePolicy').hide();
+        $('.resetnewcls' ).val(0);
        
-   // });
-        var FinalLang = "";
+
+        $.ajax({
+            type:'get',
+            url:'@Url.Content("~/LeaveType/Read")',                       // get leave type details 
+            success:function(data){
+                 LeaveTypeData=JSON.parse(data);
+            }
+        });
+     
+
+
+        $('.resetcls , .resetnewcls' ).on('input', function () {
+      
+            $('.field-validation-valid').text('');
+            $('.field-validation-valid').show();
+            if($(this).val()>maxLimit)
+            {
+                $('<span class="field-validation-valid">'+maxLimit+' is the maximum limit based on the selected leave type...!</span>').css('color','red').insertAfter(this);
+            }
+            $(this).val(Math.max(Math.min($(this).val(), maxLimit), -(maxLimit)));                        // maxLimit is the maximum input limit       
+                         
+        });
+
+
+
+        $('#leavetypenew').on('change',function(e){
+         
+            $('.field-validation-valid').text('');
+            $('.field-validation-valid').show();
+            $('.resetnewcls').val(0);
+            $.each(LeaveTypeData,function(i){
+                if(LeaveTypeData[i].LEAVE_TYPE==e.added.text && LeaveTypeData[i].DepartmentId==deptID ){
+                    maxLimit = LeaveTypeData[i].Numberofdays;
+                }
+            });
+        });
+        //$('.resetcls' ).on('input', function () {
+        //    $(this).val(Math.max(Math.min($(this).val(), 50), -50));                        // 50 is the maximum input limit
+        //});
+      
         var EmployeeData = '@Html.Raw(ViewBag.EmployeeData)';
-        //var monthlimit = "-" + monthcount + "m";
         EmployeeData = JSON.parse(EmployeeData);
         var activeState = EmployeeData.Table[0].Active;
+        $('.datepickerclass').datepicker({
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            todayHighlight: true,
+            endDate: '+0d',
+            format: 'dd/M/yyyy',
+        });
+        var FinalLang = "";
+        //var monthlimit = "-" + monthcount + "m";
         if (activeState == true) {
 
             $("#activate").prop("checked", true)
@@ -71,7 +115,9 @@
         $("#Firstname").text(EmployeeData.Table[0].Firstname).text;
         $("#Lastname").text(EmployeeData.Table[0].Lastname).text;
         $("#Designation").text(EmployeeData.Table[0].Designation).text;
-
+    
+        deptID=EmployeeData.Table[0].DepartmentId;
+      
         $("#Department").text(EmployeeData.Table[0].Department).text;
         //var d = EmployeeData.Table[0].Department;
         //if (EmployeeData.Table[0].Department == "1") {
@@ -236,6 +282,7 @@
         $('#activate').change(function () {
             $("#activate").prop("checked", true);
             $("#inactiveid").modal('show');
+            $('.field-validation-valid').hide();
             var activestatus;
             var rowid = $("#rowid").text();
             if ($(this).is(":checked")) {
@@ -246,14 +293,23 @@
                 activestatus = 0;
             }
         });
+        LoadLeavePolicy();
+        ReadLeavePolicy();
+        $('#leavetypenew').select2({ "width": "100%" ,"placeholder":"---Select Leave Type---"});
     });
 
-        function Inactive()
+    function Inactive()
+    {
+        var rowid = $("#rowid").text();
+        var activestatus = 0;
+        var inActiveDate = $(".datepickerclass").val()
+        if (inActiveDate == "")
         {
-            
-            var rowid = $("#rowid").text();
-            var activestatus = 0;
-            var inActiveDate = $(".datepickerclass").val()
+            $('.field-validation-valid').text("Please select the date");
+            $('.field-validation-valid').show();
+        }
+        else {
+
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Employee/SetActive")',
@@ -266,10 +322,10 @@
                     },
 
                 success: function (result) {
-                    
+
                     if (result == 1) {
                         toastr.success("User Activated Successfully");
-                        setTimeout(function () {                         
+                        setTimeout(function () {
                             window.location.href = '@Url.Action("EmployeeList", "EmployeeList")'
                         }, 1000);
 
@@ -277,160 +333,466 @@
                     }
                     else if (result == 0) {
                         toastr.success("User De-Activated Successfully");
-                        setTimeout(function () {                            
+                        setTimeout(function () {
                             window.location.href = '@Url.Action("EmployeeList", "EmployeeList")'
                         }, 1000);
 
                     }
-                    else
-                    {
+                    else {
                         toastr.error("Failed");
                     }
 
                 }
             });
         }
+    }
     function back() {
         //bootbox.confirm("Are you sure?", function (result) {
-         //  if (result == true) {
+        //  if (result == true) {
 
         $("#inactiveid").modal('hide');
-       
+
     }
 
 
 
-            function Edit() {
+    function Edit() {
 
-                $("#check").hide();
-                var empid = $("#Employeeid").text();
-                $.ajax({
-                    type: 'POST',
-                    url: '@Url.Content("~/Employee/SetEmployeeid")',
-                    data:
-                        {
-                            id: empid
-                        },
-                    success: function (result) {
+        $("#check").hide();
+        var empid = $("#Employeeid").text();
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Employee/SetEmployeeid")',
+            data:
+                {
+                    id: empid
+                },
+            success: function (result) {
 
-                        if (result == "success") {
-                            window.location.href = '@Url.Action("Employee", "Employee")';
-                        }
-                    }
-
-                });
-
-            }
-            function show(input) {
-                if (input.files && input.files[0]) {
-                    var filerdr = new FileReader();
-                    filerdr.onload = function (e) {
-                        $('#profile_image').attr('src', e.target.result);
-                        $("#employeeUploadProfileImage").prop('disabled', false);
-                    }
-                    filerdr.readAsDataURL(input.files[0]);
-
-                }
-                $("#employeeUploadProfileImage").prop('disabled', true);
-            }
-
-            function EditBankdetails() {
-
-                var id = $("#rowid").text();
-
-                $("#Employee_Id").val(id);
-                $("#Bank_Name").val($("#BankName").text());
-                $("#Branch_Name").val($("#BranchName").text());
-                $("#Account_Number").val($("#AccountNumber").text());
-                $("#Ifsc_Code").val($("#Ifsc").text());
-                $("#EditaBankdetails").modal('show');
-                $('.field-validation-valid').hide();
-            }
-
-            function UpdateBankdetails(formName) {
-
-                if (checkForm(formName)) {
-                    $.ajax({
-                        type: 'POST',
-                        url: '@Url.Content("~/BankDetails/AddEdit")',
-                        async: false,
-                        data:
-                            {
-                                Employee_Id: $("#Employee_Id").val(),
-                                BankName: $("#Bank_Name").val(),
-                                Branchname: $("#Branch_Name").val(),
-                                Accountnumber: $("#Account_Number").val(),
-                                Ifsccode: $("#Ifsc_Code").val()
-                            },
-                        success: function (response) {
-                            if (parseInt(response.success) == 2) {
-                                $("#EditaBankdetails").modal('hide');
-                                location.reload(true);
-                                $("#check").show();
-                            } else if (parseInt(response.success) == 1) {
-                                $("#EditaBankdetails").modal('hide');
-                                location.reload(true);
-                                $("#check").show();
-                            }
-                            else {
-                                $('#errorSpan').text("Failed To Update");
-                                $('#errorSpan').show();
-                            }
-                        },
-                        error: function (a, b, c) {
-                        }
-                    });
+                if (result == "success") {
+                    window.location.href = '@Url.Action("Employee", "Employee")';
                 }
             }
+
+        });
+
+    }
+    function show(input) {
+        if (input.files && input.files[0]) {
+            var filerdr = new FileReader();
+            filerdr.onload = function (e) {
+                $('#profile_image').attr('src', e.target.result);
+                $("#employeeUploadProfileImage").prop('disabled', false);
+            }
+            filerdr.readAsDataURL(input.files[0]);
+
+        }
+        $("#employeeUploadProfileImage").prop('disabled', true);
+    }
+
+    function EditBankdetails() {
+
+        var id = $("#rowid").text();
+
+        $("#Employee_Id").val(id);
+        $("#Bank_Name").val($("#BankName").text());
+        $("#Branch_Name").val($("#BranchName").text());
+        $("#Account_Number").val($("#AccountNumber").text());
+        $("#Ifsc_Code").val($("#Ifsc").text());
+        $("#EditaBankdetails").modal('show');
+        $('.field-validation-valid').hide();
+    }
+
+    function UpdateBankdetails(formName) {
+
+        if (checkForm(formName)) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/BankDetails/AddEdit")',
+                async: false,
+                data:
+                    {
+                        Employee_Id: $("#Employee_Id").val(),
+                        BankName: $("#Bank_Name").val(),
+                        Branchname: $("#Branch_Name").val(),
+                        Accountnumber: $("#Account_Number").val(),
+                        Ifsccode: $("#Ifsc_Code").val()
+                    },
+                success: function (response) {
+                    if (parseInt(response.success) == 2) {
+                        $("#EditaBankdetails").modal('hide');
+                        location.reload(true);
+                        $("#check").show();
+                    } else if (parseInt(response.success) == 1) {
+                        $("#EditaBankdetails").modal('hide');
+                        location.reload(true);
+                        $("#check").show();
+                    }
+                    else {
+                        $('#errorSpan').text("Failed To Update");
+                        $('#errorSpan').show();
+                    }
+                },
+                error: function (a, b, c) {
+                }
+            });
+        }
+    }
 
     function ConfirmReset() {
         bootbox.confirm("Are you sure to reset password?", function (result) {
             if (result == true) {
                 ResetPassword();
             }
-           
+
         });
     }
-            function ResetPassword() {
-                var userid = $("#rowid").text();
-                var FirstName = $("#Firstname").text();
-                var lastName = $("#Lastname").text();
-                var EmailId = $("#Officialmail").text();
+    function ResetPassword() {
+        var userid = $("#rowid").text();
+        var FirstName = $("#Firstname").text();
+        var lastName = $("#Lastname").text();
+        var EmailId = $("#Officialmail").text();
 
-                $.ajax({
-                    type: 'POST',
-                    url: '@Url.Content("~/Employee/ResetEmployeePassword")',
-                    data:
-                        {
-                            id: userid,
-                            Firstname: FirstName,
-                            Lastname: lastName,
-                            Email: EmailId
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Employee/ResetEmployeePassword")',
+            data:
+                {
+                    id: userid,
+                    Firstname: FirstName,
+                    Lastname: lastName,
+                    Email: EmailId
 
-                        },
-                    success: function (result) {
+                },
+            success: function (result) {
 
-                        if (result == '-1') {
+                if (result == '-1') {
 
-                            toastr.success("Password Reset Successfull");
+                    toastr.success("Password Reset Successfull");
 
-                        }
-                        else  {
+                }
+                else  {
 
-                            toastr.error("Password Reset Failed");
-                        }
-
-                    }
-
-                });
+                    toastr.error("Password Reset Failed");
+                }
 
             }
 
-</script>
-<div class="row">
+        });
 
-    <div class="col-md-12">
-        <div style="display:inline-block;float:right" class="text-right">
+    }
+    $(document).ready(function () {
+        $('#rolevalue').click(function (event) {
+            $('#roledropdown').slideToggle("fast");
+            event.stopPropagation();
+        });
+
+        $(document).click(function () {
+            $('#roledropdown').slideUp("fast");
+        });
+        $('#dropdownProfile').click(function () {
+            $('#roledropdown').slideUp("fast");
+        });
+    });
+    function ConfirmEditRole(RoleId) {
+        bootbox.confirm("Are you sure to change role?", function (result) {
+            if (result == true && @Session["RoleId"].ToString()=='1') {
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Content("~/Employee/EditRole")',
+                    data:
+                        {
+                            'RoleId':RoleId
+                        },
+                    success : function(data)
+                    {
+                        if(parseInt(data)>0){
+                            location.reload();
+                        }else{
+                            toastr.error("Failed");
+                        }
+                    }
+                });
+            }else if(result == true){
+                bootbox.alert("Only Admin can able to change the role");
+            }
+        });
+    }
+
+    function backToEmployeeList() {
+
+        bootbox.confirm("Are you sure?", function (result) {
+
+            if (result == true) {
+
+                window.location.href = '@Url.Action("EmployeeList", "EmployeeList")';
+            }
+        });
+    }
+    function ReadLeavePolicy()
+    {
+        $.ajax({
+            type:'get',
+            url:'@Url.Content("~/EmployeeLeaveList/ReadLeavePolicy")',
+            data:{deptID:deptID},
+            success:function(data)
+            {
+                LeavebalanceData=JSON.parse(data);
+            }
+        });
+    }
+    function LoadLeavePolicy() {
+        if ($.fn.DataTable.isDataTable('#ReadLeaveBalance')) {
+            $('#ReadLeaveBalance').dataTable().fnDestroy();
+        }
+        var data = {
+            empid : $('#rowid').text()
+        }
+
+        leavePolicytable = $("#ReadLeaveBalance").DataTable({
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "iDisplayLength": 5,
+            "bFilter": true,
+            "bProcessing": true,
+            "ajax": {
+                type: "GET",
+                url: '@Url.Content("~/EmployeeLeaveList/ReadEmployeeLeaveBalance")',
+                data:
+                       {
+                           'employeeid':$('#rowid').text()
+                       },
+                dataSrc: function (data) {
+                    //  LeavebalanceData=JSON.parse(data);
+                    return JSON.parse(data);
+                }
+            },
+            "aoColumns": [
+            { "mData": "ID", "sTitle": "ID", "sClass": "text-center", "sWidth": "2%", "bVisible": false }  //0
+                , { "mData": "LEAVE_TYPE", "sTitle": "Leave Type", "sClass": "text-center" }  //1
+                , { "mData": "LEAVE_CODE", "sTitle": "Leave Code", "sClass": "text-center", "bVisible": false }  //2
+                , { "mData": "LeaveTypeId", "sTitle": "Leave Type Id", "sClass": "text-center", "bVisible": false}  //3
+                , { "mData": "LeaveCredited", "sTitle": "Leave Credit", "sClass": "text-center"}  //4
+                , { "mData": "AdvanceCredit", "sTitle": "Advance Credit", "sClass": "text-center"}  //5
+                , { "mData": "NumberofdaysLeaveTaken", "sTitle": "Leave Taken", "sClass": "text-center"}  //6
+                , { "mData": "AdvanceAvailed", "sTitle": "Advance Availed", "sClass": "text-center"}  //7
+                , { "mData": "AvailableLeave", "sTitle": "Available Leave", "sClass": "text-center"}  //8
+
+
+                , { "mData": "ID", "sTitle": "Edit", "sClass": "text-center", "sWidth": "2%", "orderable": false }  //9
+                , { "mData": "Employee_Id", "sTitle": "Employee_Id", "sClass": "text-center", "bVisible": false}  //10
+                , { "mData": "EmployeeName", "sTitle": "EmployeeName", "sClass": "text-center", "bVisible": false }  //11
+
+
+
+
+            ],
+            "aoColumnDefs": [
+            //    {
+            //    "aTargets": [4]
+            //        , "mRender": function (data, type, row) {
+            //            var result = (data == 1) ? 'Male' : (data == 2) ? 'Female' : (data == 3) ? 'Both' : 'N/A';
+            //            return result;
+            //        }
+            //},
+            {
+                "aTargets": [8]
+                    , "mRender": function (data, type, row) {
+                        //var result = (data == 1) ? 'Single' : (data == 2) ? 'Married' : (data == 3) ? 'Both' : 'N/A';
+                        if(data >= 0)
+                            return data;
+                        else
+                            return 0;
+                    }
+            },
+                {
+                    "aTargets": [9]
+                    , "mRender": function (data, type, row) {
+                        return '<span style="cursor: pointer !important;" onclick=editPolicy($(this).closest("tr")) class="fa fa-edit"></span>';
+                    }
+                }]
+
+        });
+    }
+    function addPolicy(){
+       
+        $('#addLeavePolicyNew').show();
+        var title="---Select Leave Type---";
+        $('#leavetypenew').append('<option value="0">' + title  + '');
+        $.each(LeavebalanceData,function(i,value){
+            $('#leavetypenew').append('<option value="' + LeavebalanceData[i].id + '">' + LeavebalanceData[i].LEAVE_TYPE  + '');
+
+        });
+        //$.each(LeaveTypeData,function(i){
+        //    if(LeaveTypeData[i].LEAVE_TYPE==data.LEAVE_TYPE && LeaveTypeData[i].DepartmentId==deptID ){
+        //        maxLimit = LeaveTypeData[i].Numberofdays;
+        //    }
+        //});
+        $('#leavetypenew').select2({ "placeholder":"---Select Leave Type---"});
+        $('#readPolicyCard').hide();
+        $('#addLeavePolicy').hide();
+        $('#actionBtns').hide();
+        $('#empDetails').hide();
+
+    }
+    function editPolicy(curTr) {
+  
+       
+    var data = leavePolicytable.row(curTr).data();
+  
+    $.each(LeaveTypeData,function(i){
+        if(LeaveTypeData[i].LEAVE_TYPE==data.LEAVE_TYPE && LeaveTypeData[i].DepartmentId==deptID ){
+            maxLimit = LeaveTypeData[i].Numberofdays;
+        }
+    });
+    $('#readPolicyCard').hide();
+    $('#addLeavePolicy').show();
+    $('#addLeavePolicyNew').hide();
+    $('#empDetails').hide();
+    $('#title').text('Edit');
+    $('#updatebtn').show();
+
+    id = data.ID;
+    $('#leavetype').val(data.LEAVE_TYPE);
+    $('#leavetype').prop('disabled', true);
+    $('#leaveCode').val(data.LEAVE_CODE);
+    $('#leaveCode').prop('disabled', true);
+    $('#Leavebalance').val(data.NumberofdaysLeaveTaken);
+    $('#Leavebalance').prop('disabled', true);
+    if(data.AvailableLeave > 0)
+    {
+        $('#Availableleave').val(data.AvailableLeave);
+    }
+    else
+    {
+        $('#Availableleave').val(0);
+    }
+    // $('#Availableleave').val(data.AvailableLeave);
+    $('#Availableleave').prop('disabled', true);
+    $('#AdvanceCredit').val(data.AdvanceCredit);
+    $('#AdvanceAvailed').val(data.AdvanceAvailed);
+    $('#AdvanceAvailed').prop('disabled', true);
+    }
+    function keydownNumberOnly(e) {
+
+        if ((e.keyCode == 8 || e.keyCode == 46 || e.keyCode == 190) || (e.keyCode >= 48 && e.keyCode <= 57)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    function closeAddLeave() {
+        $('#leavetypenew').empty();
+        $('.field-validation-valid').text('');
+        $('.resetnewcls').val(0);
+        //   $('.resetcls').select2('val',0);
+        $('#leavetypenew').select2('val',0);
+        $('#addLeavePolicyNew').hide();
+        $('#addLeavePolicy').hide();
+        $('#readPolicyCard').show();
+        $('#empDetails').show();
+        $('#actionBtns').show();
+    }
+    function AddNewPolicy(){
+
+        $('.field-validation-valid').text('');
+        $('.field-validation-valid').show();
+        if($('#leavetypenew').val()=='0'){
+            $('#Errorleavetypenew').text("This field is required...!");
+        }
+        if($('.field-validation-valid').text()!='')
+        {
+            return false;
+        }
+        if($('#AdvanceCredit').val() >= $('#AdvanceAvailed').val()) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Content("~/EmployeeLeaveList/AddAdvanceCreditLeave")',
+            data: { EmpId:$('#rowid').text() ,Availableleave:$('#Availableleavenew').val() ,AdvanceCredit:$('#AdvanceCreditnew').val() ,AdvanceAvailed:$('#AdvanceAvailednew').val() ,leavetype: $('#leavetypenew').val()  },
+            success: function (response) {
+                if (parseInt(response.success) == 1) {
+                    LoadLeavePolicy();
+                    $('#empDetails').show();
+                    $('#addLeavePolicyNew').hide();
+                    $('#leavetypenew').empty();
+                    $('#readPolicyCard').show();
+                    toastr.success("successfully Added");
+                }
+                else {
+                    //   toastr.warning("Failed to Add");
+
+                    toastr.warning("This leave type is already exist");
+                }
+            }
+        });
+        } else {
+            toastr.warning("Advance availed is greater than Advance credit");
+        }
+
+    }
+    function UpdatePolicy() {
+
+        //if (ValidationCall()) {
+        //var adjust = ($('#adjustLeave').val()).join();
+        if($('#AdvanceCredit').val() >= $('#AdvanceAvailed').val()) {
+            var data = {
+                Id: id,
+                MaxAllowBal: $('#AdvanceCredit').val().trim(),
+                ConsecutiveLeave: $('#AdvanceAvailed').val().trim(),
+            }
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Content("~/EmployeeLeaveList/UpdateAdvanceCreditAndAvailed")',
+                async: false,
+                contentType: "application/json",
+                dataType: "json",
+                data:
+                    JSON.stringify({ leavePolicy: data }),
+                success: function (response) {
+                    if (parseInt(response.success) == 1) {
+                        LoadLeavePolicy();
+                        $('#empDetails').show();
+                        $('#addLeavePolicy').hide();
+                        $('#readPolicyCard').show();
+                        toastr.success("Updated successfully");
+                    }
+                    else {
+                        toastr.warning("Failed to update");
+                    }
+                }
+            });
+        } else {
+            toastr.warning("Advance availed is greater than Advance credit");
+        }
+       
+        //}
+
+    }
+
+</script>
+<div class="row" id="actionBtns">
+
+        <div class="col-md-12">
+
+            <div id="rolevalue" style="display:inline-block;float:right;" class="text-right dropdown m-l-10">
+
+                <button type="button" class="btn btn-primary btn-sm dropdown reset" style="min-width: 140px;"><span><i class="fa fa-user m-r-10" style="cursor:pointer;"></i>@Session["Role"]<i class="fa fa-pencil m-l-10"></i></span></button>
+
+                <div id="roledropdown" class="role-dropdown dropdown-menu" aria-labelledby="dropdownMenuLink">
+
+                    <a class="dropdown-item" style="cursor:pointer" onclick="ConfirmEditRole(1)"> <span> Admin </span></a>
+
+                    <a class="dropdown-item" style="cursor:pointer" onclick="ConfirmEditRole(2)"> <span>Employee</span></a>
+
+                    <a class="dropdown-item" style="cursor:pointer" onclick="ConfirmEditRole(3)"> <span>Manager</span></a>
+
+                    <a class="dropdown-item" style="cursor:pointer" onclick="ConfirmEditRole(4)"> <span>HR</span></a>
+                </div>              
+            </div>
+
+
+        <div style="display:inline-block;float:right" class="text-right m-l-10">
 
             <div class="tg-list ">
                 <div class="tg-list-item">
@@ -451,7 +813,7 @@
     </div>
 </div>
 
-<div class="employeedetails">
+<div class="employeedetails" id="empDetails">
 
     <div class="card">
         <div class="card-header">
@@ -643,98 +1005,118 @@
                 <div class="shadow">
                     <div class="row">
                         <div class="col-12">
-                            <h6 class="mt-1 mb-1 text-primary">Address</h6>
+                            <h6 class="mt-1 mb-1 text-primary">Edit Employee Advance Credit Leave</h6>
                         </div>
                     </div>
                     <hr class="my-1" />
-                    <div class="row m-t-10">
-                        <div class="col-12 col-sm-6 col-lg-6">
-                            <div class="col-12">
-                                <b class="font-weight-normal text-success text-uppercase">Current</b>
-                                <hr class="my-1" />
+                    <div class="col-lg-12 m-t-15">
+                            <div class="text-right m-b-10">
+                                <button type="button" style="position: relative;right: 15px;" onclick="addPolicy()" class="btn btn-primary btn-sm" id="create"><span class="fa fa-plus-circle"></span>&nbsp;&nbsp;Add</button>
                             </div>
-                            <div class="col-12">
-                                <label class="fz13">Building/Plot/No/Street : </label>
-                                <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="Address_Line1"></label>
-                            </div>
-                            <div class="col-12">
-                                <label class="fz13">City : </label>
-                                <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="Line2"></label>
-                            </div>
-                            <div class="col-12">
-                                <label class="fz13">State :</label>
-                                <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="State"></label>
-                            </div>
-                            <div class="col-12">
-                                <label class="fz13">Pincode :</label>
-                                <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="Pincode"></label>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-6 col-lg-6">
-                            <div class="col-12">
-                                <b class="font-weight-normal text-success text-uppercase">Permanent</b>
-                                <hr class="my-1" />
-                            </div>
-                            <div class="col-12">
-                                <label class="fz13">Building/Plot/No/Street : </label>
-                                <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="permanent_address"></label>
-                            </div>
-                            <div class="col-12">
-                                <label class="fz13">City :</label>
-                                <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="permanentLine1"></label>
-                            </div>
-                            <div class="col-12">
-                                <label class="fz13">State :</label>
-                                <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="permanentstate"></label>
-                            </div>
-                            <div class="col-12">
-                                <label class="fz13">Pincode:</label>
-                                <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="permanentpincode"></label>
-                            </div>
-                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="MTS_Table">
+                        <table id="ReadLeaveBalance" class="table table-bordered table-hover tabel-sm table-responsive bg-th-blue" cellspacing="0" style="width:100%"></table>
                     </div>
                 </div>
             </div>
-            <div class="p20 p-t-0 m-b-10">
-                <div class="shadow">
-                    <div class="row">
-                        <div class="col-9">
-                            <h6 class="mt-1 mb-1 text-primary">Bank Account</h6>
-                        </div>
-                        <div class="col-3">
-                            <a href="javascript:void(0)" onclick="EditBankdetails()" class="p-1 pull-right text-dark rounded bg-warning fz13"><i class="fa fa-edit"></i>&nbsp;Edit</a>
-                        </div>
-                    </div>
-                    <hr class="my-1" />
-                    <div class="row m-t-15">
-                        <div class="col-12 col-md-6 col-lg-6">
-                            <label class="fz13">Bank Name :</label>
-                            <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="BankName"></label>
-                        </div>
-                        <div class="col-12 col-md-6 col-lg-6">
-                            <label class="fz13">Branch Name :</label>
-                            <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="BranchName"></label>
-                        </div>
-                        <div class="col-12 col-md-6 col-lg-6">
-                            <label class="fz13">Account Number :</label>
-                            <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="AccountNumber"></label>
-                        </div>
-                        <div class="col-12 col-md-6 col-lg-6">
-                            <label class="fz13">IFSC Code :</label>
-                            <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="Ifsc"></label>
-                        </div>
+        </div>
+        <div class="p20 p-t-0 m-b-10">
+            <div class="shadow">
+                <div class="row">
+                    <div class="col-12">
+                        <h6 class="mt-1 mb-1 text-primary">Address</h6>
                     </div>
                 </div>
-            </div>
-            <div class="p20 p-t-0 m-b-10">
-                <div class="shadow">
-                    <div class="row">
+                <hr class="my-1" />
+                <div class="row m-t-10">
+                    <div class="col-12 col-sm-6 col-lg-6">
                         <div class="col-12">
-                            <h6 class="mt-1 mb-1 text-primary">Employee Image</h6>
+                            <b class="font-weight-normal text-success text-uppercase">Current</b>
+                            <hr class="my-1" />
+                        </div>
+                        <div class="col-12">
+                            <label class="fz13">Building/Plot/No/Street : </label>
+                            <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="Address_Line1"></label>
+                        </div>
+                        <div class="col-12">
+                            <label class="fz13">City : </label>
+                            <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="Line2"></label>
+                        </div>
+                        <div class="col-12">
+                            <label class="fz13">State :</label>
+                            <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="State"></label>
+                        </div>
+                        <div class="col-12">
+                            <label class="fz13">Pincode :</label>
+                            <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="Pincode"></label>
                         </div>
                     </div>
-                    <hr class="my-1" />
-                    <div class="row m-t-10">
+                    <div class="col-12 col-sm-6 col-lg-6">
+                        <div class="col-12">
+                            <b class="font-weight-normal text-success text-uppercase">Permanent</b>
+                            <hr class="my-1" />
+                        </div>
+                        <div class="col-12">
+                            <label class="fz13">Building/Plot/No/Street : </label>
+                            <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="permanent_address"></label>
+                        </div>
+                        <div class="col-12">
+                            <label class="fz13">City :</label>
+                            <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="permanentLine1"></label>
+                        </div>
+                        <div class="col-12">
+                            <label class="fz13">State :</label>
+                            <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="permanentstate"></label>
+                        </div>
+                        <div class="col-12">
+                            <label class="fz13">Pincode:</label>
+                            <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="permanentpincode"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="p20 p-t-0 m-b-10">
+            <div class="shadow">
+                <div class="row">
+                    <div class="col-9">
+                        <h6 class="mt-1 mb-1 text-primary">Bank Account</h6>
+                    </div>
+                    <div class="col-3">
+                        <a href="javascript:void(0)" onclick="EditBankdetails()" class="p-1 pull-right text-dark rounded bg-warning fz13"><i class="fa fa-edit"></i>&nbsp;Edit</a>
+                    </div>
+                </div>
+                <hr class="my-1" />
+                <div class="row m-t-15">
+                    <div class="col-12 col-md-6 col-lg-6">
+                        <label class="fz13">Bank Name :</label>
+                        <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="BankName"></label>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-6">
+                        <label class="fz13">Branch Name :</label>
+                        <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="BranchName"></label>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-6">
+                        <label class="fz13">Account Number :</label>
+                        <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="AccountNumber"></label>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-6">
+                        <label class="fz13">IFSC Code :</label>
+                        <label class="control-label col-xs-12 iceLabel fz13 font-weight-bold" id="Ifsc"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="p20 p-t-0 m-b-10">
+            <div class="shadow">
+                <div class="row">
+                    <div class="col-12">
+                        <h6 class="mt-1 mb-1 text-primary">Employee Image</h6>
+                    </div>
+                </div>
+                <hr class="my-1" />
+                <div class="row m-t-10">
 
                         <div class="col-12">
                             <div id="progress" class="progress">
@@ -765,6 +1147,96 @@
                     </div>
                 </div>
             </div>
+            <div class="p20 p-t-0 m-b-10">
+                <div class="row">
+                    <div class="col-12 text-right">
+                        <button type="button" onclick="backToEmployeeList()" class="btn btn-light" id="cancel">Close</button>
+                    </div>
+                </div>                
+            </div>            
+        </div>
+    </div>
+</div>
+
+<div class="card p-b-15" id="addLeavePolicy">
+    <div class="card-header">
+        <span id="title"></span> Leave policy
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-lg-4 form-group">
+                <label>Leave type</label>
+                <input type="text" class="form-control requir" id="leavetype"/>
+            </div>
+            <div class="col-lg-4 form-group">
+                <label>Leave code</label>
+                <input type="text" class="form-control requir" id="leaveCode" />
+            </div>
+            <div class="col-lg-4 form-group">
+                <label>Leave Taken</label>
+                <input type="text" class="form-control requir" id="Leavebalance" />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4 form-group">
+                <label>Available Leave</label>
+                <input type="text" class="form-control requir" id="Availableleave" />
+            </div>
+            <div class="col-lg-4 form-group">
+                <label>Advance Credit</label>
+                <input type="number" min="0" class="form-control requir  resetcls" id="AdvanceCredit" />
+            </div>
+            <div class="col-lg-4 form-group">
+                <label>Advance Availed</label>
+                <input type="number" min="0" class="form-control requir resetcls" id="AdvanceAvailed" />
+            </div>
+        </div>
+
+        <div class="pull-right p-t-15 p-b-10 p-r-10">
+            <button type="button" class="btn btn-light m-r-5" onclick="closeAddLeave()">Close</button>
+            <button type="button" class="btn btn-primary" id="updatebtn" onclick="UpdatePolicy()">Update</button>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="card p-b-15" id="addLeavePolicyNew">
+    <div class="card-header">
+        <span id="title"></span> Leave policy
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-lg-6 form-group">
+                <label>Leave type</label>
+                <select type="text" class="form-control   requir" id="leavetypenew" placeholder="---Select Leave Type---">
+                    @*<option value="0">---Select Leave Type---</option>*@
+                </select>
+                <span class="field-validation-valid" id="Errorleavetypenew" style="color:red;font: bold; display: none"></span>
+            </div>
+            <div class="col-lg-6 form-group">
+                <label>Available Leave</label>
+                <input type="text" onkeydown="return keydownNumberOnly(event);" class="form-control requir resetnewcls" id="Availableleavenew" />
+            </div>
+           
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6 form-group">
+                <label>Advance Credit</label>
+                <input type="number" min="0" class="form-control requir resetnewcls" id="AdvanceCreditnew" />
+            </div>
+            <div class="col-lg-6 form-group">
+                <label>Advance Availed</label>
+                <input type="number" min="0" class="form-control requir resetnewcls" id="AdvanceAvailednew" />
+            </div>
+           
+        </div>
+
+        <div class="pull-right p-t-15 p-b-10 p-r-10">
+            <button type="button" class="btn btn-light m-r-5" onclick="closeAddLeave()">Close</button>
+            <button type="button" class="btn btn-primary" id="savenew" onclick="AddNewPolicy()">Add</button>
         </div>
     </div>
 </div>
@@ -823,16 +1295,16 @@
                     <input type="hidden" class="form-control" id="url" value="">
                     <div class="form-group">
                             <label>Select the Date To Inactive User</label>
-                            <input type="text" name="Inactive" id="inactiveid"  class="datepickerclass form-control"  />
+                            <input type="text" name="Inactive" id="inactiveid"  class="datepickerclass form-control"   />
                         <span class="field-validation-valid" style="color: red; font: bold; display: none"></span>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <div class="dataurl">
-                    <div>                    
-                        <button type="button"  id="Yes" class="btn btn-success"  onclick="Inactive()">Yes</button>
+                    <div>                                         
                         <button type="button" id="No" class="btn btn-secondary" onclick="back()">No</button>
+                        <button type="button" id="Yes" class="btn btn-success" onclick="Inactive()">Yes</button>
                     </div>
                 </div>
             </div>

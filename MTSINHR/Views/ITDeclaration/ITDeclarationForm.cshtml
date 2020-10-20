@@ -1,0 +1,2274 @@
+﻿
+@{
+    ViewBag.Title = "ITDeclarationForm";
+}
+
+@System.Web.Optimization.Styles.Render("~/bundles/datepickercss")
+@System.Web.Optimization.Scripts.Render("~/bundles/datepicker")
+<script src="~/Scripts/moment.min.js"></script>
+<link href="~/Content/viewer.min.css" rel="stylesheet" />
+<script src="~/Scripts/viewer.min.js"></script>
+
+<script src="~/Scripts/daterangepicker.min.js"></script>
+<link href="~/Content/daterangepicker.css" rel="stylesheet" />
+
+<link href="~/Content/css/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.min.js"></script>
+<script src="~/Scripts/fine-uploader-5.14.2/fine-uploader.js"></script>
+
+<style>
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .update-info {
+        font-weight: 500;
+        font-style: italic;
+        font-size: 14px;
+        margin-right: 30px;
+        margin-top: -5px;
+        color:#dc3545;
+    }
+
+        .update-info span {
+            font-weight: bold;
+        }
+</style>
+<body>
+    <div class="card">
+        <div class="card-header">
+            IT Declaration Form
+        </div>
+        <div class="card-body">
+            <div class="row col-lg-12 p-b-10">
+                <div class=" col-lg-3">
+                    <label class="p-0 col-lg-12">Employee Code</label>
+                    <input class="col-lg-12 form-control" id="empCode" disabled />
+                </div>
+                <div class="  col-lg-3">
+                    <label class="p-0 col-lg-12">Employee Name</label>
+                    <input class="col-lg-12 form-control" id="empName" disabled />
+                </div>
+                <div class=" col-lg-3">
+                    <label class="p-0 col-lg-12">Employee Department</label>
+                    <input class="col-lg-12 form-control" id="empDept" disabled />
+                </div>
+                <div class=" col-lg-3">
+                    <label class="p-0 col-lg-12">Employee Designation</label>
+                    <input class="col-lg-12 form-control" id="empDesgn" disabled />
+                </div>
+            </div>
+            <div class="row col-lg-12  p-b-10">
+                <div class=" col-lg-3">
+                    <label class="p-0 col-lg-12">Employee PAN Details</label>
+                    <input class="col-lg-12 form-control" id="empPAN" disabled />
+                </div>
+                <div class=" col-lg-3">
+                    <label class="p-0 col-lg-12">Employee Address</label>
+                    <input class="col-lg-12 form-control" id="empAddress" disabled />
+                </div>
+                <div class="col-lg-3">
+                    <label class="p-0 col-lg-12">Select Financial Year</label>
+                    <select id="ddlFinYear" class="form-control"></select>
+                    @*<input type="number" class="col-lg-12 form-control" id="FinancialYear" />*@
+                </div>
+                <div class="col-lg-3 text-right">
+                    <span id="formSubmitDate" class="update-info pull-right m-top-10 p-t-35 "></span>
+                </div>
+            </div>
+
+
+            <div>
+                <ul class="nav nav-tabs getactivetab" id="">
+                    <li class="nav-item">
+                        <a data-id="1" class="nav-link active dashboard_nav_active HouseRentDetailsLink" id="HouseRentDetailsLink" data-toggle="tab" href="#Content_HouseRent">House Rent Allowance</a>
+                    </li>
+                    <li class="nav-item">
+                        <a data-id="2" class="nav-link dashboard_nav_active HomeLoanDetailsLink" id="HomeLoanDetailsLink" data-toggle="tab" href="#Content_HomeLoan">Deduction of interest on borrowing</a>
+                    </li>
+                    <li class="nav-item">
+                        <a data-id="3" class="nav-link  dashboard_nav_active itFormTableDetailsLink" id="itFormTableDetailsLink" data-toggle="tab" href="#Content_IT_table">Deduction under Chapter VI-A</a>
+                    </li>
+                    <li class="nav-item">
+                        <a data-id="4" class="nav-link  dashboard_nav_active otherIncomeDetailsLink" id="otherIncomeDetailsLink" data-toggle="tab" href="#Content_otherIncome">Other Source of Income</a>
+                    </li>
+                    @if (!ViewBag.DirectITDeclaration)
+                    {
+                        <li class="nav-item">
+                            <a data-id="5" class="nav-link  dashboard_nav_active IT_DeclarationLiablity" id="IT_DeclarationLiablity" data-toggle="tab" href="#Content_IT_Liablity">IT Liablity</a>
+                        </li>
+                    }
+
+                    @*<li class="nav-item">
+                            <a data-id="5" class="nav-link  dashboard_nav_active summaryDetailsLink" id="summaryDetailsLink" data-toggle="tab" href="#Content_summary">Summary</a>
+                        </li>*@
+
+
+
+                    @*<li class="nav-item managerCommends">
+                            <a data-id="4" class="nav-link dashboard_nav_active ManagerCommends" id="ManagerCommends" data-toggle="tab" href="#Manager_Commends">Feedback</a>
+                        </li>*@
+
+                </ul>
+            </div>
+            <div class="tab-content p-t-10">
+
+                <div class="tab-pane Content_HouseRent active" id="Content_HouseRent">
+                    <div class="card-body" id="appraisalProcessContentDiv">
+
+                        <div class="col-lg-12 pull-right" id="divUpload">
+                            <div class="col-lg-6 pad0 pad-top25 pad-right10 gap-top10 pull-right" style="width: auto;">
+                                <script type="text/template" id="qq-template">
+                                    <div class="qq-uploader-selector qq-uploader qq-gallery" qq-drop-area-text="Drop files here">
+
+                                        <div class="qq-upload-button-selector qq-upload-button" id="Uploadbtn">
+                                            <div><i class="fa fa-upload"></i>&nbsp;&nbsp;Upload files</div>
+                                        </div> @*<span style="color:red">(only .xls files)</span>*@
+                                        <ul class="qq-upload-list-selector qq-upload-list" role="region" aria-live="polite" aria-relevant="additions removals">
+                                            <li style="list-style-type:none;"></li>
+                                        </ul>
+
+                                    </div>
+                                </script>
+                                <div id="fine-uploader-galler"></div>
+                            </div>
+                        </div>
+
+                        @*<div class="row col-lg-12 p-b-10">
+                            <div class="col-lg-12 text-right">
+                            <button class="btn btn-danger btnUploadCls"><i class="fa fa-upload"></i>&nbsp;Upload files</button>
+                            </div>
+                            </div>*@
+
+                        <div class="row col-lg-12">
+                            @*<div class=" col-lg-4">
+                                    <label class="p-0 col-lg-12">
+                                        Rental Period
+                                    </label>
+                                    <input type="text" name="datefilter" id="daterangefilter" onkeydown="return false" placeholder="From Date - To Date" class="clearcls text-center col-lg-12 datefilter form-control" />
+                                </div>
+                                <div class="col-lg-3">
+                                    <label class="p-0 col-lg-12">Landlord’s PAN&nbsp;&nbsp;<i class="fa fa-info-circle landlordInfo" title="if the Rental Amount's total exceeds ₹1,00,000, then Landlord's PAN is mandatory...! " onmouseover="LandlordTooltip()"></i></label>
+
+                                    <input type="text" class="form-control col-lg-12 clearcls" id="landlordPAN" />
+                                </div>*@
+                            <div class="col-lg-6 form-group row">
+                                <div class="col-lg-5 text-right">
+                                    <label>Rental Period</label>
+                                </div>
+                                <div class="col-lg-7">
+                                    <input type="text" name="datefilter" id="daterangefilter" onkeydown="return false" placeholder="From Date - To Date" class="validationinputcls requirAddcls homerentInputcls clearcls admincls text-center col-lg-12 datefilter form-control" />
+                                </div>
+                            </div>
+                            <div class="col-lg-6 form-group row">
+                                <div class="col-lg-5 text-right">
+                                    <label class="col-lg-12 p-r-0">Landlord’s PAN&nbsp;&nbsp;<i class="fa fa-info-circle  landlordInfo" title="if the Rental Amount's total exceeds ₹1,00,000, then Landlord's PAN is mandatory...! " onmouseover="LandlordTooltip()"></i></label>
+                                </div>
+                                <div class="col-lg-7">
+                                    <input type="text" class="form-control col-lg-12 clearcls admincls panValidationcls" id="landlordPAN" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row col-lg-12">
+                            @*<div class=" col-lg-4">
+                                    <label class="p-0 col-lg-12">
+                                        LandLord Name
+                                    </label>
+                                    <input type="text" class="form-control col-lg-12 clearcls" id="txtname" />
+                                </div>
+                                <div class=" col-lg-4">
+                                    <label class="p-0 col-lg-12">
+                                        Address
+                                    </label>
+                                    <textarea id="address" class="form-control col-lg-12 clearcls"></textarea>
+                                </div>
+                                <div class=" col-lg-4">
+                                    <label class="p-0 col-lg-12">
+                                        Rental Amount(₹)
+                                    </label>
+                                    <input type="text" id="Rentamt" class="form-control formatNumbercls col-lg-12 clearcls" />
+                                </div>*@
+                            <div class="col-lg-6 form-group row">
+                                <div class="col-lg-5 text-right">
+                                    <label> LandLord Name</label>
+                                </div>
+                                <div class="col-lg-7">
+                                    <input type="text" class="form-control col-lg-12 clearcls admincls requirAddcls homerentInputcls validationinputcls" id="txtname" />
+                                </div>
+                            </div>
+                            <div class="col-lg-6 form-group row">
+                                <div class="col-lg-5 text-right">
+                                    <label> Address</label>
+                                </div>
+                                <div class="col-lg-7">
+                                    <textarea id="address" class="form-control col-lg-12 clearcls admincls requirAddcls homerentInputcls validationinputcls"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row col-lg-12 p-b-10">
+                            @*<label class="col-lg-6">Acual Amount(₹)</label>
+                                <input type="number" id="OtherActualAmt" disabled class="col-lg-6 form-control  clearcls" />*@
+
+
+                            <div class="col-lg-6 form-group row">
+                                <div class="col-lg-5 text-right">
+                                    <label>Rental Amount(₹)</label>
+                                </div>
+                                <div class="col-lg-7">
+                                    <input type="number" id="Rentamt" class="form-control formatNumbercls requirAddcls homerentInputcls col-lg-12 clearcls admincls validationinputcls" />
+                                </div>
+                            </div>
+                            <div class="col-lg-6 form-group row">
+                                <div class="col-lg-5 text-right">
+                                    <label> Acual Amount(₹)</label>
+                                </div>
+                                <div class="col-lg-7">
+                                    <input type="number" id="HRA_ActualAmt" disabled class=" form-control  clearcls" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12 text-right">
+                            <button onclick="AddHomeRentDetails()" id="btnEditSaveHomeRent" hidden class="btn btn-success text-right "><i class=""></i>&nbsp;Save</button>
+                            <button onclick="AddHomeRentDetails()" id="btnAddHomeRent" class="btn btn-primary text-right "><i class="fa fa-plus-circle"></i>&nbsp;Add</button>
+                            <button onclick="nextTab()" class="btn btn-primary text-right "><i class="fa fa-arrow-right "></i>&nbsp; Next</button>
+                        </div>
+                    </div>
+                    <div id="homeRentTableDiv" hidden>
+                        <div class="card-header">
+                            Home Rent Details
+                        </div>
+                        <div class="card-body">
+                            <div class="MTS_Table">
+                                <table class="table table-bordered table-responsive" id="homeRentTable" width="100%">
+                                    <thead>
+                                    </thead>
+                                    <tbody></tbody>
+                                    <tfoot>
+                                        <tr style="font-weight: bold;">
+                                            <td colspan="6"></td>
+                                            <td id="declaredtotal"></td>
+                                            <td id="actualtotal"></td>
+                                            <td></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane Content_HomeLoan" id="Content_HomeLoan">
+                    <div class="card-body">
+                        @*<div class="row col-lg-12 p-b-10">
+                            <div class="col-lg-12 text-right">
+                            <button class="btn btn-danger btnUploadCls"><i class="fa fa-upload"></i>&nbsp;Upload files</button>
+                            </div>
+                            </div>*@
+                        <div class="row col-lg-12 p-b-10">
+                            <label class="col-lg-6">Principal Paid on Home Loan(₹)</label>
+                            <input type="number" id="principalPaid" class="form-control col-lg-6 interestDeductioncls requirAddcls clearcls admincls validationinputcls" />
+                        </div>
+                        <div class="row col-lg-12 p-b-10">
+                            <label class="col-lg-6">Interest Paid on Home Loan(₹)</label>
+                            <input type="number" id="interestPaid" class="col-lg-6 form-control interestDeductioncls requirAddcls clearcls admincls validationinputcls" />
+                        </div>
+                        <div class="row col-lg-12 p-b-10">
+                            <label class="col-lg-6">Name of the Lender</label>
+                            <input type="text" id="nameLender" class="col-lg-6 form-control  clearcls admincls" />
+                        </div>
+                        <div class="row col-lg-12 p-b-10">
+                            <label class="col-lg-6">Lender PAN</label>
+                            <input type="text" id="HouseLoanlenderPAN" class="col-lg-6 form-control panValidationcls clearcls admincls" />
+                        </div>
+                        <div class=" col-lg-12 p-b-10 text-right">
+                            <button class=" btn btn-primary pull-left" onclick="goBackTab()" id="btnback">Back</button>
+                            <button onclick="AddHouseLoanDetails()" id="btnAddHomeLoan" class="btn btn-success text-right btnadminbeforeapprovecls"><i class=""></i>&nbsp;Save</button>
+                            <button onclick="nextTabfromHomeLoan()" class="btn btn-primary text-right "><i class="fa fa-arrow-right "></i>&nbsp;Next</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane Content_IT_table" id="Content_IT_table">
+                    <div class="card-body">
+                        <div class="MTS_Table">
+                            <table class="table table-bordered table-responsive" width="100%" id="itFormTable">
+                                <thead>
+                                </thead>
+                                <tbody></tbody>
+                                <tfoot>
+                                    <tr style="font-weight: bold;">
+                                        <td colspan="6"></td>
+                                        <td id="ITdeclaredtotal"></td>
+                                        <td id="ITactualtotal"></td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <div class="col-lg-12 text-right p-t-10">
+                            <button class=" btn btn-primary pull-left" onclick="goBackTab()" id="btnback">Back</button>
+                            <button onclick="nextTab()" class="btn btn-primary text-right "><i class="fa fa-arrow-right "></i>&nbsp; Next</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane Content_otherIncome" id="Content_otherIncome">
+                    <div class="card-body">
+                        <div class="row col-lg-12 p-b-10">
+                            <label class="col-lg-6">Income from other sources(₹)</label>
+                            <input type="number" id="incomeotherSource" class="form-control col-lg-6 otherInputcls clearcls admincls " />
+                        </div>
+                        <div class="row col-lg-12 p-b-10">
+                            <label class="col-lg-6">Interest Earned from Savings Deposit(₹)</label>
+                            <input type="number" id="SavingsInterest" class="col-lg-6 form-control otherInputcls clearcls admincls " />
+                        </div>
+                        <div class="row col-lg-12 p-b-10">
+                            <label class="col-lg-6">Interest Earned from Fixed Deposit(₹)</label>
+                            <input type="number" id="FixedInterest" class="col-lg-6 form-control otherInputcls clearcls admincls " />
+                        </div>
+                        <div class="row col-lg-12 p-b-10">
+                            <label class="col-lg-6">Total(₹)</label>
+                            <input type="number" id="OtherTotalAmt" disabled class="col-lg-6 form-control  clearcls " />
+                        </div>
+
+                        
+                        <div class="col-lg-12 p-t-10 text-right ">
+                            <button class=" btn btn-primary pull-left" onclick="goBackTab()" id="btnback">Back</button>
+                            <button onclick="addOtherSourceIncomeDetails()" id="btnAddOtherIncome" class="btn btn-success text-right btnadminbeforeapprovecls"><i class=""></i>&nbsp;Save</button>
+                            <button onclick="finalSubmit()" class="btn btn-primary text-right "><i class=""></i>&nbsp; Submit</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane Content_summary" id="Content_summary">
+                    <div class="card-body">
+                        <div class="row col-lg-12 p-b-10">
+                            <label class="col-lg-6">Total HRA(₹)</label>
+                            <input type="number" disabled id="summTotalHRA" class="form-control col-lg-6  clearcls" />
+                        </div>
+                        <div class="row col-lg-12 p-b-10">
+                            <label class="col-lg-6">Principal Paid on Home Loan(₹)</label>
+                            <input type="number" disabled id="summPrincipalPaid" class="form-control col-lg-6  clearcls" />
+                        </div>
+                        <div class="row col-lg-12 p-b-10">
+                            <label class="col-lg-6">Interest Paid on Home Loan(₹)</label>
+                            <input type="number" disabled id="summInterestPaid" class="form-control col-lg-6  clearcls" />
+                        </div>
+                        <div class="row col-lg-12 p-b-10">
+                            <label class="col-lg-6">Total Declared Amount(₹)</label>
+                            <input type="number" disabled id="summTotalSubmitted" class="form-control col-lg-6  clearcls" />
+                        </div>
+                        <div class="row col-lg-12 p-b-10">
+                            <label class="col-lg-6">Total Actual Amount(₹)</label>
+                            <input type="number" disabled id="summTotalActual" class="form-control col-lg-6  clearcls" />
+                        </div>
+                        <div class="row col-lg-12 p-b-10">
+                            <label class="col-lg-6">Total Other Source of Income Amount(₹)</label>
+                            <input type="number" disabled id="summTotalOther" class="form-control col-lg-6  clearcls" />
+                        </div>
+                        <div class="col-lg-12 p-t-10 text-right ">
+                            <button class=" btn btn-primary pull-left" onclick="goBackTab()" id="btnback">Back</button>
+                            <button class="btn btn-success text-right "><i class=""></i>&nbsp;Submit</button>
+                        </div>
+                    </div>
+                </div>
+                @if (!ViewBag.DirectITDeclaration)
+                {
+                    <div class="tab-pane Content_IT_Liablity" id="Content_IT_Liablity">
+                        <div class="card-body">
+                            <div class="row col-lg-12">
+                                <label class="col-lg-3">Tax Liablity(₹)</label>
+                                <input type="number" disabled id="txtITLiablity" class="form-control col-lg-3 clearcls" />
+                                <span id="spnEdit" onclick="EditITLiablity()" class="col-lg-2"><i class="fa fa-edit"></i></span>
+                                <span id="spnSave" onclick="SaveITLiablity()" class="col-lg-2"><i class="fa fa-save"></i></span>
+                            </div>
+                            <div class="row col-lg-12 p-t-10">
+                                <div class="card-header">Deductions/Deducted Details</div>
+                            </div>
+                            <div class="row col-lg-12">
+                                <table class="table table-bordered table-responsive" width="100%" id="IT_DeductionFormTable"></table>
+                            </div>
+                            <div class="row col-lg-12">
+                                <label class="col-lg-3">Balance(₹)</label>
+                                <input type="number" disabled id="txtITBalance" class="form-control col-lg-3 clearcls" />
+                                <div class="checkbox col-lg-6">
+                                    <label>
+                                        <span>Prorate Balance across Balance Months</span>&nbsp;
+                                        <input type="checkbox" id="chkProrate" onclick="ProrateITDedutions(this)" />
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 p-t-10 text-right ">
+                                <button class="btn btn-success text-right " id="btnConfirm" onclick="SubmitITLiablity()"><i class="fa fa-check"></i>&nbsp;Confirm</button>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+
+            </div>
+        </div>
+        <div class="" id="newViewer">
+            <div class="row">
+                <div class="col-sm-8 col-md-6">
+                    <div class="docs-galley">
+                        <ul class="fullimages hide">
+
+                            <li></li>
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<div class="modal fade" id="UploadModal" data-backdrop="false" tabindex="-1" role="dialog" aria-labelledby="StatusModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button id="close" onclick="close()" type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title" style="text-align:center" id="StatusModalLabel">File upload</h4>
+            </div>
+            <div class="modal-body">
+                <div class="col-lg-12 pull-right" id="divUpload1">
+                    <div class="col-lg-6 pad0 pad-top25 pad-right10 gap-top10" style="width: auto;">
+                        <script type="text/template" id="qq-template1">
+                            <div class="qq-uploader-selector qq-uploader qq-gallery" qq-drop-area-text="Drop files here">
+
+                                <div class="qq-upload-button-selector qq-upload-button" id="Uploadbtn1">
+                                    <div><i class="fa fa-upload"></i>&nbsp;&nbsp;Upload files</div>
+                                </div> @*<span style="color:red">(only .xls files)</span>*@
+                                <ul class="qq-upload-list-selector qq-upload-list" role="region" aria-live="polite" aria-relevant="additions removals">
+                                    <li style="list-style-type:none;"></li>
+                                </ul>
+                            </div>
+                        </script>
+                        <div id="fine-uploader-gallery"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                @*<button type="button" onclick="close()" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="updateSave" onclick="updateSave()" type="button" class="btn btn-primary">Save changes</button>*@
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+    var Employee_ID = 0;
+    var CurrSection;
+    var tempSubmittedOn = false;
+    var tempApprovedOn = false;
+    var tempSubmittedDate = '';
+    var tempApprovedDate = '';
+    var PreviousTr;
+    var PreviousTd;
+    var CurrYear = [];
+    var finYearStatus = false;
+    var itFormTableDetails;
+    var tempHomeRentDetail;
+    var SectionDetails = [];
+    var DescriptionDetails = [];
+    var addCount = 0;
+    var HouseRentDetails = [];
+    var HouseLoanDetails = [];
+    var TotalRentAmountDetails = [];
+    var employeeDetails = [];
+    var SummaryDetails = [];
+    var otherSourceIncomeDetails = [];
+    var ITDetails = [];
+    var ITDetailsSplit = [];
+    var ITLiablityDetails = [];
+    var HourseRentRowID = 0;
+    var HomeLoanRowID = 0;
+    var homeRentTableDetails;
+    var ITLiablityTableDetails;
+    var homeloan_pplPaid_maxlimit = 0;
+    var homerentMaxlimit = 0;
+    var homeloan_IntPaid_maxlimit = 0;
+    var OtherIncomeRowID = 0;
+    var ITLiablity = 0;
+    var Balance = 0;
+    var ITDeducted = 0;
+    var ITScheduled = 0;
+    var row_data_def;
+    $(document).ready(function () {
+
+        getEmployeeDetails();
+        getSectionDescriptionDetails();
+        //defineITLiablityTable(null);
+        //defineITLiablityScheduleTable(null);
+
+
+        $("#spnSave").hide();
+        $('.select2cls').select2({ 'width': '100%' });
+
+        $('.datefilter').daterangepicker({
+            autoUpdateInput: false,
+
+            locale: { cancelLabel: 'Clear' },
+
+        }).keydown(function (e) {
+
+            if (e.keyCode == 8 || e.keyCode == 46) {
+                $(this).val('');
+                $('.requirAddcls').trigger('input');
+
+            }
+        });
+        $('.datefilter').val('');
+        $('.datefilter').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+            $('.requirAddcls').trigger('input');
+
+        });
+        $('.datefilter').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+            $('.requirAddcls').trigger('input');
+        });
+
+
+        getFinancialYear();
+
+        $("#ddlFinYear").html('');
+        $("#ddlFinYear").append('<option value="' + 0 + '">' + "----Select Year----" + '</option>');
+        $.each(CurrYear, function (i, val) {
+            $("#ddlFinYear").append('<option value="' + val.Id + '">' + val.Financial_Year + '</option>');
+        });
+
+
+        if ('@ViewBag.DirectITDeclaration' == 'False') {
+            $('.admincls').prop('disabled', true);
+
+            Employee_ID = '@ViewBag.EmpID';
+            $("#ddlFinYear").val(@ViewBag.FinancialYear);
+            $.each(CurrYear, function (i, val) {
+                if (val.Id == $("#ddlFinYear").val()) {
+                    finYearStatus = val.status;
+                    return false;
+                }
+            });
+            $("#ddlFinYear").trigger('change');
+            //   $("#ddlFinYear").attr('disabled', true);
+        }
+        else {
+            $.each(CurrYear, function (i, val) {
+                if (val.status == true) {
+                    finYearStatus = true;
+                    $("#ddlFinYear").val(val.Id);
+                    return false;
+                }
+            });
+            $("#ddlFinYear").trigger('change');
+            //   $("#ddlFinYear").attr('disabled', true);
+        }
+
+        getITLiablity();
+        setITLiablity();
+
+
+        $('.dashboard_nav_active').on('click', function () {
+            $('.tab-pane').removeClass('active');
+            $($(this).attr('href')).addClass('active');
+        });
+
+
+
+        $('#ddlFinYear').on('change', function () {
+            debugger
+            $.each(CurrYear, function (i, val) {
+                if (val.Id == parseInt($('#ddlFinYear').val())) {
+                    finYearStatus = val.status;
+                    return false;
+                }
+            });
+            var Selectedyear = [];
+            var financialYear = $('#ddlFinYear').val();
+            Selectedyear = CurrYear.filter(m => m.Id = financialYear);
+            var lastSubmit = Selectedyear[0].Last_Submission_Date;
+            var curr_date = new Date();
+            if (curr_date > new Date(lastSubmit) || (tempApprovedOn == true)) {
+                finYearStatus = false;
+            }
+            $('.field-validation-valid').text('');
+            $('.field-validation-valid').show();
+            $('.clearcls').val('');
+            $('.validationinputcls').removeClass('requir');
+            if ($('#ddlFinYear').val() == 0 || $('#ddlFinYear').val() == '') {
+                $('.admincls,.disableSubAmtcls ').prop('disabled', false);
+                $('#btnEditSaveHomeRent').prop('hidden', true);
+                $('#btnAddHomeRent,#btnAddHomeLoan,#btnFinalSubmit,#btnAddOtherIncome').show();
+                $('#formSubmitDate').html('');
+            }
+            gethomeRentDetails($(this).val());
+            getHomeLoanDetails($(this).val());
+            getOtherSourceIncomeDetails($(this).val());
+            getSummaryTabDetails($(this).val());
+            getITLiablity();
+            $('#homeRentTableDiv').prop('hidden', false);
+        });
+
+
+
+        $('.otherInputcls').on('input', function () {
+            $('.field-validation-valid').text('');
+            $('.field-validation-valid').show();
+            var sum = 0;
+            var count = 0;
+            for (var i = 0; i < $('.otherInputcls').length; i++) {
+                sum = sum + parseFloat(($('.otherInputcls')[i].value) == '' ? 0 : $('.otherInputcls')[i].value);
+                if ($('.otherInputcls')[i].value != '') {
+                    count++;
+                }
+            }
+            $('#OtherTotalAmt').val(sum);
+            //if (count > 0) {
+            //    $('.otherInputcls').addClass('requir');
+            //}
+            //else {
+            //    $('.otherInputcls').removeClass('requir');
+            //}
+        });
+
+        $('.requirAddcls').on('input', function () {
+            $('.field-validation-valid').text('');
+            $('.field-validation-valid').show();
+            var count = 0;
+            for (var i = 0; i < $('.requirAddcls:visible').length; i++) {
+                if ($('.requirAddcls:visible')[i].value != '') {
+                    count++;
+                }
+                if ($('.requirAddcls:visible')[i].id == 'HRA_ActualAmt' && homerentMaxlimit != 0) {
+
+                    if ($('.requirAddcls:visible')[i].value > homerentMaxlimit) {
+                        $('#HRA_ActualAmt').val(homerentMaxlimit);
+                        toastr.warning('Exceeds Maximum Limit - ₹' + homerentMaxlimit.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,"));
+                    }
+                }
+            }
+            if (count > 0) {
+                $('.requirAddcls:visible').addClass('requir');
+            }
+            else {
+                $('.requirAddcls:visible').removeClass('requir');
+            }
+        });
+
+        InitializeUpload("fine-uploader-gallery");
+        InitializeUploadnomodal("fine-uploader-galler", "home-rent-allowance");
+
+        $('.btnUploadCls').on('click', function () {
+
+            var Selectedyear = []
+            var financialYear = $('#ddlFinYear').val();
+            Selectedyear = CurrYear.filter(m => m.Id = financialYear);
+            var lastSubmit = Selectedyear[0].Last_Submission_Date;
+            var curr_date = new Date();
+            if (curr_date > new Date(lastSubmit) || (tempApprovedOn == true)) {
+                toastr.warning("Oops! – Date of submission lapsed or already processed ");
+                return false;
+            }
+        });
+
+
+    });
+
+    function EditITLiablity() {
+        $("#spnSave").show();
+        $("#spnEdit").hide();
+        $("#txtITLiablity").removeAttr("disabled");
+    }
+
+    function SaveITLiablity() {
+        $("#spnSave").hide();
+        $("#spnEdit").show();
+        $("#txtITLiablity").attr("disabled", true);
+        ITLiablity = $("#txtITLiablity").val();
+        setITLiablity();
+    }
+
+    function ProrateITDedutions(currelement) {
+        debugger
+        if (ITDetails.filter(d => d.FLAG == 2)[0].DEDUCTION_SCHEDULED != $("#txtITLiablity").val()) {
+            if (ITLiablityDetails.filter(d => d.FLAG == 2).length > 0) {
+                $.each(ITLiablityDetails.filter(d => d.FLAG == 2), function (i, val) {
+                    if (ITDetailsSplit.filter(d => d.FLAG == 2).length > 0) {
+                        ITDetailsSplit.filter(d => d.MONTH_NAME == val.MONTH_NAME)[0].DEDUCTED_AMOUNT = val.DEDUCTED_AMOUNT;
+                    }
+                });
+            }
+
+            if (currelement.checked) {
+                var deduction = 0;
+                var current_Balance = parseFloat(ITLiablity).toFixed(2) - ITDeducted;
+                var months = ITDetailsSplit.filter(d => d.FLAG == 2).length;
+                var splitbalance = months != 0 ? current_Balance / months : current_Balance;
+                $(".inputschedulecls").val(splitbalance.toFixed(2));
+                if (ITDetailsSplit.filter(d => d.FLAG == 2).length > 0) {
+                    $.each(ITDetailsSplit.filter(d => d.FLAG == 2), function (i, val) {
+                        val.DEDUCTED_AMOUNT = parseFloat(val.DEDUCTED_AMOUNT) + parseFloat(splitbalance);
+                        deduction = (parseFloat(deduction) + parseFloat(val.DEDUCTED_AMOUNT)).toFixed(2);
+                    });
+                }
+                ITDetails.filter(d => d.FLAG == 2)[0].DEDUCTION_SCHEDULED = deduction;
+            }
+            else {
+                //var current_Balance = 0;
+                var deduction = 0;
+                $(".inputschedulecls").val(current_Balance);
+                if (ITDetailsSplit.filter(d => d.FLAG == 2).length > 0) {
+                    $.each(ITDetailsSplit.filter(d => d.FLAG == 2), function (i, val) {
+                        //val.DEDUCTED_AMOUNT = current_Balance.toFixed(2);
+                        deduction = deduction + parseFloat(val.DEDUCTED_AMOUNT)
+                    });
+                }
+                ITDetails.filter(d => d.FLAG == 2)[0].DEDUCTION_SCHEDULED = deduction;
+                $("#txtITBalance").val(0);
+            }
+
+            defineITLiablityTable(ITDetails);
+            setITLiablityNew(ITDetails);
+        }
+        
+    }
+
+    function validationinputclsFn() {
+        $('.field-validation-valid').text('');
+        $('.field-validation-valid').show();
+        for (var i = 0; i < $('.validationinputcls:visible').length; i++) {
+            if ($('#' + $('.validationinputcls:visible')[i].id).val() == '') {
+                $('#' + $('.validationinputcls:visible')[i].id).addClass('requir');
+                $('<span class="field-validation-valid col-lg-8 text-right">' + ' This field is required...!</span>').css('color', 'red').insertAfter('#' + $('.validationinputcls:visible')[i].id);
+            }
+        }
+        if ($('#HouseLoanlenderPAN').val() != '') {
+            var regex = /([A-Z]){5}([0-9]){4}([A-Z]){1}$/;
+            if (!regex.test($('.panValidationcls:visible').val().toUpperCase())) {
+                $('<span class="field-validation-valid col-lg-8 text-right">' + 'Invalid PAN Number...!' + '</span>').css('color', 'red').insertAfter('#' + $('.panValidationcls:visible')[0].id);
+
+            }
+        }
+
+    }
+
+    function getOtherSourceIncomeDetails(data) {
+        $.ajax({
+            type: 'get',
+            async: false,
+            url: '@Url.Content("~/ITDeclaration/getOtherSourceIncomeDetails")',
+            data: { year: data, Employee_ID: Employee_ID },
+            success: function (data) {
+                if (data.success) {
+                    otherSourceIncomeDetails = JSON.parse(data.result1);
+                    if (otherSourceIncomeDetails != null) {
+                        if (otherSourceIncomeDetails.length != 0) {
+                            OtherIncomeRowID = (otherSourceIncomeDetails[0].ID) == null ? 0 : otherSourceIncomeDetails[0].ID;
+                            $('#incomeotherSource').val(otherSourceIncomeDetails[0].Income_Amount);
+                            $('#SavingsInterest').val(otherSourceIncomeDetails[0].INTEREST_EARNED_FROM_SAVINGS_DEPOSIT);
+                            $('#FixedInterest').val(otherSourceIncomeDetails[0].INTEREST_EARNED_FROM_FIXED_DEPOSIT);
+                            $('.otherInputcls').trigger('input');
+                        }
+                    }
+                   
+                }
+            }
+        });
+    }
+
+    function goBackTab() {
+
+        var ref_this = $("ul.getactivetab li a.active");
+
+        $("ul.getactivetab li a.active").removeClass("active");
+        $("div.tab-content div.active").removeClass("active");
+        if (ref_this.data("id") == 2) {
+            $("ul.getactivetab li a.HouseRentDetailsLink").addClass("active");
+            $("div.tab-content div.Content_HouseRent").addClass("active");
+        } else if (ref_this.data("id") == 3) {
+            $("ul.getactivetab li a.HomeLoanDetailsLink").addClass("active");
+            $("div.tab-content div.Content_HomeLoan").addClass("active");
+        } else if (ref_this.data("id") == 4) {
+            $("ul.getactivetab li a.itFormTableDetailsLink").addClass("active");
+            $("div.tab-content div.Content_IT_table").addClass("active");
+        }
+        else if (ref_this.data("id") == 5) {
+            $("ul.getactivetab li a.otherIncomeDetailsLink").addClass("active");
+            $("div.tab-content div.Content_otherIncome").addClass("active");
+        }
+    }
+    function nextTabfromHomeLoan() {
+        var financialYear = $('#ddlFinYear').val();
+        if (financialYear == '' || financialYear == 0) {
+            toastr.warning('select financial year');
+            return false;
+        }
+        getSectionDescriptionDetails();
+        $("ul.getactivetab li a.active").removeClass("active");
+        $("div.tab-content div.active").removeClass("active");
+        $("ul.getactivetab li a.itFormTableDetailsLink").addClass("active");
+        $("div.tab-content div.Content_IT_table").addClass("active");
+        itFormTableDetails.$('img#viewDetails80C').trigger('click').draw(false);
+    }
+    function nextTab() {
+        var ref_this = $("ul.getactivetab li a.active");
+
+        $("ul.getactivetab li a.active").removeClass("active");
+        $("div.tab-content div.active").removeClass("active");
+
+        if (ref_this.data("id") == 1) {
+            $("ul.getactivetab li a.HomeLoanDetailsLink").addClass("active");
+            $("div.tab-content div.Content_HomeLoan").addClass("active");
+        } else if (ref_this.data("id") == 2) {
+            $("ul.getactivetab li a.itFormTableDetailsLink").addClass("active");
+            $("div.tab-content div.Content_IT_table").addClass("active");
+        } else if (ref_this.data("id") == 3) {
+            $("ul.getactivetab li a.otherIncomeDetailsLink").addClass("active");
+            $("div.tab-content div.Content_otherIncome").addClass("active");
+        }
+        else if (ref_this.data("id") == 4) {
+            $("ul.getactivetab li a.summaryDetailsLink").addClass("active");
+            $("div.tab-content div.Content_summary").addClass("active");
+        }
+
+    }
+    function getITLiablity() {
+        var fin_year = $('#ddlFinYear').val() == '' || $('#ddlFinYear').val() == null || $('#ddlFinYear').val() == undefined ? 0 : $('#ddlFinYear').val();
+        $.ajax({
+            type: 'get',
+            async: false,
+            url: '@Url.Content("~/ITDeclaration/getITLiablity")',
+            data: { EmployeeID: Employee_ID, FinancialYear: fin_year },
+            success: function (data) {
+                if (data.success) {
+
+                    ITDetails = JSON.parse(data.result1);
+                    ITDetailsSplit = JSON.parse(data.result);
+                    ITLiablityDetails = JSON.parse(data.result);
+                    defineITLiablityTable(ITDetails);
+                    setITLiablityNew(ITDetails);
+                }
+            }
+        });
+    }
+
+    function setITLiablityNew(itDetails) {
+        debugger
+        ITLiablity = 0;
+        $.each(itDetails, function (i, val) {
+            ITLiablity = ITLiablity + (val.DEDUCTION_SCHEDULED == "" || val.DEDUCTION_SCHEDULED == null || val.DEDUCTION_SCHEDULED == undefined ? 0.00 : val.DEDUCTION_SCHEDULED);
+        });
+        $("#txtITLiablity").val(Math.round(parseFloat(ITLiablity).toFixed(2)));
+    }
+
+    function setITLiablity() {
+        debugger
+        if ($("#txtITLiablity").val() == 0 || $("#txtITLiablity").val() == '' || $("#txtITLiablity").val() == null || $("#txtITLiablity").val() == undefined) {
+            $.each(ITDetails, function (i, val) {
+                ITLiablity = ITLiablity + (val.DEDUCTION_SCHEDULED == "" || val.DEDUCTION_SCHEDULED == null || val.DEDUCTION_SCHEDULED == undefined ? 0.00 : val.DEDUCTION_SCHEDULED);
+            });
+            $("#txtITLiablity").val(Math.round(parseFloat(ITLiablity).toFixed(2)));
+        }
+
+
+        var Split1 = [];
+        var Split2 = [];
+        Split1 = ITDetailsSplit != null ? ITDetailsSplit.filter(m => m.FLAG == 1) : [];
+        Split2 = ITDetailsSplit != null ? ITDetailsSplit.filter(m => m.FLAG == 2) : [];
+        if (Split1.length > 0) {
+            ITScheduled = 0;
+            $.each(Split1, function (i, val) {
+                ITScheduled = ITScheduled + parseFloat((val.DEDUCTED_AMOUNT == "" || val.DEDUCTED_AMOUNT == null || val.DEDUCTED_AMOUNT == undefined) ? 0.00 : val.DEDUCTED_AMOUNT);
+            });
+        }
+
+        if (Split2.length > 0) {
+            ITDeducted = 0;
+            $.each(Split2, function (i, val) {
+                ITDeducted = ITDeducted + parseFloat((val.DEDUCTED_AMOUNT == "" || val.DEDUCTED_AMOUNT == null || val.DEDUCTED_AMOUNT == undefined) ? 0.00 : val.DEDUCTED_AMOUNT);
+            });
+        }
+
+        Balance = parseFloat(ITLiablity) - (parseFloat(ITScheduled) + parseFloat(ITDeducted));
+        $("#txtITBalance").val(Balance.toFixed(2));
+    }
+
+    function getEmployeeDetails() {
+        $.ajax({
+            type: 'get',
+            async: false,
+            url: '@Url.Content("~/ITDeclaration/getEmployeeDetails")',
+            data: { Employee_ID: Employee_ID },
+            success: function (data) {
+                debugger
+                if (data.success) {
+                    employeeDetails = JSON.parse(data.result1);
+                    if (employeeDetails.length != 0) {
+                        var address = (employeeDetails[0].CurrentBuilding_Plot == null ? '' : employeeDetails[0].CurrentBuilding_Plot) + ' ' + (employeeDetails[0].CurrentCity == null ? '' : employeeDetails[0].CurrentCity) + ' ' + (employeeDetails[0].CurrentState == null ? '' : employeeDetails[0].CurrentState) + ' ' + (employeeDetails[0].CurrentPincode == null ? '' : employeeDetails[0].CurrentPincode)
+                        $('#empCode').val(employeeDetails[0].Emp_Code);
+                        $('#empName').val(employeeDetails[0].Emp_Name);
+                        $('#empDept').val(employeeDetails[0].Department);
+                        $('#empDesgn').val(employeeDetails[0].Designation);
+                        $('#empPAN').val(employeeDetails[0].Pancard);
+                        $('#empAddress').val(address);
+                        if ('@ViewBag.DirectITDeclaration' == 'True') {
+                            Employee_ID = employeeDetails[0].id;
+                        }
+                    }
+                }
+            }
+        });
+    }
+    function addOtherSourceIncomeDetails() {
+        var financialYear = $('#ddlFinYear').val();
+        if (financialYear == '' || financialYear == 0) {
+            toastr.warning('select financial year');
+            return false;
+        }
+        if ('@ViewBag.DirectITDeclaration' == 'True') {
+            validationinputclsFn();
+        }
+        if ($('.field-validation-valid').text() != '') {
+            return false;
+        }
+        $.ajax({
+            type: 'post',
+            url: '@Url.Content("~/ITDeclaration/addOtherSourceIncomeDetails")',
+            data: { Id: OtherIncomeRowID, financialYear: financialYear, incomeOtherSource: $('#incomeotherSource').val(), savingsInterst: $('#SavingsInterest').val(), fixedInterest: $('#FixedInterest').val(), Employee_ID: Employee_ID },
+            success: function (data) {
+
+                if (data.result == 1) {
+                    toastr.success('Successfully Saved');
+
+                }
+            }
+        });
+    }
+    function getFinancialYear() {
+        $.ajax({
+            type: 'get',
+            url: '@Url.Content("~/ITDeclaration/getFinancialYear")',
+            async: false,
+            success: function (data) {
+                if (data.success) {
+                    CurrYear = JSON.parse(data.result);
+                }
+            }
+        });
+    }
+
+    function defineITLiablityTable(data) {
+        if ($.fn.DataTable.isDataTable('#IT_DeductionFormTable')) {
+            $('#IT_DeductionFormTable').dataTable().fnDestroy();
+        }
+        ITLiablityTableDetails = $('#IT_DeductionFormTable').DataTable({
+            "ordering": true,
+            "searching": false,
+            "bLengthChange": false,
+            "info": false,
+            "bPaginate": false,
+            'data': data
+    ,
+            "aoColumns":
+                [
+             { "mData": "FLAG", "sTitle": "Type", "sWidth": "20%", "sClass": "text-left", "defaultContent": "0.00" }//0
+             , { "mData": "DEDUCTION_SCHEDULED", "sTitle": "Amount(Rs.)", "sWidth": "20%", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//1
+            , { "mData": "FLAG", "sTitle": "View", "sWidth": "5%", "sClass": "text-center", "defaultContent": "<i class='fa fa-view'></i>" }//2
+
+                ],
+            "aoColumnDefs": [
+                 {
+                     "aTargets": [0],
+                     "mRender": function (data, type, row) {
+                         if (data == 1) {
+                             return "Deducted";
+                         }
+                         else
+                             return "Scheduled";
+                     }
+                },
+                {
+                    "aTargets": [1],
+                    "mRender": function (data, type, row) {
+                        debugger
+                        return Math.round(data);
+                    }
+                },
+               {
+                   "aTargets": [2],
+                   "mRender": function (data, type, row) {
+                       return '<img src="@Url.Content("~/Content/images/chevron-down.png")" onclick="ViewDeductionDetails(this,' + data + ')" style="cursor:pointer;" />'
+                   }
+               }
+            ]
+        });
+    }
+
+    function getHomeLoanDetails(data) {
+
+        $.ajax({
+            type: 'get',
+            async: false,
+            url: '@Url.Content("~/ITDeclaration/getHomeLoanDetails")',
+            data: { year: data, Employee_ID: Employee_ID },
+            success: function (data) {
+                if (data.success) {
+
+
+                    HouseLoanDetails = JSON.parse(data.result1);
+                    if (HouseLoanDetails.length != 0) {
+                        HomeLoanRowID = (HouseLoanDetails[0].ID) == null ? 0 : HouseLoanDetails[0].ID;
+                        $('#principalPaid').val(HouseLoanDetails[0].PRINCIPAL_PAID_ON_LOAN);
+                        $('#interestPaid').val(HouseLoanDetails[0].INTEREST_PAID_ON_LOAN);
+                        $('#nameLender').val(HouseLoanDetails[0].NAME_OF_LENDER);
+                        $('#HouseLoanlenderPAN').val(HouseLoanDetails[0].LENDER_PAN);
+                      //  $('.requirAddcls').trigger('input');
+                    }
+                }
+            }
+        });
+    }
+
+
+
+    function AddHouseLoanDetails() {
+        var financialYear = $('#ddlFinYear').val();
+        if (financialYear == '' || financialYear == 0) {
+            toastr.warning('select financial year');
+            return false;
+        }
+        if ('@ViewBag.DirectITDeclaration' == 'True') {
+            validationinputclsFn();
+        }
+        if ($('.field-validation-valid').text() != '') {
+            return false;
+        }
+        $.ajax({
+            type: 'post',
+            url: '@Url.Content("~/ITDeclaration/AddHouseLoanDetails")',
+            data: { Id: HomeLoanRowID, principalPaid: $('#principalPaid').val(), interestPaid: $('#interestPaid').val(), nameLender: $('#nameLender').val(), lenderPAN: $('#HouseLoanlenderPAN').val(), LoanFinancialYear: financialYear, Employee_ID: Employee_ID },
+            success: function (data) {
+
+                if (data.result == 1) {
+                    toastr.success('Successfully Saved');
+                    getSectionDescriptionDetails();
+
+                }
+            }
+        });
+    }
+
+    function validationHomeRent()
+    {
+        $('.field-validation-valid').text('');
+        $('.field-validation-valid').show();
+        for (var i = 0; i < $('.validationinputcls:visible').length; i++) {
+            if ($('#' + $('.validationinputcls:visible')[i].id).val() == '') {
+                $('#' + $('.validationinputcls:visible')[i].id).addClass('requir');
+                $('<span class="field-validation-valid">' + ' This field is required...!</span>').css('color', 'red').insertAfter('#' + $('.validationinputcls:visible')[i].id);
+            }
+        }
+      // var total=parseFloat(TotalRentAmountDetails[0].Total_Rental) + parseFloat($('#Rentamt').val()) ;
+        if ('@ViewBag.DirectITDeclaration' == 'True' && (tempSubmittedOn == false)) {
+            if (parseFloat($('#Rentamt').val()) >= 100000 && $('#landlordPAN').val() == '') {
+                $('#landlordPAN').addClass('requir');
+                $(".landlordInfo").tooltip('show');
+            }
+            else
+            {
+                $('#landlordPAN').removeClass('requir');
+                $(".landlordInfo").tooltip('hide');
+            }
+        }
+
+
+
+
+    }
+
+    function AddHomeRentDetails() {
+        if ('@ViewBag.DirectITDeclaration' == 'True') {
+            validationHomeRent();
+        }
+        var StartDate = $('input[name="datefilter"]').val().split("-")[0];
+        var EndDate = $('input[name="datefilter"]').val().split("-")[1];
+
+        var financialYear = $('#ddlFinYear').val();
+        //Selectedyear = CurrYear.filter(m => m.Id = financialYear);
+
+        //var StartDate = Selectedyear[0].Financial_Year.split("-")[0];
+       // var EndDate = Selectedyear[0].Financial_Year.split("-")[1];
+
+        if (financialYear == '' || financialYear == 0) {
+            toastr.warning('select financial year');
+            return false;
+        }
+        if ($('#landlordPAN').hasClass('requir')) {
+            return false;
+        }
+
+        if ($('#HRA_ActualAmt').val() == '' && '@ViewBag.DirectITDeclaration' == 'False') {
+            toastr.warning("please enter the actual amount");
+            return false;
+        }
+        if ($('#landlordPAN').val() != '') {
+
+            var regex = /([A-Z]){5}([0-9]){4}([A-Z]){1}$/;
+            if (!regex.test($('.panValidationcls:visible').val().toUpperCase())) {
+                $('<span class="field-validation-valid">' + 'Invalid PAN Number...!' + '</span>').css('color', 'red').insertAfter('#' + $('.panValidationcls:visible')[0].id);
+
+            }
+            for (var i = 0; i < HouseRentDetails.length; i++) {
+                if ($('#landlordPAN').val() == HouseRentDetails[i].Land_Lord_Pan && $('#address').val() == HouseRentDetails[i].RENT_ADDRESS && $('#txtname').val() == HouseRentDetails[i].Land_Lord_Name && HourseRentRowID == 0) {
+                    toastr.warning("Landlord details already exists");
+                    return false;
+                }
+            }
+        }
+
+        if ($('.field-validation-valid').text() != '') {
+            return false;
+        }
+        if (StartDate != '') {
+            var check1 = StartDate.split("/");
+            var check2 = EndDate.split("/");
+            for (var i = 0; i < HouseRentDetails.length; i++) {
+                var d1 = dateRangeValueFormat(HouseRentDetails[i].Rented_From).split("/");
+                var d2 = dateRangeValueFormat(HouseRentDetails[i].Rented_To).split("/");
+                if (((parseInt(check1[0])) >= (parseInt(d1[0]))) && ((parseInt(check1[0])) <= (parseInt(d2[0]))) && HourseRentRowID == 0) {
+                    toastr.warning("Rental period month already exists");
+                    return false;
+                }
+                if (((parseInt(check2[0])) >= (parseInt(d1[0]))) && ((parseInt(check2[0])) <= (parseInt(d2[0]))) && HourseRentRowID == 0) {
+                    toastr.warning("Rental period overlapping");
+                    return false;
+                }
+            }
+        }
+        $.ajax({
+            type: 'post',
+            url: '@Url.Content("~/ITDeclaration/AddHomeRentDetails")',
+            data: { Id: HourseRentRowID, year: $('#ddlFinYear').val(), fromdate: StartDate, todate: EndDate, PAN: $('#landlordPAN').val(), address: $('#address').val(), amount: parseFloat($('#Rentamt').val().replace(/,/g, '')), Name: $("#txtname").val(), Employee_ID: Employee_ID, HRA_ActualAmt: ($('#HRA_ActualAmt').val()) == '' ? 0 : $('#HRA_ActualAmt').val() },
+            success: function (data) {
+
+                if (data.result == 1) {
+                    $('#landlordPAN').removeClass('requir');
+                    $(".landlordInfo").tooltip('hide');
+                    if (HourseRentRowID == 0) {
+                        toastr.success('Successfully Added');
+                    }
+                    else {
+                        toastr.success('Successfully Saved');
+                    }
+                    $('#btnEditSaveHomeRent').prop('hidden', true);
+                    $('#btnAddHomeRent').show();
+                    $('#HRA_ActualAmt').attr('disabled', true);
+                    HourseRentRowID = 0;
+                    $('.clearcls:visible').val('');
+                    gethomeRentDetails(financialYear);
+
+
+                }
+            }
+        });
+    }
+
+    function gethomeRentDetails(data) {
+        $.ajax({
+            type: 'get',
+            async:false,
+            url: '@Url.Content("~/ITDeclaration/gethomeRentDetails")',
+            data: { year: data, Employee_ID: Employee_ID },
+            success: function (data) {
+                if (data.success) {
+                    getSectionDescriptionDetails();
+                    TotalRentAmountDetails = JSON.parse(data.result2);
+                    HouseRentDetails = JSON.parse(data.result1);
+                    homeRentTableCall(HouseRentDetails);
+                    if (($('#ddlFinYear').val() != 0 && $('#ddlFinYear').val() != '') || finYearStatus == false) {
+                        finalSubmitValidation();
+                    }
+                }
+            }
+        });
+    }
+    function dateRangeValueFormat(date) {
+        var d = new Date(date);
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                        "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var val = (d.getMonth() + 1) + "/" + d.getDate() + "/" + d.getFullYear();
+        return val;
+    }
+
+    function dateValueFormat(date) {
+        var d = new Date(date);
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                        "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var val = d.getDate() + "-" + months[d.getMonth()] + "-" + d.getFullYear();
+        return val;
+    }
+    function homeRentTableCall(data) {
+        if ($.fn.DataTable.isDataTable('#homeRentTable')) {
+            $('#homeRentTable').dataTable().fnDestroy();
+        }
+        homeRentTableDetails = $('#homeRentTable').DataTable({
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "iDisplayLength": 5,
+            "bFilter": true,
+            // 'scrollX': true,
+            'data': data
+    ,
+            "aoColumns":
+        [
+          { "mData": "Rented_From", "sTitle": "Rental FromDate", "sType": "date", "sWidth": "20%", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//0
+         , { "mData": "Rented_To", "sTitle": "Rental ToDate", "sType": "date", "sClass": "text-center", "sWidth": "20%", "defaultContent": "<i>Not set</i>" }//1
+         , { "mData": "Financial_Year", "sTitle": "Financial Year", "sWidth": "15%", "bVisible": false, "sClass": "text-center", "defaultContent": "<i>Not set</i>" }//2
+          , { "mData": "Land_Lord_Name", "sTitle": "Landlord Name", "sWidth": "15%", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//3
+         , { "mData": "Land_Lord_Pan", "sTitle": "Landlord's PAN", "sWidth": "15%", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//4
+         , { "mData": "RENT_ADDRESS", "sTitle": "Address", "sClass": "text-center", "sWidth": "15%", "defaultContent": "<i>Not set</i>" }//5
+         , { "data": "Rental_Amount", "sTitle": "Rental Amount(₹)", "sClass": "text-right", "sWidth": "15%", "defaultContent": "<i>Not set</i>" }//6
+         , { "data": "Actual_amount", "sTitle": "Actual Amount(₹)", "sClass": "text-right", "sWidth": "15%", "defaultContent": "<i>Not set</i>" }//7
+          , { "mData": "Id", "sTitle": "Edit", "sWidth": "5%", "sClass": "text-center", "defaultContent": "<i class='fa fa-edit'></i>" }//8
+          , { "mData": "Id", "sTitle": "View Document", "sWidth": "5%", "sClass": "text-center", "defaultContent": "<i class='fa fa-eyw'></i>" }//9
+        ],
+            "aoColumnDefs": [
+               {
+                   "aTargets": [0, 1],
+                   "mRender": function (data, type, row) {
+                       if (data == null || data == '') {
+                           return '-';
+                       }
+                       else {
+                           return dateValueFormat(data);
+                       }
+                   }
+               }
+               ,
+        {
+            "aTargets": [6],
+            "mRender": function (data, type, row) {
+                //return parseFloat(data.replace(/,/g, ''));
+                return data.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
+            }
+        }
+           ,
+                  {
+                      "aTargets": [7],
+                      "mRender": function (data, type, row) {
+                          if (data == null) {
+                              return '0';
+                          }
+                          else {
+                              return data;
+                          }
+                      }
+                  }
+                  ,
+                  {
+                      "aTargets": [8],
+                      "mRender": function (data, type, row) {
+                          return '<i onclick="editHomeRentCall(this)" class="fa fa-edit"></i>';
+                      }
+                  }
+            ],
+            "footerCallback": function (row, data, start, end, display) {
+                var api = this.api(), data;
+
+                // Remove the formatting to get integer data for summation
+                var intVal = function (i) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,]/g, '') * 1 :
+                        typeof i === 'number' ?
+                        i : 0;
+                };
+
+                declaredTotal = api
+                .column(6)
+                .data()
+                .reduce(function (a, b) {
+                    return parseFloat(intVal(a) + intVal(b)).toFixed(2);
+                }, 0);
+
+                $('#declaredtotal').text(declaredTotal.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,"));
+
+                actualTotal = api
+               .column(7)
+               .data()
+               .reduce(function (a, b) {
+                   return parseFloat(intVal(a) + intVal(b)).toFixed(2);
+               }, 0);
+
+                $('#actualtotal').text(actualTotal.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,"));
+            }
+        });
+    }
+    function getSummaryTabDetails(data) {
+        $.ajax({
+            type: 'get',
+            url: '@Url.Content("~/ITDeclaration/getSummaryTabDetails")',
+            data: { year: data },
+            success: function (data) {
+                if (data.success) {
+                    SummaryDetails = JSON.parse(data.result1);
+                    if (SummaryDetails.length != 0) {
+                        $('#summTotalHRA').val(SummaryDetails[0].Total_Rental);
+                        $('#summPrincipalPaid').val(SummaryDetails[0].PRINCIPAL_PAID_ON_LOAN);
+                        $('#summInterestPaid').val(SummaryDetails[0].INTEREST_PAID_ON_LOAN);
+                        $('#summTotalSubmitted').val(SummaryDetails[0].Submitted_amount);
+                        $('#summTotalActual').val(SummaryDetails[0].Approved_Amount);
+                    }
+
+
+                }
+            }
+        });
+    }
+
+    function editHomeRentCall(thisval) {
+
+        $('#btnEditSaveHomeRent').prop('hidden', false);
+        $('#btnAddHomeRent').hide();
+
+        if ('@ViewBag.DirectITDeclaration' == 'True') {
+            $('#HRA_ActualAmt').prop('disabled', true);
+        }
+        else {
+            $('#HRA_ActualAmt').prop('disabled', false);
+        }
+
+        rowData = $('#homeRentTable').DataTable().row(thisval.closest('tr')).data();
+        HourseRentRowID = rowData.Id;
+        $('#landlordPAN').val(rowData.Land_Lord_Pan);
+        $('#txtname').val(rowData.Land_Lord_Name);
+        $('#address').val(rowData.RENT_ADDRESS);
+        $('#Rentamt').val(rowData.Rental_Amount);
+        $('#daterangefilter').daterangepicker({ startDate: dateRangeValueFormat(rowData.Rented_From), endDate: dateRangeValueFormat(rowData.Rented_To) });
+    }
+
+
+
+    function getSectionDescriptionDetails() {
+        $.ajax({
+            type: 'get',
+            url: '@Url.Content("~/ITDeclaration/getSectionDescriptionDetails")',
+            data: { year: ($('#ddlFinYear').val()) == '' ? 0 : $('#ddlFinYear').val() },
+            success: function (data) {
+                if (data.success) {
+
+                    SectionDetails = JSON.parse(data.result1);
+                    DescriptionDetails = JSON.parse(data.result2);
+                    //  declarationTableCall(financialYearDetails);
+                    formTableCall(SectionDetails);
+                    for (var i = 0; i < SectionDetails.length; i++) {
+                        if (SectionDetails[i].SECTION == '80C' && SectionDetails[i].MAX_LIMIT != null && SectionDetails[i].MAX_LIMIT != '') {
+                            homeloan_pplPaid_maxlimit = SectionDetails[i].MAX_LIMIT;
+                        }
+                        if (SectionDetails[i].SECTION == '80GG' && SectionDetails[i].MAX_LIMIT != null && SectionDetails[i].MAX_LIMIT != '') {
+                            homerentMaxlimit = SectionDetails[i].MAX_LIMIT;
+                        }
+                        if (SectionDetails[i].SECTION == '80EE' && SectionDetails[i].MAX_LIMIT != null && SectionDetails[i].MAX_LIMIT != '') {
+                            homeloan_IntPaid_maxlimit = SectionDetails[i].MAX_LIMIT;
+                        }
+                        if (SectionDetails[i].Submitted_on != '' && SectionDetails[i].Submitted_on != null) {
+                            tempSubmittedOn = true;
+                            tempSubmittedDate = SectionDetails[i].Submitted_on;
+                        }
+                        if (SectionDetails[i].Approved_On != '' && SectionDetails[i].Approved_On != null) {
+                            tempApprovedOn = true;
+                            tempApprovedDate = SectionDetails[i].Approved_On;
+                        }
+
+                    }
+                    for (var i = 0; i < DescriptionDetails.length; i++) {
+                        if (DescriptionDetails[i].Submitted_on != '' && DescriptionDetails[i].Submitted_on != null) {
+                            tempSubmittedOn = true;
+                            tempSubmittedDate = DescriptionDetails[i].Submitted_on;
+                        }
+                        if (DescriptionDetails[i].Approved_On != '' && DescriptionDetails[i].Approved_On != null) {
+                            tempApprovedOn = true;
+                            tempApprovedDate = DescriptionDetails[i].Approved_On;
+                        }
+                    }
+
+
+                }
+            }
+        });
+    }
+    //function dateValueFormat(date) {
+    //    var d = new Date(date);
+    //   // var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+    //            //        "Aug", "Sep", "Oct", "Nov", "Dec"];
+    //    var val = d.getMonth() +"/"+ d.getDate() + "/" + d.getFullYear();
+    function finalSubmitValidation() {
+
+        var Selectedyear = []
+        var financialYear = $('#ddlFinYear').val();
+        Selectedyear = CurrYear.filter(m => m.Id = financialYear);
+        var lastSubmit = Selectedyear[0].Last_Submission_Date;
+        var curr_date = new Date();
+
+
+
+        if ((tempSubmittedOn == true || tempApprovedOn==true) && '@ViewBag.DirectITDeclaration' == 'True') {
+            $('.admincls,.disableSubAmtcls ').prop('disabled', true);
+            $('#btnAddHomeRent,#btnAddHomeLoan,#btnFinalSubmit,#btnAddOtherIncome').hide();
+            homeRentTableDetails.column(8).visible(false);    // column-8 -> edit
+            itFormTableDetails.column(5).visible(false);      // column-5 -> submit
+        }
+
+        if (('@ViewBag.DirectITDeclaration' == 'True') && (tempSubmittedOn == false) && (lastSubmit != undefined && lastSubmit != null && lastSubmit != '') && financialYear != 0) {
+            $('#formSubmitDate').html('Last date of submission: ' + '<span>' + dateValueFormat(lastSubmit) + '</span>');
+        }
+        if (curr_date > new Date(lastSubmit) && financialYear != 0) {
+            $('#formSubmitDate').html('Submmission period closed').css({ 'font-size': '16px', 'font-weight': 'bold' });
+        }
+        if ((tempSubmittedOn == true || tempApprovedOn == true) && financialYear != 0) {
+            $('#formSubmitDate').html('Submmitted on: ' + '<span >' + dateValueFormat(tempSubmittedDate) + '</span>');
+        }
+
+        if ((tempApprovedOn == true && '@ViewBag.DirectITDeclaration' == 'False')) {
+            $('.admincls,.disableActualAmtcls ').prop('disabled', true);
+            $('#btnAddHomeRent,#btnAddHomeLoan,#btnFinalSubmit,#btnAddOtherIncome').hide();
+            homeRentTableDetails.column(8).visible(false);    // column-8 -> edit
+            itFormTableDetails.column(5).visible(false);      // column-5 -> submit
+
+        }
+        if (((tempSubmittedOn == true || tempApprovedOn == true)) && '@ViewBag.DirectITDeclaration' == 'False') {
+            $('.btnadminbeforeapprovecls').hide();
+        }
+        if (finYearStatus == false) {
+            $('.admincls,.disableActualAmtcls ').prop('disabled', true);
+            $('#btnAddHomeRent,#btnAddHomeLoan,#btnFinalSubmit,#btnAddOtherIncome').hide();
+            homeRentTableDetails.column(8).visible(false);    // column-8 -> edit
+            itFormTableDetails.column(5).visible(false);      // column-5 -> submit
+        }
+
+
+    }
+    //    return val;
+    //}
+    function formTableCall(data) {
+        if ($.fn.DataTable.isDataTable('#itFormTable')) {
+            $('#itFormTable').dataTable().fnDestroy();
+        }
+        itFormTableDetails = $('#itFormTable').DataTable({
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "iDisplayLength": 5,
+            "bFilter": true,
+            // 'scrollX': true,
+            'data': data
+    ,
+            "aoColumns":
+        [
+           { "mData": "SECTION", "sTitle": "Section", "sWidth": "15%", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//0
+         , { "mData": "DESCRIPTION", "sTitle": "Description", "sWidth": "20%", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//1
+         , { "mData": "NOTES", "sTitle": "Notes", "sClass": "text-center", "sWidth": "5%", "defaultContent": "<i>Not set</i>" }//2
+         , { "mData": "MAX_LIMIT", "sTitle": "Maximum Limit(₹)", "sClass": "text-right", "sWidth": "15%", "defaultContent": "<i>Not set</i>" }//3
+         , { "data": "SECTION", "sTitle": "View", "sClass": "text-center", "sWidth": "15%", "defaultContent": "<i>Not set</i>" }//4
+         , { "mData": "SECTION", "sTitle": "Submit", "sWidth": "15%", "sClass": "text-center", "defaultContent": "<i>Not set</i>" }//5
+         , { "mData": "Submitted_amount", "sTitle": "Total Declared Amount(₹)", "sWidth": "15%", "sClass": "text-right", "defaultContent": "<i>Not set</i>" }//6
+         , { "mData": "Approved_Amount", "sTitle": "Total Actual Amount(₹)", "sWidth": "15%", "sClass": "text-right", "defaultContent": "<i>Not set</i>" }//7
+                      , { "mData": null, "sTitle": "Upload files", "sWidth": "15%", "sClass": "text-center", "bVisible": false, "defaultContent": "<i>Not set</i>" }//8
+                      , { "mData": "Id", "sTitle": "id", "sWidth": "15%", "sClass": "text-center", "bVisible": false, "defaultContent": "<i>Not set</i>" }
+
+        ],
+            'aoColumnDefs':
+              [
+                  {
+                      "aTargets": [2],
+                      "mRender": function (data, type, row) {
+                          if (data == null || data == '') {
+                              data = 'none';
+                              return '<i class="fa fa-info-circle"  title="' + data + '" onmouseover="setTooltip()"></i>';
+                          }
+                          else {
+                              return '<i class="fa fa-info-circle"  title="' + data + '" onmouseover="setTooltip()"></i>';
+                          }
+                      }
+                  }
+                  ,
+                  {
+                      "aTargets": [4],
+                      "mRender": function (data, type, row) {
+                          return '<img src="@Url.Content("~/Content/images/chevron-down.png")"  id="viewDetails'+row.SECTION+'"  onclick="ViewSubSectionDetails(this)" style="cursor:pointer;" />'
+                      }
+                  }
+                  ,
+                  {
+                      "aTargets": [5],
+                      "mRender": function (data, type, row) {
+                          return '<span   class="badge" style="background-color:#2d8830ad;" onclick="SubmitSectionAmt(this)">Save</span>'
+                      }
+                  }
+                   ,
+                  {
+                      "aTargets": [6],
+                      "mRender": function (data, type, row) {
+                          if (row.Submitted_amount == null || row.Submitted_amount == '') {
+                              return '<label id="totalDeclaredAmt' + row.SECTION + '" >0</label>';
+                          }
+                          else {
+                              return '<label id="totalDeclaredAmt' + row.SECTION + '" >' + (row.Submitted_amount).toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,") + '</label>';
+                          }
+                      }
+                  }
+                  ,
+              {
+                  "aTargets": [7],
+                  "mRender": function (data, type, row) {
+                      if (row.Approved_Amount == null || row.Approved_Amount == '') {
+                          return '<label id="totalActualAmt' + row.SECTION + '" >0</label>';
+                      }
+                      else {
+                          return '<label id="totalActualAmt' + row.SECTION + '" >' + (row.Approved_Amount).toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,"); + '</label>';
+                      }
+                  }
+              }
+
+                   ,
+                  {
+                      "aTargets": [3],
+                      "mRender": function (data, type, row) {
+                          if (data == 0 || data == null) {
+                              return '-'
+                          }
+                          else {
+                              return data.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
+                          }
+
+
+                      }
+                  }
+              ]
+            ,
+            "footerCallback": function (row, data, start, end, display) {
+                var api = this.api(), data;
+
+                // Remove the formatting to get integer data for summation
+                var intVal = function (i) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,]/g, '') * 1 :
+                        typeof i === 'number' ?
+                        i : 0;
+                };
+
+                declaredTotal = api
+                .column(6)
+                .data()
+                .reduce(function (a, b) {
+                    return parseFloat(intVal(a) + intVal(b)).toFixed(2);
+                }, 0);
+
+                $('#ITdeclaredtotal').text(declaredTotal.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,"));
+
+                actualTotal = api
+               .column(7)
+               .data()
+               .reduce(function (a, b) {
+                   return parseFloat(intVal(a) + intVal(b)).toFixed(2);
+               }, 0);
+
+                $('#ITactualtotal').text(actualTotal.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,"));
+            }
+        });
+
+    }
+
+
+    function ViewSubSectionDetails(CurrentElement) {
+
+        var financialYear = $('#ddlFinYear').val();
+        if (financialYear == '' || financialYear == 0) {
+            toastr.warning('select financial year');
+            return false;
+        }
+
+        rowData = $('#itFormTable').DataTable().row(CurrentElement.closest('tr')).data();
+        CurrSection = rowData.SECTION;
+
+        if (CurrSection == "80GG") {
+            $("ul.getactivetab li a.active").removeClass("active");
+            $("div.tab-content div.active").removeClass("active");
+            $("ul.getactivetab li a.HouseRentDetailsLink").addClass("active");
+            $("div.tab-content div.Content_HouseRent").addClass("active");
+            return false;
+        }
+
+        var nTr = CurrentElement.parentNode.parentNode;
+        if ($("#itFormTable").dataTable().fnIsOpen(PreviousTr) && PreviousTr != nTr) {
+            $("#itFormTable").dataTable().fnClose(PreviousTr);
+            PreviousTd.src = "@Url.Content("~/Content/images/chevron-down.png")";
+        }
+        if ($("#itFormTable").dataTable().fnIsOpen(nTr)) {
+            $("#itFormTable").dataTable().fnClose(nTr);
+            CurrentElement.src = "@Url.Content("~/Content/images/chevron-down.png")";
+        } else {
+            CurrentElement.src = "@Url.Content("~/Content/images/chevron-up.png")";
+            $("#itFormTable").dataTable().fnOpen(nTr, mapDetails(DescriptionDetails), 'details');
+            PreviousTr = nTr;
+            PreviousTd = CurrentElement;
+        }
+
+
+        if ((tempSubmittedOn == true || tempApprovedOn == true) && '@ViewBag.DirectITDeclaration' == 'True') {
+            $('.disableSubAmtcls ').prop('disabled', true);
+        }
+        if (tempApprovedOn == true && '@ViewBag.DirectITDeclaration' == 'False') {
+            $('.disableActualAmtcls ').prop('disabled', true);
+        }
+        if(finYearStatus==false)
+        {
+            $('.disableSubAmtcls ').prop('disabled', true);
+            $('.disableActualAmtcls ').prop('disabled', true);
+        }
+    }
+
+    function ViewDeductionDetails(CurrentElement, flag) {
+        rowData = $('#IT_DeductionFormTable').DataTable().row(CurrentElement.closest('tr')).data();
+        //CurrSection = rowData;
+        var nTr = CurrentElement.parentNode.parentNode;
+        if ($("#IT_DeductionFormTable").dataTable().fnIsOpen(PreviousTr) && PreviousTr != nTr) {
+            $("#IT_DeductionFormTable").dataTable().fnClose(PreviousTr);
+            PreviousTd.src = "@Url.Content("~/Content/images/chevron-down.png")";
+            updateITonChanges(flag);
+        }
+        if ($("#IT_DeductionFormTable").dataTable().fnIsOpen(nTr)) {
+            $("#IT_DeductionFormTable").dataTable().fnClose(nTr);
+            CurrentElement.src = "@Url.Content("~/Content/images/chevron-down.png")";
+            updateITonChanges(flag);
+        } else {
+            CurrentElement.src = "@Url.Content("~/Content/images/chevron-up.png")";
+            $("#IT_DeductionFormTable").dataTable().fnOpen(nTr, mapDeductionDetails(ITDetailsSplit, flag), 'details');
+            PreviousTr = nTr;
+            PreviousTd = CurrentElement;
+            if (row_data_def == '' || row_data_def == null || row_data_def == undefined) {
+                row_data_def = $('#ITSplitDetailsTable').DataTable({
+                    "ordering": true,
+                    "searching": false,
+                    "bLengthChange": false,
+                    "info": false,
+                    "bPaginate": false,
+                });
+            }
+        }
+
+
+
+    }
+    function updateITonChanges(flag) {
+        if (flag == 2) {
+            if (ITDetailsSplit.filter(d => d.FLAG == flag).length > 0) {
+                var deduction = 0;
+                $.each(ITDetailsSplit.filter(d => d.FLAG == flag), function (i, val) {
+                    deduction = deduction + parseFloat(val.DEDUCTED_AMOUNT);
+                });
+                ITDetails.filter(d => d.FLAG == flag)[0].DEDUCTION_SCHEDULED = deduction.toFixed(2);
+                defineITLiablityTable(ITDetails);
+                setITLiablityNew(ITDetails);
+                //setITLiablity
+            }
+        }
+
+    }
+
+    function mapDeductionDetails(data, flag) {
+        debugger
+        data = data.filter(a => a.FLAG == flag);
+        var sOut = '<table class="" style="margin-bottom: 1px!important;;width:100%;" id="ITSplitDetailsTable" border="0">';
+        if (data == null || data == undefined || data.length == 0) {
+            sOut += '<tr><th class="text-center">No data</th></tr>';
+        } else {
+            sOut += '<thead >';
+            sOut += '<tr role="row" >';
+            sOut += '<th style="width:20%" class="text-center">Month</th>';
+            sOut += '<th style="width:20%" class="text-center">Amount(₹)</th>';
+            //if (data == null || data[0].Employee_id != null) {
+            //    sOut += '<th style="width:15%" class="text-center">Unassign</th>';
+            //} else {
+            //    sOut += '<th style="width:15%" class="text-center">Assign</th>';
+            //}
+            sOut += "</tr>";
+            sOut += '</thead>';
+            sOut += '<tbody>';
+            for (var i = 0; i < data.length; i++) {
+                sOut += "<tr>";
+                sOut += '<td style="width:20%" class="text-left"><label class="" id="Deduction' + i + '" >' + data[i].MONTH_NAME + '</label></td>';
+                if (flag == 1)
+                    sOut += '<td style="width:20%" class="text-left">' + data[i].DEDUCTED_AMOUNT + '</td>';
+                else
+                    sOut += '<td style="width:20%" class="text-left"><input type="text" class="inputschedulecls" id="txtscheduledamt' + i + '" value="' + data[i].DEDUCTED_AMOUNT + '" onfocusout="setrowdata(this)" /></td>';
+
+            }
+            sOut += '</tbody>';
+        }
+        sOut += '</table>';
+        return sOut;
+    }
+
+    function LandlordTooltip() {
+        $(".landlordInfo").tooltip({ placement: "top" });
+    }
+
+    function setTooltip() {
+        $(".fa-info-circle").tooltip({ placement: "right" })
+    }
+
+    function mapDetails(data) {
+        var sOut = '<table class="table MTS_Table table-bordered table-condensed table-responsive " style="margin-bottom: 1px!important;;width:100%;" border="0">';
+        if (data == null || data == undefined || data.length == 0) {
+            sOut += '<tr><th class="text-center">No data</th></tr>';
+        } else {
+            sOut += '<thead >';
+            sOut += '<tr role="row" >';
+            sOut += '<th style="width:20%" class="text-center">Sub-Section</th>';
+            sOut += '<th style="width:20%" class="text-center">Description</th>';
+            sOut += '<th style="width:5%" class="text-center">Notes</th>';
+            sOut += '<th style="width:20%" class="text-center">Maximum Limit</th>';
+            sOut += '<th style="width:20%" class="text-center">Declared Amount</th>';
+            sOut += '<th style="width:20%" class="text-center">Actual Amount</th>';
+            sOut += '<th style="width:20%" class="text-center">Proof Upload</th>';
+            sOut += '<th style="width:20%" class="text-center">View proof</th>';
+            //if (data == null || data[0].Employee_id != null) {
+            //    sOut += '<th style="width:15%" class="text-center">Unassign</th>';
+            //} else {
+            //    sOut += '<th style="width:15%" class="text-center">Assign</th>';
+            //}
+            sOut += "</tr>";
+            sOut += '</thead>';
+            sOut += '<tbody>';
+            for (var i = 0; i < data.length; i++) {
+                if (data[i].SECTION == CurrSection) {
+                    sOut += "<tr>";
+                    sOut += '<td style="width:20%" class="text-left"><label class="subSection' + data[i].SECTION + '" id="subSection' + i + '" >' + data[i].SUB_SECTION + '</label></td>';
+                    sOut += '<td style="width:20%" class="text-left">' + data[i].DESCRIPTION + '</td>';
+                    if (data[i].NOTES == null || data[i].NOTES == '') {
+                        var tempData = 'none';
+                        // sOut += '<td style="width:20%" class="text-center">-</td>';
+                        sOut += '<td style="width:5%" class="text-center"><i class="fa fa-info-circle "  title="' + tempData + '" onmouseover="setTooltip()"></i></td>';
+
+                    }
+                    else {
+                        var tempData = data[i].NOTES;
+                        // sOut += '<td style="width:20%" class="text-center">' + data[i].NOTES + '</td>';
+
+                        sOut += '<td style="width:5%" class="text-center"><i class="fa fa-info-circle "  title="' + tempData + '" onmouseover="setTooltip()"></i></td>';
+                    }
+                    if (data[i].MAX_LIMIT == 0 || data[i].MAX_LIMIT == null) {
+                        sOut += '<td style="width:20%" class="text-right">-</td>';
+                    }
+                    else {
+                        sOut += '<td style="width:20%" class="text-right">' + data[i].MAX_LIMIT + '</td>';
+                    }
+                    // if (data[i].Submitted_amount == '' || data[i].Submitted_amount == null) {
+                    if ('@ViewBag.DirectITDeclaration' == 'True') {
+                        sOut += '<td style="width:20%" class="text-right"><input class="subAmt' + data[i].SECTION + '  disableSubAmtcls formatNumbercls" id="subAmt' + i + '" type="number" value="' + data[i].Submitted_amount + '" onchange="validationAmt(' + data[i].MAX_LIMIT + ',event)"  /></td>'
+                    }
+                    else {
+                        sOut += '<td style="width:20%" class="text-right"><input class="subAmt' + data[i].SECTION + ' disableSubAmtcls formatNumbercls" id="subAmt' + i + '" type="number"  value="' + data[i].Submitted_amount + '"  onchange="validationAmt(' + data[i].MAX_LIMIT + ',event)" disabled  /></td>'
+                    }
+                    if ('@ViewBag.DirectITDeclaration' == 'True') {
+                        sOut += '<td style="width:20%" class="text-right"><input  class="ActualAmt' + data[i].SECTION + ' disableActualAmtcls formatNumbercls" id="ActualAmt' + i + '"  value="' + data[i].Approved_Amount + '" onchange="validationAmt(' + data[i].MAX_LIMIT + ',event)" disabled type="number" /></td>';
+                    }
+                    else {
+                        sOut += '<td style="width:20%" class="text-right"><input  class="ActualAmt' + data[i].SECTION + ' disableActualAmtcls formatNumbercls" id="ActualAmt' + i + '"  value="' + data[i].Approved_Amount + '" onchange="validationAmt(' + data[i].MAX_LIMIT + ',event)"  type="number" /></td>';
+                    }
+                    sOut += '<td style="width:20%" class="text-center"><div ><i class="fa fa-upload" onclick="uploadmodalopen(' + data[i].Id + ')"></i></div></td>';
+                    sOut += '<td style="width:20%" class="text-center"><div ><i class="fa fa-eye" onclick="ShowDocuments(' + data[i].Id + ')"></i></div></td>';
+                    sOut += "</tr>";
+
+                    @*if ('@ViewBag.DirectITDeclaration' == 'True') {
+                        $('.disableSubAmtcls').prop('disabled', true);
+                    }
+                    else
+                    {
+                        $('.disableSubAmtcls').prop('disabled', false);
+                     //   $('#disableSubAmtcls').prop('disabled', false);
+                    }*@
+
+                }
+            }
+            sOut += '</tbody>';
+        }
+        sOut += '</table>';
+        return sOut;
+    }
+    function setrowdata(currdata) {
+
+        var rowval = currdata.closest("tr");
+        var row_data = row_data_def.row(rowval).data() != undefined ? row_data_def.row(rowval).data()[0] : rowval.textContent;
+        var selmonth = row_data_def.row(rowval).data() != undefined ? $(row_data).text() : row_data;
+        var x = currdata.value;
+        ITDetailsSplit.filter(a => a.MONTH_NAME == selmonth)[0].DEDUCTED_AMOUNT = parseInt(x);
+        setITLiablity();
+    }
+
+    function SubmitITLiablity() {
+        debugger
+        var FinYear = $('#ddlFinYear').val() == '' ? 0 : $('#ddlFinYear').val();
+        if (FinYear != '0' && ITDetailsSplit != null) {
+            ResultData = ITDetailsSplit.filter(d => d.FLAG == 2)
+
+            bootbox.confirm('Are you sure do you want to Submit your IT-Liablity details?', function (result) {
+                if (result) {
+
+                    $.ajax({
+                        type: 'POST',
+                        dataType: "json",
+                        contentType: "application/json",
+                        url: '@Url.Content("~/ITDEclaration/SubmitITLiablity")',
+                        data: JSON.stringify({ Tabledata: ResultData, EmployeeID: Employee_ID, FinancialYear: FinYear }),
+                        success: function (data) {
+                            if (data.result) {
+                                getITLiablity();
+                                setITLiablity();
+                                //chkProrate
+                                $("#chkProrate").prop("checked", false);
+                                toastr.success('IT Details submitted Successfully');
+                            }
+
+                        }
+                    });
+                }
+            });
+        } else {
+            if (FinYear != '0') {
+                toastr.error('Please Select Financial Year');
+            }
+        }
+    }
+
+    function SubmitSectionAmt(thisval) {
+        var sum1 = 0;
+        var sum2 = 0;
+        var tempsubAmt = 0;
+        var tempActualAmt = 0;
+        var tempActualAmtList = '';
+        var tempsubAmtList = '';
+        var tempSection;
+        var tempSubSectionList = '';
+
+        rowData = $('#itFormTable').DataTable().row(thisval.closest('tr')).data();
+        for (var i = 0; i < $('.subAmt' + rowData.SECTION + '').length; i++) {
+            tempsubAmt = $('#' + $('.subAmt' + rowData.SECTION + '')[i].id).val();
+            if (tempsubAmt == '') {
+                tempsubAmt = 0;
+            }
+            else {
+                tempsubAmt = parseFloat($('#' + $('.subAmt' + rowData.SECTION + '')[i].id).val());
+            }
+            tempActualAmt = $('#' + $('.ActualAmt' + rowData.SECTION + '')[i].id).val();
+            if (tempActualAmt == '') {
+                tempActualAmt = 0;
+            }
+            else {
+                tempActualAmt = parseFloat($('#' + $('.ActualAmt' + rowData.SECTION + '')[i].id).val());
+            }
+            tempSection = rowData.SECTION;
+            tempsubAmtList += tempsubAmt + ',';
+            tempActualAmtList += tempActualAmt + ',';
+            tempSubSectionList += $('#' + $('.subSection' + rowData.SECTION + '')[i].id).text() + ',';
+            if (rowData.MAX_LIMIT != 0) {
+                sum1 = sum1 + tempsubAmt;
+                sum2 = sum2 + tempActualAmt
+            }
+        }
+        if (sum1 > rowData.MAX_LIMIT || sum2 > rowData.MAX_LIMIT) {
+            toastr.warning('Exceeds Maximum Limit');
+            return false;
+        }
+        else {
+            tempsubAmtList = tempsubAmtList.substring(0, tempsubAmtList.length - 1);
+            tempActualAmtList = tempActualAmtList.substring(0, tempActualAmtList.length - 1);
+            tempSubSectionList = tempSubSectionList.substring(0, tempSubSectionList.length - 1);
+
+            $.ajax({
+                type: 'post',
+                url: '@Url.Content("~/ITDeclaration/saveITFormDetails")',
+                data: { emp_IT_id: (rowData.EMP_IT_ID) == null ? 0 : rowData.EMP_IT_ID, tempSection: tempSection, tempSubSectionList: tempSubSectionList, tempsubAmtList: tempsubAmtList, tempActualAmtList: tempActualAmtList, totalDeclaredAmt: sum1, totalActualAmt: sum2 },
+                success: function (data) {
+
+                    if (data.result == 1) {
+                        toastr.success('Successfully Saved');
+                        getSectionDescriptionDetails();
+
+                    }
+                }
+            });
+        }
+
+    }
+
+
+    function onchangeTotalAmount(section) {
+        var sum1 = 0;
+        var sum2 = 0;
+        var tempsubAmt;
+        var tempActualAmt;
+        //  rowData = $('#itFormTable').DataTable().row(thisval.closest('tr')).data();
+        for (var i = 0; i < $('.subAmt' + section + '').length; i++) {
+            tempsubAmt = $('#' + $('.subAmt' + section + '')[i].id).val();
+            if (tempsubAmt == '') {
+                tempsubAmt = 0;
+            }
+            else {
+                tempsubAmt = parseFloat($('#' + $('.subAmt' + section + '')[i].id).val());
+            }
+            tempActualAmt = $('#' + $('.ActualAmt' + section + '')[i].id).val();
+            if (tempActualAmt == '') {
+                tempActualAmt = 0;
+            }
+            else {
+                tempActualAmt = parseFloat($('#' + $('.ActualAmt' + section + '')[i].id).val());
+            }
+            //    tempSection = rowData.SECTION;
+            sum1 += tempsubAmt;
+            sum2 += tempActualAmt;
+
+        }
+        $('#totalDeclaredAmt' + section).text(sum1.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,'));
+        $('#totalActualAmt' + section).text(sum2.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,'));
+    }
+    function validationAmt(maxlimit, e) {
+        onchangeTotalAmount(CurrSection);
+        if (maxlimit != 0) {
+            if (parseFloat(e.currentTarget.value) > parseFloat(maxlimit)) {
+                $('#' + e.currentTarget.id).val(parseFloat(maxlimit));
+                toastr.warning('Maximum Limit Exceeding...!');
+            }
+        }
+
+    }
+
+
+    function finalSubmit() {
+
+        var emp_IT_ID = (SectionDetails[0].EMP_IT_ID) == null ? 0 : SectionDetails[0].EMP_IT_ID;
+
+        bootbox.confirm('Are you sure do you want to Submit your IT-Declaration details?', function (result) {
+            if (result) {
+
+                $.ajax({
+                    type: 'post',
+                    url: '@Url.Content("~/ITDeclaration/FinalSubmitITDeclaration")',
+                    data: { emp_IT_ID: emp_IT_ID, DirectITDeclaration: '@ViewBag.DirectITDeclaration' },
+                    success: function (data) {
+                        if (data.result == 1) {
+                            toastr.success('Successfully Saved');
+                            getSectionDescriptionDetails();
+                            setTimeout(function () {
+                                location.reload();
+                                $("html, body").animate({ scrollTop: $('.mainContent').position().top }, "fast");
+                            }, 2000);
+                        }
+                    }
+                });
+
+            }
+        });
+    }
+    function AutoUpload() {
+        debugger
+        var formData = new FormData();
+        var fileInput = document.getElementById('Amc_or_insurance_file');
+        formData.append(fileInput.files[0].name, fileInput.files[0]);
+
+        //formData.append("#file",File)
+        $.ajax({
+            url: '@Url.Content("~/AMC_Insurance/GetFileData")',
+            type: "POST",
+            data: formData,
+
+            success: function (result) {
+
+                if (result == "Success") {
+                    toastr.success("Successfully Uploaded");
+                    $('#insurance')[0].reset();
+                } else if (Number.isInteger(parseInt(result))) {
+                    toastr.success("Successfully Uploaded");
+                    Amc_Document_Id = parseInt(result);
+
+
+                } else {
+                    Amc_Document_Id = '';
+                    $(".errorspan").show();
+                }
+
+
+
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        })
+    }
+
+    function InitializeUpload(uploadername) {
+        debugger
+        var galleryUploader = new qq.FineUploader({
+             element: document.getElementById(uploadername),
+
+            request: {
+
+                endpoint: '@Url.Action("UploadImagefiles", "ITDeclaration")',
+                customHeaders: { Accept: 'application/json' },
+                params: {
+                    employeecode: function () {
+                        MonthYear = $('#empCode').val();
+                        return MonthYear;
+                    },
+                    fileid: function () {
+
+                        return sectionid;
+                    }, description: function () {
+
+                        return description;
+                    }
+
+
+                }
+                },
+                text: {
+                    uploadButton: '<div><i class="fa fa-upload"></i>&nbsp;&nbsp;Upload Excel</div>',
+                    waitingForResponse: 'Uploading. . .'
+                },
+                multiple: false,
+                callbacks: {
+                    onProgress: function (id) {
+                        //UploadExcel();
+
+                        $('.qq-upload-list li').css({ "background-color": "#eaeef3", "color": "black", "font-size": "13px", "text-align": "center", "border-radius": "10%", "padding": "5px" });
+                        $('.qq-upload-file').html('');
+                        $('.qq-upload-size').html('');
+                        $('.qq-in-progress').html('Uploading...');
+                    },
+                    onComplete: function (id, xhr, isError) {
+                        debugger
+                        $('.qq-upload-list li').css({ "background-color": "#eaeef3", "color": "black", "font-size": "13px", "text-align": "center", "padding": "5px" });
+                        $('.qq-upload-file').html('');
+                        $('.qq-in-progress').html('');
+                        $('.qq-upload-success').html('Uploaded');
+                    },
+                    onError: function (id, name, errorReason, xhrOrXdr) {
+                        $('.qq-upload-list li').css({ "background-color": "#eaeef3", "color": "black", "font-size": "13px", "text-align": "center", "padding": "5px" });
+                        $('.qq-upload-file').html('');
+                        $('.qq-in-progress').html('');
+                        $('.qq-upload-success').html('failed');
+
+                    }
+                }
+
+            });
+    }
+    function InitializeUploadnomodal(uploadername, description) {
+        debugger
+        var galleryUploader = new qq.FineUploader({
+             element: document.getElementById(uploadername),
+
+            request: {
+
+                endpoint: '@Url.Action("UploadImagefiles", "ITDeclaration")',
+                customHeaders: { Accept: 'application/json' },
+                params: {
+                    employeecode: function () {
+                        MonthYear = $('#empCode').val();
+                        return MonthYear;
+                    },
+                    fileid: function () {
+
+                        return sectionid;
+                    }, description: function () {
+
+                        return description;
+                    }
+
+
+                }
+                },
+                text: {
+                    uploadButton: '<div><i class="fa fa-upload"></i>&nbsp;&nbsp;Upload Excel</div>',
+                    waitingForResponse: 'Uploading. . .'
+                },
+                multiple: false,
+                callbacks: {
+                    onProgress: function (id) {
+                        //UploadExcel();
+
+                        $('.qq-upload-list li').css({ "background-color": "#eaeef3", "color": "black", "font-size": "13px", "text-align": "center", "border-radius": "10%", "padding": "5px" });
+                        $('.qq-upload-file').html('');
+                        $('.qq-upload-size').html('');
+                        $('.qq-in-progress').html('Uploading...');
+                    },
+                    onComplete: function (id, xhr, isError) {
+                        debugger
+                        $('.qq-upload-list li').css({ "background-color": "#eaeef3", "color": "black", "font-size": "13px", "text-align": "center", "padding": "5px" });
+                        $('.qq-upload-file').html('');
+                        $('.qq-in-progress').html('');
+                        $('.qq-upload-success').html('Uploaded');
+
+                    },
+                    onError: function (id, name, errorReason, xhrOrXdr) {
+                        $('.qq-upload-list li').css({ "background-color": "#eaeef3", "color": "black", "font-size": "13px", "text-align": "center", "padding": "5px" });
+                        $('.qq-upload-file').html('');
+                        $('.qq-in-progress').html('');
+                        $('.qq-upload-success').html('failed');
+
+                    }
+                }
+
+            });
+    }
+    @*function InitializeUploadnomodal(uploadername,description) {
+        debugger
+        var galleryUploader = new qq.FineUploader({
+            element: document.getElementById(uploadername),
+
+            request: {
+
+                endpoint: '@Url.Action("UploadImagefiles", "ITDeclaration")',
+                customHeaders: { Accept: 'application/json' },
+                params: {
+                    employeecode: function () {
+                        MonthYear = $('#empCode').val();
+                        return MonthYear;
+                    },
+                    fileid: function () {
+
+                        return sectionid;
+                    }, description: function () {
+
+                        return description;
+                    }
+
+
+                }
+            },
+            text: {
+                uploadButton: '<div><i class="fa fa-upload"></i>&nbsp;&nbsp;Upload Excel</div>',
+                waitingForResponse: 'Uploading. . .'
+            },
+            multiple: false,
+            callbacks: {
+                onProgress: function (id) {
+                    //UploadExcel();
+
+                    $('.qq-upload-list li').css({ "background-color": "#eaeef3", "color": "black", "font-size": "13px", "text-align": "center", "border-radius": "10%", "padding": "5px" });
+                    $('.qq-upload-file').html('');
+                    $('.qq-upload-size').html('');
+                    $('.qq-in-progress').html('Uploading...');
+                },
+                onComplete: function (id, xhr, isError) {
+
+                    $('.qq-upload-list li').css({ "background-color": "#eaeef3", "color": "black", "font-size": "13px", "text-align": "center", "padding": "5px" });
+                    $('.qq-upload-file').html('');
+                    $('.qq-in-progress').html('');
+                    $('.qq-upload-success').html('Uploaded');
+                    debugger
+
+                    if (isError.success) {
+
+                        if ($.fn.DataTable.isDataTable('#ErrorTable')) {
+                            $('#ErrorTable').dataTable().fnDestroy();
+
+                        }
+                        // $('#btnSaveAttendance').css('display', 'none');
+                        //SuccessNotify("File Uploaded Successfully");
+                        bootbox.alert("No errors with the data, Uploaded Successfully.");
+                        //$("#dvUploadTable").css("display", "block");
+                    }
+                    else {
+
+                        if (!isError.success) {
+                            if ($.fn.DataTable.isDataTable('#ErrorTable')) {
+                                $('#ErrorTable').dataTable().fnDestroy();
+                            }
+                            // $("#dvUploadTable").css("display", "none");
+                            /////////////$('#btnSaveAttendance').css('display', 'block');
+                            if (isError.message == "Invalid Extension. Please Use .xls or .xlsx") {
+                                bootbox.alert("Invalid Extension. Please Use .xls or .xlsx");
+                                $('#btnSaveAttendance').css('display', 'none');
+                            }
+                            else if (isError.message == "Please select Processing Month & Year") {
+                                bootbox.alert("Please select Processing Month & Year");
+                                $('#btnSaveAttendance').css('display', 'none');
+                            }
+                            else if (isError.message == "Mapping columns Error. kindly Verify.") {
+                                bootbox.alert(isError.message);
+                                $('#btnSaveAttendance').css('display', 'none');
+                            }
+                            else {
+                                LoadUploadedData(JSON.parse(isError.message));
+                                $('#btnSaveAttendance').css('display', 'block');
+                            }
+
+                            //var msg
+                            $("[class*='qq-file']").html('');
+                            // WarningNotify(msg);
+                        }
+                    }
+
+                },
+                onError: function (id, name, errorReason, xhrOrXdr) {
+                    $('.qq-upload-list li').css({ "background-color": "#eaeef3", "color": "black", "font-size": "13px", "text-align": "center", "padding": "5px" });
+                    $('.qq-upload-file').html('');
+                    $('.qq-in-progress').html('');
+                    $('.qq-upload-success').html('failed');
+
+                }
+            }
+
+        });
+    }*@
+    var description;
+    var sectionid;
+    function uploadmodalopen(data) {
+
+        let details = DescriptionDetails.find(a=>a.Id == data);
+        if (details != undefined) {
+            description = '';
+            sectionid = '';
+            $('#UploadModal').modal('show');
+            $('#divUpload').modal('hide');
+            //$('#empCode').val(details.EMP_IT_ID);
+            description = details.DESCRIPTION;
+            sectionid = details.Id;
+
+        }
+    }
+    function ShowDocuments(data) {
+        let details = DescriptionDetails.find(a=>a.Id == data);
+        if (true) {
+            $.ajax({
+                type: "GET",
+                url: '@Url.Content("~/ITDeclaration/GetDocuments")',
+                data:
+                    {
+
+                        employeecode: function () {
+                            MonthYear = $('#empCode').val();
+                            return MonthYear;
+                        },
+            fileid: function () {
+
+                return details.Id;
+            }, description: function () {
+
+                return details.DESCRIPTION;
+            }
+
+                    },
+                success: function (data) {
+                    if (data == "Success") {
+                        window.open('@Url.Content("/ITDeclaration/ViewDocuments")', '', '"width=200,height=300"');
+                    }
+                    else {
+                        $(".errorspan").show();
+                    }
+                }
+
+            });
+        }
+    }
+</script>

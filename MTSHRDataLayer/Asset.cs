@@ -15,10 +15,16 @@ namespace MTSHRDataLayer
             return Convert.ToInt32( DataAccess.ExecuteScalar("CREATE_ASSET_DETAILS", parameterValues));
         }
 
-        public DataTable ReadLocation()
+        public int Edit(params object[] parameterValues)
         {
-            return DataAccess.ExecuteDataTable("READ_LOCATION");
+            return Convert.ToInt32(DataAccess.ExecuteScalar("UPDATE_ASSET_DETAILS", parameterValues));
         }
+
+        public DataTable FilterAssets(params object[] parameterValues)
+        {
+            return DataAccess.ExecuteDataTable("FILTER_ASSETS", parameterValues);
+        }
+
         public DataTable ReadVendorNames()
         {
             return DataAccess.ExecuteDataTable("READ_VENDORNAMES");
@@ -26,7 +32,7 @@ namespace MTSHRDataLayer
 
         public DataTable ReadAssetNames(params object[] parameterValues)
         {
-            return DataAccess.ExecuteDataTable("READ_ALLASSETNAMES",parameterValues);
+            return DataAccess.ExecuteDataTable("READ_ALLASSETNAMES", parameterValues);
         }
 
         public int UploadInvoice(params object[] parameterValues)
@@ -36,22 +42,26 @@ namespace MTSHRDataLayer
 
         public int ReadLastInvoiceId()
         {
-
             return Convert.ToInt32(DataAccess.ExecuteScalar("READ_LASTINVOICEID"));
         }
 
-        public DataTable ReadAllAssetEntries()
+        public DataSet ReadAllAssetEntries()
         {
-            return DataAccess.ExecuteDataTable("READ_ALLASSETENTRIES");
+            return DataAccess.ExecuteDataSet("READ_ALLASSETENTRIES");
         }
 
         public DataSet ReadCategory()
         {
             return DataAccess.ExecuteDataSet("READ_ASSETCATEGORY_DETAILS");
         }
+
         public DataSet ReadAssetName()
         {
             return DataAccess.ExecuteDataSet("READ_ASSET_NAME");
+        }
+        public DataSet ReadItemcode()
+        {
+            return DataAccess.ExecuteDataSet("READ_ALL_ASSETITEMCODE");
         }
     }
 }

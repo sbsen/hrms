@@ -33,6 +33,10 @@ namespace MTSINHR.Models
         [Display(Name = "IFSC Code")]
         public string Ifsccode { get; set; }
 
+        public DateTime FromDate { get; set; }
+
+        public DateTime ToDate { get; set; }
+
 
     }
 }

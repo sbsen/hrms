@@ -20,7 +20,6 @@
                 async: true,
                 url: '@Url.Content("~/Policies/ReadPolicy")',
                 dataSrc: function (data) {
-                    debugger;
                     var tempData = JSON.parse(data);
                     return tempData.Table;
                 }
@@ -28,21 +27,20 @@
 
             "aoColumns":
                 [{ "mData": "ID", "sTitle": "ID", "sClass": "text-right", "sWidth": "80px", "bVisible": false }
-                , { "mData": "POLICYNAME", "sTitle": "PolicyName", "sClass": "text-left" }
+                , { "mData": "POLICYNAME", "sTitle": "Policy Name", "sClass": "text-left" }
                 ,{ "mData": "ID", "sTitle": "Edit", "sClass": "text-center", "sWidth": "1%", "orderable": false }
                 ],
             "aoColumnDefs":
                 [{
                     "aTargets": [2]
                     , "mRender": function (data, type, row) {
-                        return '<span onclick= editPolicyName($(this).closest("tr"))  class="fa fa-edit"></span>';
+                        return '<span style="cursor:pointer;" onclick= editPolicyName($(this).closest("tr"))  class="fa fa-edit"></span>';
                     }
                 }],
         });
     });
 
     function AddEdit(actionurl, formid) {
-        debugger;
         if (checkForm(formid)) {
             $.ajax({
                 type: 'POST',
@@ -70,7 +68,6 @@
     };
 
     function editPolicyName(curTr) {
-        debugger;
         var data = groupTable.row(curTr).data();
         $("#url").val('@Url.Content("~/Policies/Edit")');
         $(".field-validation-valid").text("");
@@ -81,7 +78,6 @@
     };
 
     function addPolicy() {
-        debugger;
         $("#url").val('@Url.Content("~/Policies/AddPolicy")');
         $(".field-validation-valid").text("");
         $("#editpolicy").val("");
@@ -134,7 +130,7 @@
                     <input type="hidden" class="form-control" id="url" value="">
 
                     <div class="form-group">
-                        <label>AddPolicy</label>
+                        <label>Add Policy</label>
                         <input type="text" class="form-control" name="Policy" id="editpolicy" data-val-regex-pattern="^[a-zA-Z ]+$" />
                         <span class="field-validation-valid" style="color: red; font: bold; display: none"></span>
                     </div>

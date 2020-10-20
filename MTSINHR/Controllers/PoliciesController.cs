@@ -16,7 +16,7 @@ using MTSINHR.Models;
 
 namespace MTSINHR.Controllers
 {
-    public class PoliciesController : Controller
+    public class PoliciesController : SecureController
     {
    
         // GET: Policies
@@ -185,7 +185,8 @@ namespace MTSINHR.Controllers
                     if (ext == ".pdf")
                     {
                         var imagefile = Convert.FromBase64String(TempData["image"].ToString());
-                        return this.File(imagefile, "image/" + ext, Imagename);
+                       // return this.File(imagefile, "image/" + ext, Imagename);
+                        return new FileStreamResult(new MemoryStream(imagefile), ext);
                     }
                     else
                     {
@@ -206,7 +207,7 @@ namespace MTSINHR.Controllers
 
         }
 
-        public ActionResult ViewAllEmployeeDocuments()
+        public ActionResult ViewAllPolicies()
         {
             try
             {
@@ -226,7 +227,8 @@ namespace MTSINHR.Controllers
                     if (ext == ".pdf")
                     {
                         var imagefile = Convert.FromBase64String(TempData["image"].ToString());
-                        return this.File(imagefile, "image/" + ext, Imagename);
+                      //  return this.File(imagefile, ext, Imagename);
+                        return new FileStreamResult(new MemoryStream(imagefile), ext);
                     }
                     else
                     {

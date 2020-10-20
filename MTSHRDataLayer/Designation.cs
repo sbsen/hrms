@@ -20,7 +20,11 @@ namespace MTSHRDataLayer
             return DataAccess.ExecuteDataTable("Read_Designation");
 
         }
+        public DataTable Read_FunctionalRole()
+        {
+            return DataAccess.ExecuteDataTable("READ_FUNCTIONALROLE");
 
+        }
         public int Update(params object[] parameterValues)
         {
             return Convert.ToInt16(DataAccess.ExecuteScalar("Update_Designation", parameterValues));

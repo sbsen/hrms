@@ -47,9 +47,14 @@ namespace MTSHRDataLayer
 
         }
 
-        public int Edit(params object[] parameterValues)
+        public void UpdateEmployeeLeavePolicy(params object[] parameterValues)
         {
-            return Convert.ToInt16(DataAccess.ExecuteScalar("Update_Employee", parameterValues));
+            DataAccess.ExecuteScalar("UPDATE_EMPLOYEE_DEPARTMENT_LEAVEPOLICY", parameterValues);
+        }
+
+        public Int64 Edit(params object[] parameterValues)
+        {
+            return Convert.ToInt64(DataAccess.ExecuteScalar("Update_Employee", parameterValues));
 
         }
 
@@ -86,10 +91,38 @@ namespace MTSHRDataLayer
             return DataAccess.ExecuteDataTable("Read_Authorization");
 
         }
-        public int Checkuserid(params object[] parameterValues)
+        public int CheckAccessURL(params object[] parameterValues)
         {
 
-            return Convert.ToInt16(DataAccess.ExecuteScalar("CHECKUSERID", parameterValues));
+            return Convert.ToInt16(DataAccess.ExecuteScalar("CHECKACCESSURL", parameterValues));
+        }
+        public DataTable GetRole(params object[] parameterValues)
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+                dt = DataAccess.ExecuteDataTable("READ_EMPLOYEEROLE", parameterValues);
+            }
+            catch(Exception ex)
+            {
+                ex.Data.Clear();
+                dt = new DataTable();
+            }
+            return dt;
+        }
+        public Int64 EditRole(params object[] parameterValues)
+        {
+            Int64 result=new Int64();
+            try
+            {
+                result= Convert.ToInt64(DataAccess.ExecuteScalar("MTS_EDITROLE", parameterValues));
+            }
+            catch(Exception ex)
+            {
+                ex.Data.Clear();
+                result = -999;
+            }
+            return result;
         }
 
     }

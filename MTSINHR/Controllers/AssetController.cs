@@ -7,26 +7,36 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using HRConstants;
+using MTS.Controllers;
 
 namespace MTSINHR.Controllers
 {
-    public class AssetController : Controller
+    public class AssetController : SecureController
     {
         MTSHRDataLayer.Asset _data = new MTSHRDataLayer.Asset();
         //
         // GET: /Asset/
-        public ActionResult AssetListDetails()
+
+        public int Asset(int assettype = 0, int assetname = 0)
         {
-            return View();
+            TempData["AssetTypeId"] = assettype;
+            TempData["AssetName"] = assetname;
+            TempData.Keep("AssetTypeId");
+            TempData.Keep("AssetName");
+            ViewBag.AssetType = assettype;
+            ViewBag.AssetName = assetname;
+
+            return 1;
         }
 
         public ActionResult AssignAsset()
         {
             ViewBag.EmployeeNames = GetAllEmployeeNames();
             //ViewBag.LocationNames = GetAllLocation();
-            ViewBag.CategoryNames = GetAllCategories();
+            ViewBag.Asset = GetAsset();
+            ViewBag.Assetname = GetAssetName();
             ViewBag.VendorNames = GetAllVendorNames();
-            ViewBag.AssetNames = GetAllAssetNames(0);
             return View("AssetEntry");
         }
 
@@ -34,6 +44,13 @@ namespace MTSINHR.Controllers
         {
             MTSHRDataLayer.Asset data_doc = new MTSHRDataLayer.Asset();
             return data_doc.ReadLastInvoiceId();
+        }
+
+        [HttpPost]
+        public JsonResult FilterAssets(string StartDate, string EndDate)
+        {
+            MTSHRDataLayer.Asset data_doc = new MTSHRDataLayer.Asset();
+            return Json(JsonConvert.SerializeObject(data_doc.FilterAssets(Convert.ToDateTime(StartDate), Convert.ToDateTime(EndDate))), JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
@@ -58,17 +75,18 @@ namespace MTSINHR.Controllers
         }
 
         [HttpPost]
-        public int AddAssetDetails(Assets _asset)
+        public int AddAssetDetails(AssetsEntry _asset)
         {
             MTSHRDataLayer.Asset _data = new MTSHRDataLayer.Asset();
             try
             {
+                int result = 0;
 
 
-                int result = _data.Create(_asset.Id, _asset.VendorName, _asset.PurchaseOrderNumber, _asset.PurchasedOn, _asset.BillNumber, _asset.BillDate, _asset.AssetType, _asset.AssetName,
-                             _asset.AssetDescription, _asset.CostInRs, _asset.CostType, _asset.Make, _asset.Model, _asset.SerialNumber,
-                             _asset.IdentificationCode, _asset.WarrantyMonths, _asset.WarrantyStartDate, _asset.WarrantyEndDate, ReadLastInvoiceId(),
-                             _asset.AssetTypeId, _asset.AssetNameId);
+                result = _data.Create(_asset.Id, _asset.VendorName, _asset.PurchaseOrderNumber, _asset.PurchasedOn, _asset.BillNumber, _asset.BillDate, _asset.AssetType, _asset.AssetName,
+                            _asset.AssetDescription, _asset.CostInRs, _asset.CostType, _asset.Make, _asset.Model, _asset.SerialNumber,
+                            _asset.IdentificationCode, _asset.WarrantyMonths, _asset.WarrantyStartDate, _asset.WarrantyEndDate,_asset.InvoiceId,
+                            _asset.AssetTypeId, _asset.AssetNameId,HRConstants.AssetStatusConstants.Unassigned);
 
 
                 return result;
@@ -85,24 +103,44 @@ namespace MTSINHR.Controllers
 
         }
 
+        [HttpPost]
+        public int EditAssetDetails(AssetsEntry _asset)
+        {
+            MTSHRDataLayer.Asset _data = new MTSHRDataLayer.Asset();
+            try
+            {
+                int result = 0;
+
+
+                result = _data.Edit(_asset.Id, _asset.VendorName, _asset.PurchaseOrderNumber, _asset.PurchasedOn, _asset.BillNumber, _asset.BillDate, _asset.AssetType, _asset.AssetName,
+                            _asset.AssetDescription, _asset.CostInRs, _asset.CostType, _asset.Make, _asset.Model, _asset.SerialNumber,
+                            _asset.IdentificationCode, _asset.WarrantyMonths, _asset.WarrantyStartDate, _asset.WarrantyEndDate, _asset.InvoiceId,
+                            _asset.AssetTypeId, _asset.AssetNameId,HRConstants.AssetStatusConstants.Unassigned);
+
+
+                return result;
+
+
+            }
+            catch (Exception exec)
+            {
+                BaseExceptionHandler.HandleException(ref exec);
+                throw exec;
+            }
+        }
+
         public JsonResult ReadAllAssetEntries()
         {
             MTSHRDataLayer.Asset _data = new MTSHRDataLayer.Asset();
-            return Json(new { success = true, result = JsonConvert.SerializeObject(_data.ReadAllAssetEntries()) }, JsonRequestBehavior.AllowGet);
-
-
+            var assetDetails = _data.ReadAllAssetEntries();
+            return Json(new { success = true, result1 = JsonConvert.SerializeObject(assetDetails.Tables[1]), result2 = JsonConvert.SerializeObject(assetDetails.Tables[0]) }, JsonRequestBehavior.AllowGet);
         }
 
-
-
-        public ActionResult ImageFiles(Assets _asset)
+        public ActionResult ImageFiles(AssetsEntry _asset)
         {
-
             try
             {
-
                 var docname = Request.Params["docname"].ToString();
-
                 if (Request.Files.Count > 0)
                 {
                     var file = Request.Files[0];
@@ -133,7 +171,6 @@ namespace MTSINHR.Controllers
                 //string empName = String.Format("{0} {1}", Session["FirstName"].ToString(), Session["LastName"].ToString()); 
                 MTSHRDataLayer.EmployeeLeave EmployeeNamedata = new MTSHRDataLayer.EmployeeLeave();
                 var EmployeeNames = EmployeeNamedata.GetAllEmployeeNames();
-
                 EmployeeNameList.Add(new SelectListItem() { Value = "", Text = "----Select Employee----" });
                 for (int i = 0; i < EmployeeNames.Tables[0].Rows.Count; i++)
                 {
@@ -141,7 +178,6 @@ namespace MTSINHR.Controllers
                     EmployeeNameList.Add(new SelectListItem() { Text = EmployeeNames.Tables[0].Rows[i]["EmployeeName"].ToString(), Value = ID });
                 }
                 //EmployeeNameList.RemoveAt(EmployeeNameList.IndexOf(new SelectListItem() { Value = empid, Text = empName }));
-
             }
             catch (Exception exec)
             {
@@ -195,54 +231,67 @@ namespace MTSINHR.Controllers
             return VendorList;
         }
 
-        public List<SelectListItem> GetAllAssetNames(Int64 AssetTypeId)
+        [HttpPost]
+        public JsonResult AssetName(Int64 id)
         {
-            List<SelectListItem> AssetList= new List<SelectListItem>();
+            MTSHRDataLayer.AssetMaintenanceDetails data_asset_name = new MTSHRDataLayer.AssetMaintenanceDetails();
+            List<SelectListItem> Assetnamelist = new List<SelectListItem>();
             try
             {
-               
-                MTSHRDataLayer.Asset _data = new MTSHRDataLayer.Asset();
-                var AssetNames = _data.ReadAssetNames();
-
-                AssetList.Add(new SelectListItem() { Value = "", Text = "----Select AssetNames----" });
-                for (int i = 0; i < AssetNames.Rows.Count; i++)
+                var Assetname = data_asset_name.GetSpecificAsset(id);
+                Assetnamelist.Add(new SelectListItem() { Value = "", Text = "----Select Asset----" });
+                for (int i = 0; i < Assetname.Rows.Count; i++)
                 {
-                    AssetList.Add(new SelectListItem() { Text = AssetNames.Rows[i]["Assetname"].ToString(), Value = AssetNames.Rows[i]["AssettypeId"].ToString() });
+                    Assetnamelist.Add(new SelectListItem() { Value = Assetname.Rows[i]["Id"].ToString(), Text = Assetname.Rows[i]["AssetName"].ToString() });
                 }
-
-            }
-            catch (Exception exec)
-            {
-                BaseExceptionHandler.HandleException(ref exec);
-                throw exec;
-            }
-
-            return AssetList;
-        }
-
-        public List<SelectListItem> GetAllCategories()
-        {
-            List<SelectListItem> CategoryList = new List<SelectListItem>();
-            try
-            {
-                string empid = Session["UserID"].ToString();
-                //string empName = String.Format("{0} {1}", Session["FirstName"].ToString(), Session["LastName"].ToString()); 
-                MTSHRDataLayer.Asset _data = new MTSHRDataLayer.Asset();
-                var CategoryNames = _data.ReadCategory();
-
-                 CategoryList.Add(new SelectListItem() { Value = "", Text = "----Select Category----" });
-                for (int i = 0; i < CategoryNames.Tables[0].Rows.Count; i++)
-                {
-                    CategoryList.Add(new SelectListItem() { Text = CategoryNames.Tables[0].Rows[i]["CategoryName"].ToString(), Value = CategoryNames.Tables[0].Rows[i]["CategoryId"].ToString() });
-                }
-                //EmployeeNameList.RemoveAt(EmployeeNameList.IndexOf(new SelectListItem() { Value = empid, Text = empName }));
-
             }
             catch (Exception exec)
             {
                 BaseExceptionHandler.HandleException(ref exec);
             }
-            return CategoryList;
+            ViewBag.Assetname = Assetnamelist;
+
+            return Json(new { success = true, AssetList = JsonConvert.SerializeObject(Assetnamelist) }, JsonRequestBehavior.AllowGet);
         }
+        private List<SelectListItem> GetAsset()
+        {
+            MTSHRDataLayer.Asset data_Ass = new MTSHRDataLayer.Asset();
+            List<SelectListItem> Assetlist = new List<SelectListItem>();
+            try
+            {
+                var Asset = data_Ass.ReadCategory();
+                Assetlist.Add(new SelectListItem() { Value = "", Text = "---- Select Asset----" });
+                for (int i = 0; i < Asset.Tables[0].Rows.Count; i++)
+                {
+                    Assetlist.Add(new SelectListItem() { Value = Asset.Tables[0].Rows[i]["CategoryId"].ToString(), Text = Asset.Tables[0].Rows[i]["CategoryName"].ToString() });
+                }
+            }
+            catch (Exception exec)
+            {
+                BaseExceptionHandler.HandleException(ref exec);
+            }
+            return Assetlist;
+        }
+        private List<SelectListItem> GetAssetName()
+        {
+            MTSHRDataLayer.Asset data_Ass = new MTSHRDataLayer.Asset();
+            List<SelectListItem> Assetlist = new List<SelectListItem>();
+            try
+            {
+                var Asset = data_Ass.ReadAssetName();
+                Assetlist.Add(new SelectListItem() { Value = "", Text = "---- Select Category----" });
+                //for (int i = 0; i < Asset.Tables[0].Rows.Count; i++)
+                //{
+                //    Assetlist.Add(new SelectListItem() { Value = Asset.Tables[0].Rows[i]["Id"].ToString(), Text = Asset.Tables[0].Rows[i]["Assetname"].ToString() });
+                //}
+            }
+            catch (Exception exec)
+            {
+                BaseExceptionHandler.HandleException(ref exec);
+            }
+            return Assetlist;
+        }
+
+
     }
 }

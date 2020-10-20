@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace MTSINHR.Models
 {
@@ -29,6 +30,11 @@ namespace MTSINHR.Models
         [Required]
         public string TextMessage { get; set; }
 
+        public int Status { get; set; }
+        
+        public int MessageStatus { get; set; }
 
+        [Required]
+        public int TemplateType { get; set; }
     }
 }
