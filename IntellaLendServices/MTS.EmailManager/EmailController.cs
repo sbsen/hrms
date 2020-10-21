@@ -18,6 +18,10 @@ namespace MTS.EmailManager
 {
     public class EmailController : IMTSServiceBase
     {
+        //public EmailController()
+        //{
+        //    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+        //}
 
         public void OnStart(string Params)
         {
@@ -257,6 +261,8 @@ namespace MTS.EmailManager
          {
              try
              {
+                 //ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
                  DataSet dsSTMPDetails = dataaccess.GetSTMPDetails();
                  if ((dsSTMPDetails == null) || (dsSTMPDetails.Tables.Count == 0))
                      return false;

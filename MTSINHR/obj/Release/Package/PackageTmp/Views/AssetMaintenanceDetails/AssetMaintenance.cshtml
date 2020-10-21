@@ -1,0 +1,299 @@
+﻿@model  MTSINHR.Models.AssetMaintenanceDetails
+<script src="~/Scripts/ValidationFunction.js"></script>
+<script src="~/Scripts/bootbox.min.js"></script>
+@System.Web.Optimization.Scripts.Render("~/bundles/datepicker")
+@System.Web.Optimization.Styles.Render("~/bundles/datepickercss")
+<link href="~/Content/css/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.min.js"></script>
+<style>
+    .requir {
+        border-left: 2px solid red !important;
+    }
+</style>
+<script>
+
+    var assetMaintenance = [];
+    $(document).ready(function () {
+        $('.select2cls').select2({ "width": "100%" });
+        $("#AssetName").prop('disabled', true);
+        $("#Item").prop('disabled', true);
+        $('#Dateofpurchase').datepicker({
+            format: 'mm/dd/yyyy',
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            endDate: '+0d',
+        }).keydown(function (e) {
+
+            if (e.keyCode == 8 || e.keyCode == 46) {
+                $('#Dateofpurchase').val('');
+            }
+        });
+
+
+
+        $("#AssetTypeId").on('change', function () {
+            if ($("#AssetTypeId").val() != null && $("#AssetTypeId").val() != '') {
+                $("#AssetName").prop('disabled', false);
+                var getValue = $(this).val();
+                getdata($(this).val());
+            }
+            else {
+                $("#AssetName").val("");
+                $("#AssetName").prop("disabled", true);
+                $("#AssetName").trigger('change');
+            }
+        });
+        $("#AssetName").on('change', function () {
+            if ($("#AssetName").val() != null && $("#AssetName").val() != '') {
+                $("#Item").prop('disabled', false);
+                var getassettype = $("#AssetTypeId").val();
+                var getassetname = $("#AssetName").val();
+                getitem(getassettype, getassetname);
+            }
+            else {
+                $("#Item").val("");
+                $('#Item').select2('val', '');
+                $("#Item").prop("disabled", true);
+            }
+        });
+        $("#Item").on('change', function () {
+            if ($('#Item').val() != null && $('#Item').val() != '') {
+                getPurchasedDate();
+            }
+            else {
+                $('#Dateofpurchase').datepicker('setStartDate', false);
+
+            }
+
+        });
+        function getPurchasedDate() {
+
+            $.ajax({
+                type: 'get',
+                url: '@Url.Content("~/AssetDetails/ReadAssetDetail")',
+                data: { "ItemCode": $("#Item").val() },
+
+                success: function (data) {
+                    assetDetail = JSON.parse(data);
+                    $('#Dateofpurchase').datepicker('setStartDate', new Date(assetDetail[0].Purchased_Date));
+
+                }
+            });
+            //    $('#Date').datepicker('setStartDate', new Date(assetDetail[0].Purchased_Date));
+
+        }
+        function getdata(getValue) {
+
+            $.ajax({
+                type: "post",
+                url: '@Url.Content("~/AssetMaintenanceDetails/AssetName")?id=' + getValue,
+                success: function (result) {
+                    if (result.success == true) {
+                        $("#AssetName").empty();
+                        $.each(JSON.parse(result.AssetList), function (i, Val) { $("#AssetName").append('<option value="' + Val.Value + '">' + Val.Text + '') });
+                      
+
+                        if (getValue == '@ViewBag.AssetType') {
+                            $("#AssetName").val(@ViewBag.AssetNames);
+                            $('#AssetTypeId').select2('val', '@ViewBag.Assettype');
+                        }
+                        $("#AssetName").trigger('change');
+                    }
+                }
+            })
+        }
+        function getitem(getassettype, getassetname) {
+
+            $.ajax({
+                type: "post",
+                url: '@Url.Content("~/AssetMaintenanceDetails/Item")?Assettypeid=' + getassettype + "&Assetnameid=" + getassetname,
+                success: function (result) {
+                    if (result.success == true) {
+                        $("#Item").empty();
+                        $.each(JSON.parse(result.AssetList),
+                        function (i, Val) { $("#Item").append('<option value="' + Val.Value + '">' + Val.Text + '') });
+
+
+                        if (getassettype == '@ViewBag.AssetType' && getassetname == '@ViewBag.AssetNames') {
+                            $("#Item").val(@ViewBag.Item);
+                            $('#Item').select2('val', '@ViewBag.Item');
+                        }
+                    }
+                }
+            })
+        }
+
+        if ('@ViewBag.AssetType' != '' && '@ViewBag.AssetType' != null) {
+            $("#AssetTypeId").val('@ViewBag.AssetType');
+         //   $('#AssetTypeId').select2('val', '@ViewBag.Assettype');
+            getdata('@ViewBag.AssetType');
+            $("#AssetName").prop('disabled', false);
+            getitem('@ViewBag.AssetType', '@ViewBag.AssetNames');
+            $("#Item").prop('disabled', false);
+        }
+
+    });
+    function dateValueFormat(date) {
+        var d = new Date(date);
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                        "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var val = d.getDate() + "-" + months[d.getMonth()] + "-" + d.getFullYear();
+        return val;
+    }
+
+
+
+    function AssetsAddEdit() {
+        $('#add').attr("disabled", true);
+        var url = '@Url.Content("~/AssetMaintenanceDetails/Add")';
+        var Dateofpurchase = $('#Dateofpurchase').val();
+
+        assetMaintenance = {
+
+            AssetTypeId: $('#AssetTypeId').val(),
+            AssetName: $('#AssetName').val(),
+            Item: $('#Item').val(),
+            Dateofpurchase: dateValueFormat($('#Dateofpurchase').val()),
+            Vendor: $('#Vendor').val().trim(),
+            Cost: $('#Cost').val().trim(),
+            Maintenance_Carried_out: $('#Maintenance_Carried_out').val().trim(),
+            Notes: $('#Notes').val().trim(),
+
+        }
+
+
+        if ($("#assetmaintenance").valid()) {
+            // $('#Dateofpurchase').val(dateValueFormat(Dateofpurchase));
+
+            $.ajax({
+                type: "Post",
+                // data: $("#assetmaintenance").serialize(),
+                data: { maintenance: assetMaintenance },
+
+                url: url,
+                success: function (result) {
+
+                    if (result.success == "1") {
+                        toastr.success("Successfully Added");
+                        $('#assetmaintenance')[0].reset();
+                        $('#Vendor ').select2('val', '');
+                        $("#AssetTypeId").trigger('change');
+                    }
+                    else {
+                        $(".errorspan").show();
+                    }
+                }
+            });
+        }
+        $('#add').attr("disabled", false);
+    }
+</script>
+<form id="assetmaintenance" method="post" autocomplete="off">
+    <div class="panel">
+        <div class="card">
+            <div class="card-header p-b-0">
+                <h4>Maintenance Details</h4>
+            </div>
+            <div class="card-block">
+                <div class="content-align p15">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.AssetTypeId)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.AssetTypeId, new System.Web.Mvc.SelectList(ViewBag.Asset, "Value", "Text"), new { @class = "form-control requir select2cls" })
+                                    @Html.ValidationMessageFor(model => model.AssetTypeId)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    Category
+                                </div>
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.AssetName, new System.Web.Mvc.SelectList(ViewBag.Assetname, "Value", "Text"), new { @class = "form-control requir select2cls" })
+                                    @Html.ValidationMessageFor(model => model.AssetName)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    Item
+                                </div>
+                                <div class="editor-field">
+
+                                    @Html.DropDownListFor(model => model.Item, new System.Web.Mvc.SelectList(ViewBag.Itemcode, "Value", "Text"), new { @class = "form-control requir select2cls" })
+                                    @Html.ValidationMessageFor(model => model.Item)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                Date
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.Dateofpurchase, "{0:dd/MMM/yyyy}", new { @class = "form-control requir", onkeydown = "return false", placeholder = "MM/DD/YYYY"  })
+                                    @Html.ValidationMessageFor(model => model.Dateofpurchase)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Vendor)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.Vendor, new System.Web.Mvc.SelectList(ViewBag.vendorname, "value", "Text"), new { @class = "form-control requir select2cls" })
+                                    @Html.ValidationMessageFor(model => model.Vendor)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Cost)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.Cost, new { @class = "form-control requir" })
+                                    @Html.ValidationMessageFor(model => model.Cost)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    Maintenance Carried-out
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextAreaFor(model => model.Maintenance_Carried_out, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Maintenance_Carried_out)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Notes)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextAreaFor(model => model.Notes, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Notes)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pull-right p-b-10 p-r-10">
+                    <button type="button" id="cancel" class="btn btn-light m-r-5" onclick="@("window.location.href='" + @Url.Action("AssetDetail", "AssetDetails") + "'");">Close</button>
+                    <button type="button" id="add" class="btn btn-primary spanedit " onclick="AssetsAddEdit()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

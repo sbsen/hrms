@@ -41,30 +41,30 @@ namespace MTS.Controllers
                                                       area = "MTS.Login"
                                                   }));
                 }
-            }
-            //if (Request.Url.ToString().Length > 0)
-            //{
-            //    string url = Request.Url.ToString();
-            //    Int64 Sessionid = Convert.ToInt64(Session["UserId"]);
-            //    MTSHRDataLayer.Employee data_emp = new MTSHRDataLayer.Employee();
-            //    DataTable dt = data_emp.CheckAuthorization();
-            //    bool checkurl = dt.AsEnumerable().Where(c => Convert.ToString((c.Field<String>("Url"))).Equals(url)).Count() > 0;
-            //    if (checkurl == true)
-            //    {
+             }
+            if (Request.Url.ToString().Length > 0)
+            {
+                string url = Request.Url.ToString();
+                Int64 roleid = Convert.ToInt64(Session["roleid"]);
+                MTSHRDataLayer.Employee data_emp = new MTSHRDataLayer.Employee();
+                //datatable dt = data_emp.checkauthorization();
+                //bool checkurl = dt.asenumerable().where(c => convert.tostring((c.field<string>("url"))).equals(url)).count() > 0;
+                //if (checkurl == true)
+                //{
 
-            //        int status = data_emp.Checkuserid(Sessionid);
-            //        if (status == 0)
-            //        {
-            //            filterContext.Result = new RedirectToRouteResult(
-            //                                         new RouteValueDictionary(new
-            //                                         {
-            //                                             action = "logon",
-            //                                             controller = "account",
-            //                                             area = "MTS.Login"
-            //                                         }));
-            //        }
-            //    }
-            //}
+                int status = data_emp.CheckAccessURL(roleid, url, Convert.ToInt64(Session["UserId"] ));      //, Convert.ToInt64(Session["UserId"])
+                if (status == 0)
+                {
+                    filterContext.Result = new RedirectToRouteResult(
+                                                 new RouteValueDictionary(new
+                                                 {
+                                                     action = "logon",
+                                                     controller = "account",
+                                                     area = "mts.login"
+                                                 }));
+                }
+                //}
+            }
             if (filterContext.HttpContext.Request.IsAjaxRequest())
             {
             }

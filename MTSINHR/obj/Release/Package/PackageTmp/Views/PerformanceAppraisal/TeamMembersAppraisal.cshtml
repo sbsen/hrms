@@ -1,0 +1,286 @@
+﻿@{
+    ViewBag.Title = "TeamMembersAppraisal";
+}
+@*<link href="~/Content\css\style.css" rel="stylesheet" />*@
+<style>
+    .pad-all20 {
+        padding-top: 20px;
+        padding-bottom: 20px;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+</style>
+
+<div class="card">
+    <div class="card-header ">
+        <div class="p-t-5 changeName">Team Members Appraisal</div>
+    </div>
+    <div class="card-body ">
+        <div class="col-lg-12 row p-l-0">
+            <div class="col-lg-3 text-left">
+                <div class="col-lg-12">
+                    <label>Appraisal Description</label>
+                </div>
+                <div class="col-lg-12">
+                    <select id="processFilter" class="col-lg-12   form-control  ">
+                        <option value="0">All</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-lg-3 text-left p-t-25">
+                <div>
+                    <button class="btn btn-primary" onclick="filterStatus()"><i class="fa fa-filter"></i> Filter</button>
+                </div>
+            </div>
+            <div class="col-lg-3 text-left">
+                <div class="col-lg-12">
+                    <label>Action</label>
+                </div>
+                <div class="col-lg-12">
+                    <select id="actionFilter" class="col-lg-12   form-control  ">
+                        <option value="0">All</option>
+                        <option value="1">Feedback</option>
+                        <option value="2">Evaluation</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-lg-3 text-left p-t-25">
+                <div>
+                    <button class="btn btn-primary" onclick="filterAction()"><i class="fa fa-filter"></i> Filter</button>
+                </div>
+            </div>
+        </div>
+        <div class="MTS_Table m-t-20">
+            <table class="table table-bordered table-responsive" id="ManagerUnderEmployeesTable" style="width:100%;"></table>
+        </div>
+        <div class="m-t-20 text-right p-r-10">
+            <button class="btn btn-light" id="btnclose" onclick="backToDashboard()">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    var TeamMembersDetailTable;
+    var teamDetails = [];
+    var typeList = [];
+    var descriptionList = [];
+    var KRA_quest = '';
+    var Skill_quest = '';
+    var Summary_quest = '';
+    var EmployeeWeightageValueList = [];
+    var EmployeeWeightageIdList = [];
+    var sessionrole;
+    var tempFlag = true;
+    var appraisalDescription = [];
+    var appraisalFilter = [];
+    $(document).ready(function () {
+
+        sessionrole = '@Session["RoleId"].ToString()';
+        if (sessionrole == '3' || sessionrole == '1') {
+
+            ManagerViewEmployeeSummaryTable();
+        }
+
+
+    });
+    function filterAction() {
+
+        TeamMembersDetailTable.columns(7).search('', true).draw();
+        if ($('#actionFilter').children("option:selected").text() == 'All') {
+            TeamMembersDetailTable.columns(7).search('', true).draw();
+        }
+        if ($('#actionFilter').children("option:selected").text() != 'All') {
+            TeamMembersDetailTable.columns(7).search('^' + $.fn.dataTable.util.escapeRegex($('#actionFilter').children("option:selected").text()) + '$').draw();
+
+        }
+    }
+    function filterStatus() {
+
+        TeamMembersDetailTable.columns(0).search('', true).draw();
+        if ($('#processFilter').children("option:selected").text() == 'All') {
+            TeamMembersDetailTable.columns(0).search('', true).draw();
+        }
+        if ($('#processFilter').children("option:selected").text() != 'All') {
+            TeamMembersDetailTable.columns(0).search('^' + $.fn.dataTable.util.escapeRegex($('#processFilter').children("option:selected").text()) + '$').draw();
+
+        }
+
+
+    }
+    function ManagerViewEmployeeSummaryTable() {
+
+        if ($.fn.DataTable.isDataTable('#ManagerUnderEmployeesTable')) {
+            $('#ManagerUnderEmployeesTable').dataTable().fnDestroy();
+        }
+        TeamMembersDetailTable = $('#ManagerUnderEmployeesTable').DataTable({
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "iDisplayLength": 10,
+            "bFilter": true,
+            'ajax':
+                {
+                    type: 'get',
+                    url: '@Url.Content("~/PerformanceAppraisal/GetManagerUnderEmployeesList")',
+                    dataSrc: function (data) {
+                        teamDetails = JSON.parse(data.result1);
+                        $.each(teamDetails, function (i, val) {
+
+                            //if (tempFlag || (teamDetails[i - 1].APPRAISAL_ID != teamDetails[i].APPRAISAL_ID)) {
+                            //    appraisalDescription.push(teamDetails[i].Appraisal_Process_Period);
+                            //    $('#processFilter').append('<option value=' + teamDetails[i].APPRAISAL_ID + '>' + teamDetails[i].Appraisal_Process_Period + '</option>');
+                            //    tempFlag = false;
+                            //}
+                            if (!appraisalFilter.includes(teamDetails[i].APPRAISAL_ID)) {
+                                appraisalDescription.push(teamDetails[i].Appraisal_Process_Period);
+                                $('#processFilter').append('<option value=' + teamDetails[i].APPRAISAL_ID + '>' + teamDetails[i].Appraisal_Process_Period + '</option>');
+                                tempFlag = false;
+                                appraisalFilter.push(teamDetails[i].APPRAISAL_ID);
+                            }
+
+                        });
+                        return JSON.parse(data.result1);
+                    }
+                },
+            "order": [[1, "asc"]],
+
+
+            "aoColumns": [
+                  { "mData": 'Appraisal_Process_Period', "sTitle": "Appraisal Process Description", "sClass": "text-left", "bVisible": true }//0
+                , { "mData": "EMP_CODE", "sTitle": "Employee Code", "defaultContent": "<i>Not set</i>" } //1
+                 , { "mData": "EMP_NAME", "sTitle": "Employee Name", "bVisible": true }//2
+                , { "mData": "EMP_DESIGNATION", "sTitle": "Designation", "sClass": "text-left", "defaultContent": "<i>Not set</i>" }//3
+                , { "mData": 'RATING_MANAGER_ID', "sTitle": "Employee Status", "sClass": "text-center", "bVisible": false, "bSearchable": false }//4
+                 , { "mData": 'DOJ', "sTitle": "Date Of Join", "sType": "date", "sClass": "text-center" }//5
+                  , { "mData": "STAGING", "sTitle": "Status", "sClass": "text-center", "defaultContent": "<i>Not set</i>" }//6
+                  , { "mData": 'RATING_MANAGER_ID', "sTitle": "Action", "sClass": "text-center" }//7
+                , { "mData": 'EmployeeId', "sTitle": "View", "sClass": "text-center" }//8
+
+            ],
+            'aoColumnDefs': [
+                 {
+                     "aTargets": [4]
+       , "mRender": function (data, type, row) {
+           //return "<i class='fa fa-edit' onclick='getManagerViewEmployeeSelfAppraisal(this)'></i>";
+           //if (data == 0 || data == null || data == undefined) {
+           //    return 'On Process';
+           //}
+           //if (data >= 1) {
+           //    return 'Completed';
+
+           //}
+
+           return data;
+
+       }
+                 },
+
+
+
+                   {
+                       "aTargets": [6], "mRender": function (data, type, row) {
+                           if (data == 3) {
+                               return '<span   class="badge" style="background-color:green;">Completed</span>'
+                           }
+                           //if (data == 2) {
+                           //    if (row.ASSIGNED_MANAGER_ID == 0) {
+                           //        return '<span class="badge" style="background-color:#b17018;">Self Rated</span>'
+                           //    }
+                           //    else {
+                           //        return '<span class="badge" style="background-color:#060df1b8;">Manager Rated</span>'
+                           //    }
+                           //}
+                           if (data == 1) {
+                               return '<span   class="badge" style="background-color:#b17018;">Self Rated</span>'
+                           }
+                           if (data == 2) {
+                               if (row.RATING_MANAGER_ID == 0) {
+                                   return '<span class="badge" style="background-color:#b17018;">Self Rated</span>'
+                               }
+                               else {
+                                   return '<span class="badge" style="background-color:#060df1b8;">Manager Rated</span>'
+                               }
+                           }
+                           else {
+                               return '<span   class="badge" style="background-color:#dc3535c4;">Pending</span>'
+                           }
+                       }
+
+
+                   }
+                   ,
+
+                  {
+                      "aTargets": [5]
+       , "mRender": function (data, type, row) {
+           return dateValueFormat(data);
+       }
+                  }, {
+                      "aTargets": [7]
+       , "mRender": function (data, type, row) {
+           if (data == '@Session["UserID"].ToString()') {
+               return 'Evaluation'
+           }
+           else {
+               return 'Feedback';
+           }
+
+       }
+                  },
+
+                {
+                    "aTargets": [8]
+       , "mRender": function (data, type, row) {
+           return "<i class='fa fa-eye spanedit' onclick='getManagerViewEmployeeSelfAppraisal(this)'></i>";
+       }
+                },
+
+                 {
+                     "aTargets": [0]
+       , "mRender": function (data, type, row) {
+           if (data != null) {
+
+               return data;
+           }
+           else {
+               return 'Not Set';
+           }
+       }
+                 },
+            ],
+        });
+    }
+    function dateValueFormat(date) {
+        var d = new Date(date);
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                        "Aug", "Sep", "Oct", "Nov", "Dec"];
+        //  var val = d.getDate() + "-" + months[d.getMonth()] + "-" + d.getFullYear();
+        var val = months[d.getMonth()] + " " + d.getDate() + " " + d.getFullYear();
+        return val;
+    }
+    function getManagerViewEmployeeSelfAppraisal(thisval) {
+
+        var rowval = thisval.closest("tr");
+        var row_data = $('#ManagerUnderEmployeesTable').DataTable().row(rowval).data();
+        window.location.href = '@Url.Content("~/PerformanceAppraisal/EmployeeSelfAppraisal?empid=")' + row_data.EMP_ID + '&AppraisalProcessId=' + row_data.APPRAISAL_ID + '&ViewType=' + 1;
+    }
+
+    function backToDashboard() {
+
+        if (sessionrole == "1") {
+            window.location.href = '@Url.Content("~/Messages/AdminMessages")';
+        }
+        else{
+            window.location.href = '@Url.Content("~/Messages/ShowMessages")';
+        }
+
+    }
+
+
+</script>
+
+

@@ -1,0 +1,142 @@
+﻿@{
+    ViewBag.Title = "Qualification";
+}
+@System.Web.Optimization.Scripts.Render("~/bundles/datatable")
+<script src="~/Scripts/ValidationFunction.js"></script>
+
+<script>
+    var groupTable;
+    $(document).ready(function () {
+        loadTable();
+        function loadTable() {
+            groupTable = $("#getqualification").DataTable({
+                "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+                "iDisplayLength": 5,
+                "bFilter": true,
+                "bProcessing": true,
+                "ajax": {
+                    type: 'Get',
+                    url: '@Url.Content("~/Qualification/Read")',
+                    dataSrc: function (data) {
+                        return JSON.parse(data);
+                    }
+                },
+                "aoColumns": [
+                    { "mData": "id", "sTitle": "ID", "sClass": "text-right", "sWidth": "80px", "bVisible": false }
+                    , { "mData": "Qualification", "sTitle": "Qualification", "sClass": "text-left" }
+                    , { "mData": "id", "sTitle": "Edit", "sClass": "text-center", "bSortable": true, "sWidth": "1%", "orderable": false }
+                ],
+                "aoColumnDefs": [{
+                    "aTargets": [2]
+                    , "mRender": function (data, type, row) {
+                        return '<span style="cursor:pointer;" onclick= editQualification($(this).closest("tr")) id="editbtn" class="fa fa-edit"></span>';
+                    }
+                }]
+            });
+        }
+    });
+
+
+    function AddEdit(actionurl, formid) {
+        if (checkForm(formid)) {
+            $.ajax({
+                type: 'POST',
+                url: actionurl,
+                data: {
+                    Id: $("#rowId").val(),
+                    qualification: $("#editqualification").val().trim()
+                },
+                success: function (response) {
+                    if (parseInt(response.success) == 1) {
+                        $("#qualification").modal('hide');
+                        groupTable.ajax.reload();
+                        toastr.success("Successfully Added");
+                    } else {
+                        $('.field-validation-valid').text("Failed To Update, Already Exists");
+                        $('.field-validation-valid').show();
+                    }
+                },
+                error: function (a, b, c) {
+                    alert(a + b + c);
+                }
+            });
+        }
+
+    };
+
+    function editQualification(curTr) {
+        var data = groupTable.row(curTr).data();
+        $("#url").val('@Url.Content("~/Qualification/Edit")');
+        $('.field-validation-valid').text("");
+        $("#rowId").val(data.id);
+        $("#editqualification").val(data.Qualification);
+        $("#actiontitle").text("Edit Qualification");
+        $("#qualification").modal('show');
+    };
+
+    function addQualification() {
+        $("#url").val('@Url.Content("~/Qualification/Add")');
+        $('.field-validation-valid').text("");
+        $("#editqualification").val("");
+        $("#actiontitle").text("Add Qualification");
+        $("#qualification").modal('show');
+    }
+
+</script>
+
+<div class="card">
+    <div class="card-header text-center ">
+        Qualification
+    </div>
+    <div class="card-body">
+        <div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="text-right ">
+                        <button type="button" onclick="addQualification()" class="btn btn-primary btn-sm" id="create"><span class="fa fa-plus-circle"></span>&nbsp;&nbsp;Add</button>
+                    </div>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="row m-t-15">
+
+                <div class="MTS_Table">
+                    <table id="getqualification" class="table table-bordered table-hover tabel-sm table-responsive" cellspacing="0" width="100%">
+                    </table>
+                </div>
+
+            </div>
+    </div>
+</div>
+</div>
+
+<div class="modal fade" id="qualification">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="actiontitle" class="modal-title"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times</span></button>
+
+            </div>
+            <div class="modal-body">
+                <form id="QualificationList">
+                    <input type="hidden" id="rowId" value="">
+                    <input type="hidden" class="form-control" id="url" value="">
+                    <div class="form-group">
+                        <label>Qualification</label>
+                        <input type="text" class="form-control" id="editqualification" value="" data-val-regex-pattern="^[a-zA-Z ]+$" required>
+                        <span class="field-validation-valid" style="color: red; font: bold; display: none"></span>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="dataurl">
+                    <div>
+                        <button type="button" id="save" class="btn btn-success" onclick="AddEdit($('#url').val(), 'QualificationList')">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

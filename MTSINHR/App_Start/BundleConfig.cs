@@ -11,8 +11,9 @@ namespace MTSINHR.App_Start
                       "~/Scripts/jquery-3.2.1.js",
                                   "~/Content/bootstrap-4.0.0-beta/js/popper.min.js",
             "~/Content/bootstrap-4.0.0-beta/js/bootstrap.js",
-                      "~/Scripts/jquery.validate.js",
-                      "~/Scripts/jquery.validate.unobtrusive.js"));
+              "~/Scripts/jquery-validate-1.15/jquery.validate.js",
+              "~/Scripts/jquery-validate-1.15/jquery.validate.unobtrusive.js" 
+                     ));
 
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
 

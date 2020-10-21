@@ -1,0 +1,476 @@
+﻿@model MTSINHR.Models.AssignAsset
+
+@{
+    List<SelectListItem> AssignTypeItems = new List<SelectListItem>();
+
+    AssignTypeItems.Add(new SelectListItem
+    {
+        Text = "Allot",
+        Value = "1",
+
+    });
+    AssignTypeItems.Add(new SelectListItem
+    {
+        Text = "Custody",
+        Value = "2"
+    });
+
+}
+@*@{
+    List<SelectListItem> empList = new List<SelectListItem>();
+
+    empList.Add(new SelectListItem
+    {
+        Text = "Not Assign",
+        Value = "0",
+
+    });
+
+}*@
+<link href="~/Content/css/select2.min.css" rel="stylesheet" />
+@*<link href="~/Content/css/select2.css" rel="stylesheet" />*@
+<script src="~/Scripts/ValidationFunction.js"></script>
+<script src="~/Scripts/bootbox.min.js"></script>
+@System.Web.Optimization.Scripts.Render("~/bundles/datepicker")
+@System.Web.Optimization.Styles.Render("~/bundles/datepickercss")
+<script src="~/Scripts/select2.min.js"></script>
+
+
+
+<style>
+    .requir {
+        border-left: 2px solid red !important;
+    }
+    .select2cls{
+        height:200;
+    }
+</style>
+<script>
+    var assignAsset = [];
+    $(document).ready(function () {
+        
+        $('.select2cls').select2({ "width": "100%" });
+        $('#ActionDate').datepicker({
+            format: 'mm/dd/yyyy',
+            dateFormat: "dd/mm/yy",
+            changeMonth: true,
+            changeYear: true,
+            autoclose: true,
+            endDate: '+0d',
+        }).keydown(function (e) {
+
+            if (e.keyCode == 8 || e.keyCode == 46) {
+                $('#ActionDate').val('');
+            }
+        });
+
+
+
+        $('#AssetTypeId').on('change', function () {
+            
+            var Id = $('#AssetTypeId').val();
+            if ($('#AssetTypeId').val() != null && $('#AssetTypeId').val() != '') {
+                getdata(Id);
+
+            }
+            else {
+                //$('#AssetNameId').empty();
+                $('#AssetNameId').val('');
+                $('#AssetNameId').prop("disabled", true);
+                $('#AssetNameId').trigger('change');
+            }
+        });
+
+        $('#AssetNameId').on('change', function () {
+
+            if ($('#AssetNameId').val() != null && $('#AssetNameId').val() != '') {
+                var Id = $('#AssetTypeId').val();
+                var assetname = $('#AssetNameId').val();
+                getassetname(Id, assetname);
+            }
+            else {
+                $("#ItemCode").val('');
+                $("#ItemCode").prop('disabled', true);
+                $('#ItemCode').trigger('change');
+            }
+
+        });
+
+        $('#AssignTypeId').on('change', function () {
+            $("#LocationId").select2('val', '');
+            $("#LocationDetails").select2('val', '');
+            var assigntype = $('#AssignTypeId').val();
+            if (assigntype == 2) {
+                $('#LocationId').attr("disabled", false);
+            }
+            else {
+                $('#LocationId').val('');
+                $('#LocationId').attr("disabled", true);
+                $('#LocationDetails').val('');
+                $('#LocationDetails').attr("disabled", true);
+            }
+        });
+
+      
+
+      
+        function getdata(getvalue) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/AssignAsset/AssetName")',
+                data: { Id: getvalue },
+                success: function (result) {
+
+                    if (result.success == true) {
+                        $("#AssetNameId").empty();
+                        $("#AssetNameId").attr("disabled", false);
+                        $.each(JSON.parse(result.AssetList), function (i, Val) { $("#AssetNameId").append('<option value="' + Val.Value + '">' + Val.Text + '') });
+                        if (getvalue == '@ViewBag.Assettype') {
+                            $("#AssetNameId").val('@ViewBag.Assetname');
+                        }
+                        $("#AssetNameId").trigger('change');
+
+
+                    }
+                }
+            })
+
+        }
+
+        function getassetname(type, name) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/AssignAsset/GetItemCode")',
+                data: { Assettypeid: type, Assetnameid: name },
+                success: function (result) {
+
+                    if (result.success == true) {
+                        $("#ItemCode").empty();
+                        $("#ItemCode").attr("disabled", false);
+                        $.each(JSON.parse(result.ItemCodeList), function (i, Val) { $("#ItemCode").append('<option    value="' + Val.Value + '">' + Val.Text + '') });
+                        //    $('#ItemCode').select2('val', '@ViewBag.ItemCode');
+                        if (type == '@ViewBag.Assettype' && name == '@ViewBag.Assetname') {
+                            $("#ItemCode").val('@ViewBag.Item');
+                        }
+                        $("#ItemCode").trigger('change');
+                    }
+                }
+            })
+        }
+        if ('@ViewBag.Assettype' != '' && '@ViewBag.Assettype' != null) {
+            
+            $("#AssetTypeId").val('@ViewBag.Assettype');
+            $('#AssetTypeId').select2('val', '@ViewBag.Assettype');
+            getdata('@ViewBag.Assettype');
+            //$("#AssetName").prop('disabled', false);
+            getassetname('@ViewBag.Assettype', '@ViewBag.Assetname');
+
+            //$("#Item").prop('disabled', false);
+        }
+        $('#ItemCode').on('change', function () {
+            var startDate=null;
+            if ($('#ItemCode').val() != null && $('#ItemCode').val() != '') {
+                $.ajax({
+                    type: 'POST',
+                    async:false,
+                    url: '@Url.Content("~/AssignAsset/GetDescription")',
+                    data: { Id: $('#ItemCode').val() },
+                    success: function (result) {
+                        let json = JSON.parse(result);
+                        $("#Description").empty();
+                        $("#Description").val(json[0].ASSET_DESCRIPTION);
+                        $('#ActionDate').datepicker('setStartDate', dateFormat(json[0].date));
+                        startDate = json[0].date;
+                        $("#Description").attr("disabled", true);
+                    }
+                });
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/AssignAsset/GetLastAssignedEmployee")',
+                    data: { Id: $('#ItemCode').val() },
+                    success: function (result) {
+
+                        let json = JSON.parse(result);
+                        $("#CurrentlyAssignedEmployeeId").empty();
+                        $("#CurrentlyAssignedEmployeeId").val(json);
+                        $("#CurrentlyAssignedEmployeeId").attr("disabled", true);
+                    }
+                });
+                $.ajax({
+                    type: 'get',
+                    url: '@Url.Content("~/AssetDetails/ReadAssetDetail")',
+                    data: { "ItemCode": $("#ItemCode").val() },
+
+                    success: function (data) {
+                        assetDetail = JSON.parse(data);
+                        if (startDate == null || startDate == undefined) {
+                            $('#ActionDate').datepicker('setStartDate', new Date(assetDetail[0].Purchased_Date));
+                        }
+
+                    }
+                });
+              //  $('#ActionDate').datepicker('setStartDate', new Date(assetDetail[0].Purchased_Date));
+            }
+            else {
+                $("#CurrentlyAssignedEmployeeId").val('');
+                $("#Description").val('');
+
+
+         
+
+            }
+        })
+
+
+        $('#LocationId').on('change', function () {
+            $("#LocationDetails").select2('val', '');
+
+            if ($('#LocationId').val() != null && $('#LocationId').val() != '') {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/AssignAsset/GetLocationDetails")',
+                    data: { id: $('#LocationId').val() },
+                    success: function (result) {
+                        if (result.success == true) {
+                            $('#LocationDetails').attr("disabled", false);
+                            $("#LocationDetails").empty();
+                            $.each(JSON.parse(result.LocationDetailList), function (i, Val) { $("#LocationDetails").append('<option value="' + Val.Value + '">' + Val.Text + '') });
+                        }
+                    }
+                })
+            }
+
+            else {
+                $('#LocationDetails').attr("disabled", true);
+            }
+        })
+
+    });
+
+    function dateValueFormat(date) {
+
+        var d = new Date(date);
+        var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                           "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var val = d.getDate() + "-" + months[d.getMonth()] + "-" + d.getFullYear();
+        return val;
+    }
+
+    function AssetsAddEdit() {
+        $('#add').attr("disabled", true);
+        //   var ActionDate = $('#ActionDate').val();
+        var date = $('#ActionDate').val();
+        assignAsset = {
+
+            AssetTypeId: $('#AssetTypeId').val(),
+            AssetNameId: $('#AssetNameId').val(),
+            ItemCode: $('#ItemCode').val(),
+            Description: $('#Description').val().trim(),
+            AssignTypeId: $('#AssignTypeId').val(),
+            EmployeeId: $('#EmployeeId').val(),
+            CurrentlyAssignedEmployeeId: $('#CurrentlyAssignedEmployeeId').val(),
+            LocationId: $('#LocationId').val(),
+            LocationDetails: $('#LocationDetails').val(),
+            ActionDate: dateValueFormat(date),
+            Notes: $('#Notes').val().trim(),
+
+
+        }
+
+
+        var url = '@Url.Content("~/AssignAsset/Add")';
+
+        if ($("#assignasset").valid()) {
+            //   $('#ActionDate').val(dateValueFormat(ActionDate));
+            //ActionDate = dateValueFormat(ActionDate);
+            $.ajax({
+                type: "Post",
+                // data: $("#assignasset").serialize(),
+                data: { assign: assignAsset },
+                url: url,
+                success: function (result) {
+
+                    if (result.success == "1") {
+                        toastr.success("Successfully Added");
+                        $("#assignasset")[0].reset();
+                        //    $(".select2cls")[0].reset();
+                        $('#EmployeeId ').select2('val', '');
+                        $("#AssetTypeId").trigger('change');
+                    }
+                    else {
+                        $(".errorspan").show();
+                        toastr.error("Failed to assign");
+                    }
+                }
+            });
+        }
+        $('#add').attr("disabled", false);
+    }
+    function dateFormat(date) {
+
+        var d = new Date(date);
+        var month = ('0' + (d.getMonth() + 1)).slice(-2);
+        var date1 = ('0' + d.getDate()).slice(-2);
+        var DateFormat = month + '/' + date1 + '/' + d.getFullYear();
+        return DateFormat;
+    }
+</script>
+
+<form id="assignasset" method="post" autocomplete="off">
+    <div class="panel">
+        <div class="card">
+            <div class="card-header p-b-0">
+                <h4>Assign Asset </h4>
+                <div class="card-title text-center">
+                    <label id="addedit"></label>
+                </div>
+            </div>
+            <div class="card-block">
+                <div class="content-align p15">
+                    <div class="row">
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.AssetTypeId)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.AssetTypeId, new System.Web.Mvc.SelectList(ViewBag.AssetCategory, "value", "Text"), new { @class = "form-control select2cls requir" })
+                                    @Html.ValidationMessageFor(model => model.AssetTypeId)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.AssetNameId)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.AssetNameId, new System.Web.Mvc.SelectList(ViewBag.AssetNames, "value", "Text"), new { @class = "form-control select2cls requir", @disabled = "disabled" })
+                                    @Html.ValidationMessageFor(model => model.AssetNameId)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.ItemCode)
+                                </div>
+                                <div class="editor-field ">
+                                    @Html.DropDownListFor(model => model.ItemCode, new System.Web.Mvc.SelectList(ViewBag.ItemCode, "value", "Text"), new { @class = "form-control  select2cls requir", @disabled = "disabled" ,height=100 })
+                                    @Html.ValidationMessageFor(model => model.ItemCode)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Description)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextAreaFor(model => model.Description, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Description)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.AssignTypeId)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.AssignTypeId, new System.Web.Mvc.SelectList(AssignTypeItems, "value", "Text"), new { @class = "form-control select2cls requir" })
+                                    @Html.ValidationMessageFor(model => model.AssignTypeId)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.EmployeeId)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.EmployeeId, new System.Web.Mvc.SelectList(ViewBag.EmployeeNames, "value", "Text"), new { @class = "form-control requir select2cls" })
+                                    @Html.ValidationMessageFor(model => model.EmployeeId)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.CurrentlyAssignedEmployeeId)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.CurrentlyAssignedEmployeeId, new { @class = "form-control" })
+                                   @* @Html.ValidationMessageFor(model => model.CurrentlyAssignedEmployeeId)*@
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    Location
+                                </div>
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.LocationId, new System.Web.Mvc.SelectList(ViewBag.Locations, "Value", "Text"), new { @class = "form-control select2cls requir", @disabled = "disabled" })
+                                    @Html.ValidationMessageFor(model => model.LocationId)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.LocationDetails)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.DropDownListFor(model => model.LocationDetails, new System.Web.Mvc.SelectList(ViewBag.LocationDetails, "Value", "Text"), new { @class = "form-control select2cls requir", @disabled = "disabled" })
+                                    @Html.ValidationMessageFor(model => model.LocationDetails)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.ActionDate)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.ActionDate, new { @class = "form-control requir", onkeydown = "return false", placeholder = "MM/DD/YYYY"  })
+                                    @Html.ValidationMessageFor(model => model.ActionDate)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(model => model.Notes)
+                                </div>
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(model => model.Notes, new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Notes)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pull-right p-b-10 p-r-10">
+                    <button type="button" id="cancel" onclick="@("window.location.href='" + @Url.Action("AssetDetail", "AssetDetails") + "'");" class="btn btn-light m-r-5">Close</button>
+                    <button type="button" id="add" class="btn btn-primary spanedit " onclick="AssetsAddEdit()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+
+

@@ -1,0 +1,39 @@
+----------------------------------------
+Timestamp: 05/21/2019 04:01:02 PM
+ Message: HandlingInstanceID: 34d48ffa-9b77-48e2-883f-505459d4edf2
+An exception of type 'System.IndexOutOfRangeException' occurred and was caught.
+-------------------------------------------------------------------------------
+05/21/2019 16:01:02
+Type : System.IndexOutOfRangeException, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089
+Message : There is no row at position 2.
+Source : System.Data
+Help link : 
+Data : System.Collections.ListDictionaryInternal
+TargetSite : NodePath GetNodeByIndex(Int32)
+HResult : -2146233080
+Stack Trace :    at System.Data.RBTree`1.GetNodeByIndex(Int32 userIndex)
+   at System.Data.DataRowCollection.get_Item(Int32 index)
+   at LeaveApply.Controllers.LeaveApplyController.GetAllLeaveType() in D:\local_SVN2\branches\Rosario\MTSINHR\Controllers\LeaveApplyController.cs:line 60
+
+Additional Info:
+
+MachineName : MTS0016
+TimeStamp : 05/21/2019 10:31:02 AM
+FullName : Microsoft.Practices.EnterpriseLibrary.ExceptionHandling, Version=6.0.0.0, Culture=neutral, PublicKeyToken=null
+AppDomainName : /LM/W3SVC/3/ROOT-3-132029082418996328
+ThreadIdentity : 
+WindowsIdentity : MTS0016\mtsuser
+
+ Category: AllErrorLog
+ Priority: 0
+ EventId: 100
+ Severity: Error
+ Title:Enterprise Library Exception Handling
+ Machine: MTS0016
+ App Domain: /LM/W3SVC/3/ROOT-3-132029082418996328
+ ProcessId: 14968
+ Process Name: C:\Program Files (x86)\IIS Express\iisexpress.exe
+ Thread Name: 
+ Win32 ThreadId:14100
+ Extended Properties: 
+----------------------------------------

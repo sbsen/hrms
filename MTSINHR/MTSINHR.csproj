@@ -56,10 +56,6 @@
     <Reference Include="DocumentFormat.OpenXml">
       <HintPath>..\packages\DocumentFormat.OpenXml.2.5\lib\DocumentFormat.OpenXml.dll</HintPath>
     </Reference>
-    <Reference Include="HRConstants, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\HRConstants\bin\Debug\HRConstants.dll</HintPath>
-    </Reference>
     <Reference Include="Humanizer">
       <HintPath>..\packages\Humanizer.Core.2.0.1\lib\portable-win+net45+wp8+wpa81\Humanizer.dll</HintPath>
     </Reference>
@@ -247,15 +243,14 @@
     <Compile Include="Models\Address.cs" />
     <Compile Include="Models\AllEmployeeDocuments.cs" />
     <Compile Include="Models\AMC_Insurance.cs" />
-    <Compile Include="Models\apply.cs" />
     <Compile Include="Models\AssetDashboard.cs" />
     <Compile Include="Models\AssetDetails.cs" />
     <Compile Include="Models\AssetMaintenanceDetails.cs" />
     <Compile Include="Models\AssetReportView.cs" />
     <Compile Include="Models\Assets.cs" />
+    <Compile Include="Models\AssetsEntry.cs" />
     <Compile Include="Models\AssetSale.cs" />
     <Compile Include="Models\AssetsCategory.cs" />
-    <Compile Include="Models\AssetsEntry.cs" />
     <Compile Include="Models\AssetsMaster.cs" />
     <Compile Include="Models\AssetsNameMaster.cs" />
     <Compile Include="Models\AssignAsset.cs" />
@@ -329,6 +324,7 @@
     <Content Include="Content\cleditor\jquery.cleditor.css" />
     <Content Include="Content\cleditor\jquery.cleditor.min.js" />
     <Content Include="Content\css\bootstrap-datetimepicker.css" />
+    <Content Include="Content\css\bxslider-4.2.1\jquery.bxslider.css" />
     <Content Include="Content\css\css\jquery-ui-demo-ie8.css" />
     <Content Include="Content\css\css\jquery-ui-demo.css" />
     <Content Include="Content\css\css\jquery.fileupload-noscript.css" />
@@ -338,7 +334,11 @@
     <Content Include="Content\css\css\style.css" />
     <Content Include="Content\css\font-awesome.css" />
     <Content Include="Content\css\font-awesome.min.css" />
+    <Content Include="Content\css\range.css" />
+    <Content Include="Content\css\select2.min.css" />
+    <Content Include="Content\css\select2.png" />
     <Content Include="Content\css\style.css" />
+    <Content Include="Content\css\summary.css" />
     <Content Include="Content\DataTables\css\autoFill.bootstrap.css" />
     <Content Include="Content\DataTables\css\autoFill.bootstrap.min.css" />
     <Content Include="Content\DataTables\css\autoFill.bootstrap4.css" />
@@ -644,8 +644,13 @@
     <Content Include="Content\viewer.min.css" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
+    <Content Include="Images\BDImg.png" />
+    <Content Include="Images\Birthday2.png" />
+    <Content Include="Images\BirthdayImg.png" />
     <Content Include="Images\bg.png" />
+    <Content Include="Images\bg1.png" />
     <Content Include="Images\birthday.jpg" />
+    <Content Include="Images\birthday_v1.jpg" />
     <Content Include="Images\Changedimage.jpg" />
     <Content Include="Images\company-names-for-sale.jpg" />
     <Content Include="Images\company-real-estate.jpg" />
@@ -658,15 +663,27 @@
     <Content Include="Images\IMG_209078.png" />
     <Content Include="Images\logo-inner.png" />
     <Content Include="Images\logo.png" />
+    <Content Include="Images\profile_default.jpg" />
     <Content Include="Images\slider1.jpg" />
+    <Content Include="Images\User-female.png" />
+    <Content Include="Images\User-male.png" />
     <Content Include="Images\Usericon.png" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Images\VOLLMER_Company_01.jpg" />
+    <Content Include="Images\xchef.png" />
+    <Content Include="Images\xchefX.png" />
     <Content Include="img\loading.gif" />
     <Content Include="img\progressbar.gif" />
+    <Content Include="Message Images\company-names-for-sale.jpg" />
+    <Content Include="Message Images\company-real-estate.jpg" />
+    <Content Include="Message Images\company-registration-slider-4.jpg" />
+    <Content Include="Message Images\company3.jpg" />
+    <Content Include="Message Images\dormant-company.jpg" />
+    <Content Include="Message Images\home-13-1280x443.jpg" />
+    <Content Include="Message Images\VOLLMER_Company_01.jpg" />
     <Content Include="Rotativa\wkhtmltopdf.exe" />
     <Content Include="Scripts\app.js" />
     <Content Include="Scripts\bootbox.js" />
@@ -680,6 +697,7 @@
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\bootstrap_dataTable.js" />
     <Content Include="Scripts\bxslider-4.2.1\jquery.bxslider.js" />
+    <Content Include="Scripts\circles.js" />
     <Content Include="Scripts\DataTable-Excel-Export\buttons.html5.min.js" />
     <Content Include="Scripts\DataTable-Excel-Export\buttons.print.min.js" />
     <Content Include="Scripts\DataTable-Excel-Export\dataTables.buttons.min.js" />
@@ -749,6 +767,7 @@
     <Content Include="Scripts\DataTables\dataTables.select.min.js" />
     <Content Include="Scripts\DataTables\dataTables.semanticui.js" />
     <Content Include="Scripts\DataTables\dataTables.semanticui.min.js" />
+    <Content Include="Scripts\DataTables\datatables.sorting.natural.js" />
     <Content Include="Scripts\DataTables\dataTables.uikit.js" />
     <Content Include="Scripts\DataTables\dataTables.uikit.min.js" />
     <Content Include="Scripts\DataTables\excel.min.js" />
@@ -856,6 +875,8 @@
     <Content Include="App_Browsers\qt.browser" />
     <Content Include="Content\toastr.scss" />
     <Content Include="Content\toastr.less" />
+    <Content Include="Logs\1705b128-9c4c-435a-80db-6275ade6e18dAllError_rolling.log" />
+    <Content Include="Logs\AllError_rolling.log" />
     <None Include="Properties\PublishProfiles\local.pubxml" />
     <None Include="Properties\PublishProfiles\MTSHR1.pubxml" />
     <None Include="Properties\PublishProfiles\PUBLISH.pubxml" />
@@ -966,6 +987,7 @@
     <Content Include="Scripts\wysihtml5-0.0.3\wysihtml-toolbar.js" />
     <Content Include="Scripts\wysihtml5-0.0.3\wysihtml.js" />
     <Content Include="Scripts\wysihtml5-0.0.3\wysihtml5-0.3.0.js" />
+    <Content Include="Views\PerformanceAppraisal\SelfAppraisal.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -975,7 +997,9 @@
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
-    <Content Include="Views\Web.config" />
+    <Content Include="Views\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Views\LeaveType\LeaveType.cshtml" />
     <Content Include="Views\GovernmentID\GovernmentID.cshtml" />
     <Content Include="Views\Relationship\Relationship.cshtml" />
@@ -1050,6 +1074,20 @@
     <Content Include="Views\Vendors\Vendors.cshtml" />
     <Content Include="Views\Asset\AssetEntry.cshtml" />
     <Content Include="Views\AssignAsset\AssignAsset.cshtml" />
+    <Content Include="Views\AssetReport\AssetReport.cshtml" />
+    <Content Include="Views\AssetReportVIew\AssetReportView.cshtml" />
+    <Content Include="Views\AttendanceLog\MonthlyAttendanceDetails.cshtml" />
+    <Content Include="Views\EmployeeEntry\ReadEmployeeEntry.cshtml" />
+    <Content Include="Views\AttendanceLog\GetMonthlyAttendance.cshtml" />
+    <Content Include="Views\AttendanceLog\AttendanceLog.cshtml" />
+    <Content Include="Views\AssetDashboard\AssetDashboard.cshtml" />
+    <Content Include="Views\EmployeeList\_PV_AssignManager.cshtml" />
+    <Content Include="Views\Messages\ConfigureMessages.cshtml" />
+    <Content Include="Views\LeavePolicy\LeavePolicy.cshtml" />
+    <Content Include="Views\Messages\demo.cshtml" />
+    <Content Include="Views\PerformanceAppraisal\TeamMembersAppraisal.cshtml" />
+    <Content Include="Views\PerformanceAppraisal\AppraisalMapping.cshtml" />
+    <Content Include="Views\PerformanceAppraisal\AppraisalProcessDetails.cshtml" />
     <Content Include="Views\Module\Module.cshtml" />
     <Content Include="Views\Module\PV_Module_Approval.cshtml" />
     <Content Include="Views\Payroll\MonthlyVariance.cshtml" />
@@ -1060,32 +1098,21 @@
     <Content Include="Views\Payroll\_PV_EmployeeLossOfPayDetails.cshtml" />
     <Content Include="Views\Payroll\_PV_EmployeePayrollDeails.cshtml" />
     <Content Include="Views\Payroll\_PV_PreviousBonusDetail.cshtml" />
-    <Content Include="Views\PerformanceAppraisal\AppraisalMapping.cshtml" />
-    <Content Include="Views\PerformanceAppraisal\AppraisalProcessDetails.cshtml" />
     <Content Include="Views\PerformanceAppraisal\ModeratorReviewPage.cshtml" />
-    <Content Include="Views\PerformanceAppraisal\SelfAppraisal.cshtml" />
-    <Content Include="Views\PerformanceAppraisal\TeamMembersAppraisal.cshtml" />
-    <Content Include="Views\LeavePolicy\LeavePolicy.cshtml" />
     <Content Include="Views\ITDeclaration\ITDeclarationEmployeeDetails.cshtml" />
     <Content Include="Views\ITDeclaration\ITDeclarationForm.cshtml" />
-    <Content Include="Views\EmployeeEntry\ReadEmployeeEntry.cshtml" />
-    <Content Include="Views\AttendanceLog\AttendanceLog.cshtml" />
-    <Content Include="Views\AttendanceLog\GetMonthlyAttendance.cshtml" />
-    <Content Include="Views\AttendanceLog\MonthlyAttendanceDetails.cshtml" />
-    <Content Include="Views\AssetReportVIew\AssetReportView.cshtml" />
-    <Content Include="Views\AssetReport\AssetReport.cshtml" />
-    <Content Include="Views\AssetDashboard\AssetDashboard.cshtml" />
+    <Content Include="Uploads\Salary Statement_Jan%2718_Projects_COPY.xlsx" />
     <Content Include="Views\UpdateTimeLine\Messages.cshtml" />
     <Content Include="Views\UpdateTimeLine\ShowMessages.cshtml" />
-    <Content Include="Uploads\Salary Statement_Jan%2718_Projects_COPY.xlsx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Images\NewFolder1\" />
-    <Folder Include="Views\Appraisal\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="packages.config" />
+    <Content Include="packages.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\MTS.Login\Views\Account\ChangePassword.cshtml" />
@@ -1139,6 +1166,7 @@
     <Content Include="Areas\MTS.Login\Views\App_LocalResources\Logon.cshtml.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Logon.cshtml.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </Content>
     <Content Include="Areas\MTS.Login\Views\App_LocalResources\PasswordPolicy.cshtml.resx" />
     <Content Include="Areas\MTS.Login\Views\App_LocalResources\RejectReason.cshtml.resx" />
@@ -1150,6 +1178,10 @@
     <Content Include="Areas\MTS.Login\Views\App_LocalResources\UserView.resx" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Constants\HRConstants.csproj">
+      <Project>{cc8a2488-7355-4994-a722-fb788da3a624}</Project>
+      <Name>HRConstants</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DataBlock\DataBlock.csproj">
       <Project>{cd785cab-f697-49e4-827c-22bfdf195f5c}</Project>
       <Name>DataBlock</Name>

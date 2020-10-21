@@ -1,0 +1,69 @@
+﻿<div class="modal-dialog modal-lg">
+    <div class="modal-content">
+        <div class="modal-header card-header">
+            <div class="p-a-md p-l-10 fa fa-lg fa-edit">
+                &nbsp;
+                <b>Previous Bonus Month </b>
+            </div>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body card-body">
+            <div id="LossOfPayDetailsDiv">
+                    <div class="row form-group">
+                        <div class="col-lg-4 text-right">
+                            Select Month :
+                        </div>
+                        <div class="col-lg-5">
+                            <input type="text" id="PrevBonusDate" onkeypress="return false;" onpaste="return false;" class="form-control" />
+                        </div>
+                    </div>
+            </div>
+        </div>
+        <div class="modal-footer card-footer" style="text-align: center">
+            <button type="submit" id="btnLocationMapping" onclick="Update()" class="btn btn-primary btn-sm">
+                <i class="fa fa-save"></i>&nbsp; Update
+            </button>
+            <button type="button" data-dismiss="modal" class="btn btn-primary btn-sm">
+                <i class="fa fa-remove "></i>&nbsp; Close
+            </button>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+
+        var bonusDate = $('#txtPrevBonusdate').val();
+        var date = new Date(bonusDate);
+        var startMonth = new Date(date.getFullYear(), date.getMonth() + 1, 1);
+        $('#PrevBonusDate').datepicker({
+            startDate: startMonth,
+            autoclose: true,
+            minViewMode: 1,
+            format: 'MM-yyyy'
+        });
+    });
+
+    function Update() {
+        if ($('#PrevBonusDate').val() != null && $('#PrevBonusDate').val() != '') {
+
+            $.ajax({
+                type: 'POST',
+                data:{ PrevBounsDate: $('#PrevBonusDate').val() },
+                url: '@Url.Content("~/Payroll/UpdatePrevBounsDate")',
+                success: function (data) {
+                    if (data.result > 0) {
+                        toastr.success('Successfully updated');
+                        $('#txtPrevBonusdate').val($('#PrevBonusDate').val());
+                        $('#PreviousBonusDetailsModal').modal('hide');
+                    }
+                    else {
+                        toastr.warning('Failed to update!');
+                    }
+                }
+            });
+        }
+        else {
+            toastr.warning('Previous Bonus Date is required!');
+        }
+    }
+</script>

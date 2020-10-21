@@ -1,0 +1,57 @@
+﻿@model MTSINHR.Models.Attendance_Log
+@System.Web.Optimization.Scripts.Render("~/bundles/datepicker")
+@System.Web.Optimization.Styles.Render("~/bundles/datepickercss")
+<script src="~/Scripts/bootstrap-datepicker.js"></script>
+<script src="~/Scripts/bootbox.min.js"></script>
+<style>
+    .requir {
+        border-left: 2px solid red !important;
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        $('#Date').datepicker({
+            changeMonth: true,
+            changeYear: true,
+            format: "yyyy/mm",
+            startView: "years",
+            viewMode: "years",
+            endDate:'0m',
+            minViewMode: "months",
+            autoclose: true
+        })
+    });
+</script>
+
+
+<form class="form-signin" action="~/AttendanceLog/MonthlyAttendanceDetails/" method="post" autocomplete="off">
+    <div class="card card-shadow ">
+        <div class="card-header text-center">
+            Monthly Attendance Details
+        </div>
+        <div class="card-body">
+            <div class="form-group">
+                <div class="editor-label">
+                    @Html.LabelFor(model => model.Date)
+                </div>
+                <div class="editor-field">
+                    @Html.TextBoxFor(model => model.Date, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Date)
+                </div>
+            </div>
+            <input type="submit" class="float-right btn btn-sm btn-primary spanedit" value="Display"/>
+        </div>
+    </div>
+</form>
+
+<script>
+    @*function GetAttendanceDetails() {
+        
+        var date = $("#Date").val()
+        if ($("#MonthlyAttendance").valid()) {
+            
+            var date=$("#Date").val();
+            location.href = '@Url.Content("~/AttendanceLog/MonthlyAttendanceDetails?date=")'+date;
+        }
+    }*@
+</script>

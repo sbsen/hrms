@@ -1,0 +1,151 @@
+﻿@model MTSINHR.Models.PaySlip
+
+@{
+    ViewBag.Title = "PaySlip";
+}
+
+
+<html>
+<body style="background-color: white">
+    <div class="row" style="border: solid">
+        <div class="col-sm-3 col-md-6 col-lg-6">
+            <h5 style="color: blue">Maitri Technology Solutions Pvt Ltd</h5>
+            <p>Vukan Towers, 4th Floor, No:81 </p>
+            <p>Thirumalai Pillai Rd, T Nagar, Chennai - 600017</p>
+            <p>Ph.: +91-44-4360-5060   www.mtsin.com</p>
+        </div>
+        <div class="col-sm-3 col-md-6 col-lg-6" style="text-align: -webkit-right">
+            <img src="~/Images/logo.png" />
+            @*<img src="~/Images/xchef.png" />*@
+        </div>
+    </div>
+    <br />
+    <div style="border: solid; background-color: yellow; text-align: center">
+        <h4>PAYSLIP FOR THE MONTH OF SEPTEMBER 2017</h4>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-lg-6" style="border: solid">
+
+            <div class="col-sm-3 col-md-6 col-lg-6">
+                <label>Name :</label>
+                <label id="empname" style="font-weight: bold;">@Model.Employee_Name</label>
+            </div>
+            <div class="col-sm-3 col-md-6 col-lg-6">
+                <label>Emp.ID :</label>
+                <label id="empid" style="font-weight: bold;">@Model.Employee_Id</label>
+            </div>
+            <div class="col-sm-3 col-md-6 col-lg-6">
+                <label>Designation :</label>
+                <label id="designation" style="font-weight: bold;">@Model.Designation</label>
+            </div>
+            <div class="col-sm-3 col-md-6 col-lg-6">
+                <label>Department :</label>
+                <label id="department" style="font-weight: bold;">@Model.Department</label>
+            </div>
+            <div class="col-sm-3 col-md-6 col-lg-6">
+                <label>Date of Joining :</label>
+                <label id="dateofjoin" style="font-weight: bold;">@Model.Dateofjoin</label>
+            </div>
+        </div>
+
+
+
+        <div class="col-lg-6" style="border: solid">
+            <div class="col-sm-3 col-md-6 col-lg-6">
+                <label>Bank Name :</label>
+                <label id="BankName" style="font-weight: bold;">@Model.BankName</label>
+            </div>
+            <div class="col-sm-3 col-md-6 col-lg-6">
+                <label>Bank A/c # :</label>
+                <label id="BankAccno" style="font-weight: bold;">@Model.Accountnumber</label>
+            </div>
+            <div class="col-sm-3 col-md-6 col-lg-6">
+                <label>PAN :</label>
+                <label id="PanNo" style="font-weight: bold;">@Model.Pancard</label>
+            </div>
+            <div class="col-sm-3 col-md-6 col-lg-6">
+                <label>PF Account No :</label>
+                <label id="pfaccount" style="font-weight: bold;">@Model.PF_Account_Number</label>
+            </div>
+            <div class="col-sm-3 col-md-6 col-lg-6">
+                <label>PF - UAN :</label>
+                <label id="pf_uan" style="font-weight: bold;">@Model.PF_UAN</label>
+            </div>
+            <div class="col-sm-3 col-md-6 col-lg-6">
+                <label>Paid Days :</label>
+                <label id="paiddays" style="font-weight: bold;">@Model.Paid_Days</label>
+            </div>
+        </div>
+
+        <div class="col-lg-6" style="border: solid">
+            <div class="col-sm-3 col-md-6 col-lg-12" style="background-color: lightgreen">
+                <label>Earnings</label>
+            </div>
+            <div class="col-sm-3 col-md-6 col-lg-6">
+                <label>Basic :</label>
+                <label id="Basic" style="font-weight: bold;">@Model.Basic</label>
+            </div>
+            <div class="col-sm-3 col-md-6 col-lg-6">
+                <label>HRA :</label>
+                <label id="Hra" style="font-weight: bold;">@Model.HRA</label>
+            </div>
+            <div class="col-sm-3 col-md-6 col-lg-6">
+                <label>Special Allowance :</label>
+                <label id="Sp_Allowance" style="font-weight: bold;">@Model.Special_Allowance</label>
+            </div>
+            <div class="col-sm-3 col-md-6 col-lg-6">
+                <label>Conveyance :</label>
+                <label id="Conveyance" style="font-weight: bold;">@Model.Conveyance</label>
+            </div>
+            <div class="col-sm-3 col-md-6 col-lg-6">
+                <label>Food Allowance :</label>
+                <label id="FoodAllowance" style="font-weight: bold;">@Model.Food_Allowance</label>
+            </div>
+        </div>
+
+        <div class="col-lg-6" style="border: solid">
+            <div class="col-sm-3 col-md-6 col-lg-12" style="background-color: orange">
+                <label>Deducations</label>
+            </div>
+            <div class="col-sm-3 col-md-6 col-lg-6">
+                <label>Income Tax :</label>
+                <label id="IncomeTax" style="font-weight: bold;">@Model.Income_Tax</label>
+            </div>
+            <div class="col-sm-3 col-md-6 col-lg-6">
+                <label>PF :</label>
+                <label id="Pf_No" style="font-weight: bold;">@Model.PF</label>
+            </div>
+            <div class="col-sm-3 col-md-6 col-lg-6">
+                <label>Professional Tax :</label>
+                <label id="Prof_Tax" style="font-weight: bold;">@Model.Professional_Tax</label>
+            </div>
+            <div class="col-sm-3 col-md-6 col-lg-6">
+                <label>Food Coupon :</label>
+                <label id="Food_Coupon" style="font-weight: bold;">@Model.Meal_Pass</label>
+            </div>
+
+        </div>
+
+        <div class="col-sm-3 col-md-6 col-lg-6" style="border: solid; background-color: skyblue">
+            <label>Gross Total :</label>
+            <label id="GrossTotal" style="font-weight: bold;"></label>
+        </div>
+
+        <div class="col-sm-3 col-md-6 col-lg-6" style="border: solid; background-color: skyblue">
+            <label>Total Deductions :</label>
+            <label id="TotalDeduct" style="font-weight: bold;"></label>
+        </div>
+
+        <div class="col-sm-3 col-md-6 col-lg-6" style="border: solid; background-color: greenyellow">
+            <label>Net Pay :</label>
+            <label id="NetPay" style="font-weight: bold;"></label>
+        </div>
+
+        <div class="col-sm-3 col-md-6 col-lg-6" style="border: solid; background-color: greenyellow">
+            <label>Rupees :</label>
+            <label id="Rupees" style="font-weight: bold;"></label>
+        </div>
+    </div>
+</body>
+</html>

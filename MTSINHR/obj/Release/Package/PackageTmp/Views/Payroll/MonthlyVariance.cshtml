@@ -1,0 +1,723 @@
+﻿
+@{
+    ViewBag.Title = "Payroll";
+}
+@System.Web.Optimization.Scripts.Render("~/bundles/datatable")
+@System.Web.Optimization.Styles.Render("~/bundles/datepickercss")
+@System.Web.Optimization.Scripts.Render("~/bundles/datepicker")
+<link href="~/Content/css/select2.min.css" rel="stylesheet" />
+<script src="~/Scripts/select2.min.js"></script>
+<link href="~/Content/bootstrap-datepicker.css" rel="stylesheet" />
+
+<style>
+    .nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
+        color: #495057;
+        background-color: #d1d0ceab;
+        border-color: #ddd #ddd #fff;
+    }
+</style>
+
+<div class="card">
+        <div class="card-header" id="MonthlyVariance">
+            Monthly Variance
+        </div>
+        <div class="card-body">
+            <div class="row" id="EmployeeDetailsList">
+                <div class="row col-lg-12">
+                    <div class="col-lg-4 form-group row">
+                        <div class="col-lg-4">
+                            <label>Employee Name</label>
+                        </div>
+                        <div class="col-lg-8">
+                            <select type="text" class="form-control select2cls" id="drpdwnEmpName">
+                                <option value="0">--Select Employee Name--</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 form-group row">
+                        <div class="col-lg-4">
+                            <label>Employee ID</label>
+                        </div>
+                        <div class="col-lg-8">
+                            <input type="text" class="form-control requir empcls" id="EmployeeID" />
+                        </div>
+                    </div>
+                    <div class="col-lg-4 form-group row">
+                        <div class="col-lg-4">
+                            <label>Employee Designation</label>
+                        </div>
+                        <div class="col-lg-8">
+                            <input type="text" id="EmpDesgn" class="form-control empcls monthlycls" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row col-lg-12">
+                    <div class="col-lg-4 form-group row">
+                        <div class="col-lg-4">
+                            <label>Employee Department</label>
+                        </div>
+                        <div class="col-lg-8">
+                            <input type="text" class="form-control requir empcls" id="EmployeeDept" />
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 form-group row">
+                        <div class="col-lg-4">
+                            <label>Date of Join</label>
+                        </div>
+                        <div class="col-lg-8">
+                            <input type="text" id="DOJ" class="form-control empcls  monthlycls" />
+                        </div>
+                    </div>
+                    <div class="col-lg-4 form-group row">
+                    </div>
+                </div>
+
+
+
+                @*<hr id="break" style="background-color:black;">*@
+                @*<div class="card-header col-lg-12 text-center">
+                Payroll Details
+            </div>*@
+                <div class="row col-lg-12">
+                    <hr style="background-color:#ddd;" class="col-sm-12">             
+                </div>
+            </div>
+            <button type="button" class="btn btn-success text-left" onclick="showDetails()" >Add Monthly Variance  <i class="fa fa-plus" style="font-size:18px"></i></button>
+            <br/>
+            <div class="row"  id="AddMonthlyVariance">
+                <div class="col-lg-3 form-group">
+                    <label>Type</label>
+                    <select type="text" class="form-control select2cls monthlycls" id="monthlyType">
+                        <option value="0">---Select Type---</option>
+                        <option value="1">Earnings</option>
+                        <option value="2">Deductions</option>
+                    </select>
+                </div>
+                <div class="col-lg-3 form-group">
+                    <label>Description</label>
+                    <select type="text" class="form-control select2cls monthlycls" id="monthlyDescription">
+                        <option value="0">---Select Description---</option>
+                        <option value="Bonus">Bonus</option>
+                        <option value="Incentive">Incentive</option>
+                        <option value="Income Tax">Income Tax</option>
+                    </select>
+                </div>
+                <div class="col-lg-3 form-group ">
+                    <label>Month & Year</label>
+                    <input type="text" onkeydown="return keydownNumberOnly(event);" id="mnthVarDatepicker" class="form-control m-l-10 monthlycls" placeholder="choose month" required="required" />
+                </div>
+                <div class="col-lg-3 form-group">
+                    <label>Amount</label>
+                    <input type="text" onkeydown="return keydownNumberOnly(event);" class="form-control requir monthlycls" id="monthlyAmnt" />
+                </div>
+                <div class="col-lg-12 text-right  p-b-15 p-r-15">
+                    <button type="button" class="btn btn-primary text-right" id="addMonVarData" onclick="AddMonthlyVarianceData()">Add</button>
+                    @*<button type="button" class="btn btn-primary text-right" id="updateMonVarData" onclick="UpdateMonthlyVarianceData()">Update</button>*@
+                </div>
+            </div>
+        </div>
+        @*<div id="monthlyVarianceTable">
+                <div class="card-header">
+                    Full Details
+                </div>
+                <div class="card-body">
+                    <div class="MTS_Table">
+                        <table class="table table-bordered table-hover tabel-sm table-responsive bg-th-blue" cellspacing="0" style="width:100%" id="monVarDataTable"></table>
+                    </div>
+                </div>
+            </div>*@
+        <div id="summarizedMonthlyVarianceTable">
+            <div class="card-header">
+                Summarized Monthly Variance Data
+            </div>
+            <div class="card-body">
+                <div class="MTS_Table">
+                    <table class="table table-bordered table-hover tabel-sm table-responsive bg-th-blue" cellspacing="0" style="width:100%" id="summarizedMonVarDataTable"></table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+       
+<div class="modal fade" id="modalEditMonVarDetails" data-backdrop="static">
+    <div class="modal-dialog modal-lg ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Update Monthly Variance</h4>
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+            </div>
+            @*<div class="modal-body MTS_Table ">
+                    <table id="PunchTable" class="table table-bordered  table-hover tabel-sm table-responsive cell-border" cellspacing="0" width="100%"></table>
+                </div>*@
+
+            <div class="card-body">
+                @*<div class="MTS_Table" id="summarizedMonthlyVarianceTable">
+                        <table class="table table-bordered table-hover tabel-sm table-responsive bg-th-blue" cellspacing="0" style="width:100%" id="summarizedMonVarDataTable"></table>
+                    </div>*@
+                <div class="row">
+                    <div class="col-lg-3 form-group">
+                        <label>Type</label>
+                        <select type="text" class="form-control select2cls monthlyModalcls" disabled id="mdlmonthlyType">
+                            <option value="0">---Select Type---</option>
+                            <option value="1">Earnings</option>
+                            <option value="2">Deductions</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-3 form-group">
+                        <label>Description</label>
+                        <select type="text" class="form-control select2cls monthlyModalcls" id="mdlmonthlyDescription" disabled>
+                            <option value="0">---Select Description---</option>
+                            <option value="Bonus">Bonus</option>
+                            <option value="Incentive">Incentive</option>
+                            <option value="Income Tax">Income Tax</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-3 form-group ">
+                        <label>Month & Year</label>
+                        <input type="text" onkeydown="return keydownNumberOnly(event);" id="mdlmnthVarDatepicker" class="form-control m-l-10 monthlyModalcls" placeholder="choose month" required="required"  />
+                    </div>
+                    <div class="col-lg-3 form-group">
+                        <label>Amount</label>
+                        <input type="text" onkeydown="return keydownNumberOnly(event);" class="form-control requir monthlyModalcls" id="mdlmonthlyAmnt" />
+                    </div>
+                    <div>
+                        <input type="hidden" id="mdlmonthlyDetailsID" />
+                    </div>
+                </div>
+                <div class="col-lg-12 text-right  p-b-15 p-r-15">
+                    @*<button type="button" class="btn btn-primary text-right" id="addMonVarData" onclick="AddMonthlyVarianceData()">Add</button>*@
+                    <button type="button" class="btn btn-primary text-right " id="updateMonVarData" onclick="UpdateMonthlyVarianceData()">Update</button>
+                </div>
+
+                @*<div class="MTS_Table" id="monthlyVarianceTable">
+                        <table class="table table-bordered table-hover tabel-sm table-responsive bg-th-blue" cellspacing="0" style="width:100%" id="monVarDataTable"></table>
+                    </div>*@
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="modalClose" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*<div>
+        <button></button>
+    </div>*@
+<script>
+    var EmployeesList = [];
+    var EmployeeDetails = [];
+    var EmpId;
+    var sOut;
+    var EmpDept;
+    var MonthVarianceTable;
+    var summarizedMonthVarianceTable;
+    var MonthVarianceData = [];
+    var summarizedMonthVarianceData = [];
+    $(document).ready(function () {
+        $('#AddMonthlyVariance').hide();
+        $('#monthlyType').on('change', function (e) {
+            $("#monthlyDescription").select2('val', 0);
+            $("#monthlyDescription").val(0);
+
+
+            $("#monthlyDescription").empty();
+
+            if ($(this).val() == 1) {
+                $("#monthlyDescription").append('<option value="' + "0" + '">' + "---Select Description---" + '');
+                $("#monthlyDescription").append('<option value="' + "Bonus" + '">' + "Bonus" + '');
+                $("#monthlyDescription").append('<option value="' + "Incentive" + '">' + "Incentive" + '');
+                $("#monthlyDescription").append('<option value="' + "Reimbursement" + '">' + "Re-Imbursement" + '');
+            }
+            else if ($(this).val() == 2) {
+                $("#monthlyDescription").append('<option value="' + "0" + '">' + "---Select Description---" + '');
+                $("#monthlyDescription").append('<option value="' + "Income Tax" + '">' + "Income Tax" + '');
+                $("#monthlyDescription").append('<option value="' + "VPF Deduction" + '">' + "VPF Deduction" + '');
+            }
+            else {
+                $("#monthlyDescription").append('<option value="' + "0" + '">' + "---Select Description---" + '');
+                $("#monthlyDescription").append('<option value="' + "Bonus" + '">' + "Bonus" + '');
+                $("#monthlyDescription").append('<option value="' + "Incentive" + '">' + "Incentive" + '');
+                $("#monthlyDescription").append('<option value="' + "Income Tax" + '">' + "Income Tax" + '');
+                $("#monthlyDescription").append('<option value="' + "Reimbursement" + '">' + "Re-Imbursement" + '');
+                $("#monthlyDescription").append('<option value="' + "VPF Deduction" + '">' + "VPF Deduction" + '');
+
+            }
+        });
+
+        $("#drpdwnEmpName").on('change', function (e) {
+            $('.field-validation-valid').text('');
+            $('.field-validation-valid').show();
+        //    $('.payrollInputs').val('');
+           
+            $('.monthlycls, .monthlyModalcls').val('');
+
+            //   $('#monthlyVarianceTable').hide();
+            EmpId = $(this).val();
+            $('#monthlyType').select2('val', 0);
+            $('#monthlyDescription').select2('val', 0);
+
+            $('.select2cls').val(0);
+            $('.select2cls').select2('val', 0);
+            $(this).val(EmpId);
+            $("#drpdwnEmpName").select2('val', EmpId);
+          
+                 $('#summarizedMonthlyVarianceTable').show();
+                 summarizedMonthlyVarianceData();
+                 if ($(this).val() == 0) {
+                     $('.empcls').val('');
+                     return false;
+                 }
+            //  LoadMonthVarianceData();
+            $.ajax({
+                type: "get",
+                url: '@Url.Content("~/Payroll/GetEmployeeDetails")',
+                data: { EmpId: EmpId },
+                success: function (data) {
+                    EmployeeDetails = JSON.parse(data.result.Data);
+                    //  $('#EmployeeName').val(EmployeeDetails[0]['Firstname']);
+                    $('#EmployeeID').val(EmployeeDetails[0]['Employee_Id']);
+                    $('#EmployeeDept').val(EmployeeDetails[0]['Department']);
+                    $('#EmpDesgn').val(EmployeeDetails[0]['Designation']);
+                    $('#DOJ').val(dateValueFormat(EmployeeDetails[0]['Dateofjoin']));
+                }
+            });
+        });
+        $('#EmployeeDetailsList input').attr('disabled', true);
+        $('#summarizedMonthlyVarianceTable').hide();
+
+        $('.select2cls').select2({ 'width': '100%' });
+        $("#mnthVarDatepicker").datepicker({
+            autoclose: true,
+            minViewMode: 1,
+            format: 'MM-yyyy'
+        });
+        $("#mdlmnthVarDatepicker").datepicker({
+            autoclose: true,
+            minViewMode: 1,
+            format: 'MM-yyyy'
+        });
+
+        GetEmployeesList();
+      //  summarizedMonthlyVarianceData();
+ 
+    });
+    function showDetails()
+    {
+        $('#AddMonthlyVariance').slideToggle();
+        $('.field-validation-valid').text('');
+        $('.field-validation-valid').show();
+ 
+
+        $('.monthlycls, .monthlyModalcls').val('');
+
+      
+        $('#monthlyType').select2('val', 0);
+        $('#monthlyDescription').select2('val', 0);
+    }
+
+
+    function summarizedMonthlyVarianceData() {
+        if ($.fn.DataTable.isDataTable('#summarizedMonVarDataTable')) {
+            $('#summarizedMonVarDataTable').dataTable().fnDestroy();
+        }
+        summarizedMonthVarianceTable = $("#summarizedMonVarDataTable").DataTable({
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "iDisplayLength": 5,
+            "bFilter": true,
+            "bProcessing": true,
+            //    "data":null,
+            "ajax": {
+                type: "GET",
+                data: { EmpId: EmpId },
+                url: '@Url.Content("~/Payroll/GetMonthlyVarianceData")',
+                dataSrc: function (data) {
+                    summarizedMonthVarianceData = JSON.parse(data.result1);
+                    MonthVarianceData = JSON.parse(data.result2);
+                    //return null;
+                    return summarizedMonthVarianceData
+                }
+            },
+            "aoColumns": [
+                { "mData": "TYPE", "sTitle": "Type", "sClass": "text-center", "sWidth": "2%", }  //0
+                , { "mData": "DESCRIPTION", "sTitle": "Description", "sClass": "text-center" }  //1
+                , { "mData": "TOTAL_NO_OF_EFFECTIVE_MONTH", "sTitle": "No. of Months", "sClass": "text-center" }  //2
+                , { "mData": "TOTAL_AMOUNT", "sTitle": "Total Amount(Rs.)", "sClass": "text-center" }  //3
+                , { "mData": "EMP_ID", "sTitle": "View Details", "sClass": "text-center" }  //4
+
+            ],
+            "aoColumnDefs": [{
+                "aTargets": [0]
+                         , "mRender": function (data, type, row) {
+                             if (data == 1) {
+                                 return 'Earnings';
+                             }
+                             if (data == 2) {
+                                 return 'Deductions';
+                             }
+                             else {
+                                 return '';
+                             }
+                         }
+            },
+
+            {
+                "aTargets": [1]
+                         , "mRender": function (data, type, row) {
+                             return data;
+                         }
+            },
+
+             {
+                 "aTargets": [4]
+                         , "mRender": function (data, type, row) {
+                             // return '<button="" onclick="ViewDetails(this)" ><i class="fa fa-table"/></button>';
+                             return '<img src="@Url.Content("~/Content/images/chevron-down.png")" onclick="ViewDetails(' + data + ',this)" style="cursor:pointer;" />'
+                         }
+             },
+
+
+            ]
+
+        });
+    }
+    function mapDetails(data) {
+        sOut = '<table id="TempTable" class="table table-bordered table-condensed" style="margin-bottom: 1px!important;;width:100%;" border="0">';
+        if (data == null || data == undefined || data.length == 0) {
+            sOut += '<tr><th class="text-center">No data</th></tr>';
+        } else {
+            sOut += '<thead>';
+            sOut += '<tr role="row">';
+            sOut += '<th style="width:20%" class="text-center">Type</th>';
+            sOut += '<th style="width:20%" class="text-center">Description</th>';
+            sOut += '<th style="width:20%" class="text-center">Month & Year</th>';
+            sOut += '<th style="width:20%" class="text-center">Amount</th>';
+            sOut += '<th style="width:20%" class="text-center">Edit</th>';
+            //if (data == null || data[0].Employee_id != null) {
+            //    sOut += '<th style="width:15%" class="text-center">Unassign</th>';
+            //} else {
+            //    sOut += '<th style="width:15%" class="text-center">Assign</th>';
+            //}
+            sOut += "</tr>";
+            sOut += '</thead>';
+            sOut += '<tbody>';
+            var type;
+            var description;
+            for (var i = 0; i < data.length; i++) {
+
+                if (data[i].TYPE == 1) {
+                    type = 'Earnings';
+                }
+                if (data[i].TYPE == 2) {
+                    type = 'Deductions';
+                }
+                if (data[i].DESCRIPTION == "Income Tax")
+                {
+                    description = "Income" + '_' + "Tax";
+                }
+                else
+                {
+                    description = data[i].DESCRIPTION;
+                }
+
+
+
+                sOut += "<tr>";
+                sOut += '<td style="display:none;" class="text-center" >' + data[i].ID + '</td>'
+                sOut += '<td  class="text-center" >' + type + '</td>';
+                sOut += '<td  class="text-center">' + data[i].DESCRIPTION + '</td>';
+                sOut += '<td  class="text-center">' + dateValueFormat(data[i].EFFECTIVE_MONTH) + '</td>';
+                sOut += '<td  class="text-center">' + data[i].AMOUNT + '</td>';
+
+              //  sOut += '<td style="width:20%" class="text-center" ><i class="fa fa-edit"  onclick=editMonthlyVariance("' + data[i] + '")   /></td>';
+
+                sOut += '<td style="width:20%" class="text-center" ><i class="fa fa-edit"  onclick=editMonthlyVariance("'+ data[i].ID +'","' + type + '","' + description + '","' + dateValueFormat(data[i].EFFECTIVE_MONTH) + '","' + data[i].AMOUNT + '")   /></td>';
+                //if (data[i].Employee_id != null) {
+                //    var AssignDate = "'" + dateFormat(data[i].ACTION_DATE) + "'";
+                //    sOut += '<td style="width:15%;" class="text-center"><span style="cursor:pointer;" onclick=UnAssignAsset(' + data[i].ASSET_TYPEID + ',' + data[i].ASSET_NAMEID + ',' + data[i].Item_Id + ',' + data[i].Employee_id + ',' + AssignDate + ')  class="fa fa-remove"/></td>';
+                //} else {
+                //    sOut += '<td style="width:15%" class="text-center"><span style="cursor:pointer;" onclick=AssignAsset(' + data[i].ASSET_TYPEID + ',' + data[i].ASSET_NAMEID + ',' + data[i].Item_Id + ')  class="fa fa-map-signs"/></td>';
+                //}
+                sOut += "</tr>";
+            }
+            sOut += '</tbody>';
+        }
+        sOut += '</table>';
+
+        return sOut;
+    }
+    function keydownNumberOnly(e) {
+        // $('.keydownNumbercls').on('input',function(){})
+
+        if ((e.keyCode == 8 || e.keyCode == 46 || e.keyCode == 190) || (e.keyCode >= 48 && e.keyCode <= 57)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    function UpdateMonthlyVarianceData() {
+        
+
+
+        $('.field-validation-valid').text('');
+        $('.field-validation-valid').show();
+
+        //for (var i = 1; i < $('.modal .select2cls:visible').length; i = i + 2) {
+        //    if ($('#' + $('.modal .select2cls:visible')[i].id).val() == 0) {
+        //        $('<span class="field-validation-valid">' + ' This field is required...!</span>').css('color', 'red').insertAfter('#' + $('.modal .select2cls:visible')[i].id);
+        //    }
+        //}
+
+        if ($('#mdlmnthVarDatepicker').val() == '') {
+            $('<span class="field-validation-valid">' + ' This field is required...!</span>').css('color', 'red').insertAfter($('#mdlmnthVarDatepicker'));
+        }
+        if ($('#mdlmonthlyAmnt').val() == '') {
+            $('<span class="field-validation-valid">' + ' This field is required...!</span>').css('color', 'red').insertAfter($('#mdlmonthlyAmnt'));
+        }
+        if ($('#mdlmonthlyDetailsID').val() == '' || $('#mdlmonthlyDetailsID').val() == null) {
+            $('<span class="field-validation-valid">' + ' This field is required...!</span>').css('color', 'red').insertAfter($('#mdlmonthlyDetailsID'));
+        }
+
+        if ($('.field-validation-valid').text() != '') {
+            return false;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Content("~/Payroll/UpdateMonthlyVarianceData")',
+            data: { ID: $('#mdlmonthlyDetailsID').val(),  EmpId: EmpId, type: $('#mdlmonthlyType').val(), description: $('#mdlmonthlyDescription').val(), Amount: $('#mdlmonthlyAmnt').val(), month: $('#mdlmnthVarDatepicker').val() },
+            success: function (response) {
+                if (parseInt(response.success) == 1) {
+
+                    toastr.success("successfully Updated");
+                    $("#drpdwnEmpName").trigger('change');
+                    //   LoadMonthVarianceData();
+                }
+                else {
+                    //   toastr.warning("Failed to Add");
+
+                    toastr.warning("Failed to Update");
+                }
+            }
+        });
+    }
+    function editMonthlyVariance(ID, type, description, month, amount) {
+        
+        //var rowval = thisval.closest("tr");
+        //var row_data = $('#summarizedMonVarDataTable').DataTable().row(rowval).data();
+
+        if (type == 'Earnings') {
+            type = 1;
+        }
+        if (type == 'Deductions') {
+            type = 2;
+        }
+        if (description == 'Income_Tax') {
+            description = 'Income Tax';
+        }
+
+        $('#mdlmonthlyDetailsID').val(ID)
+        $('#mdlmonthlyType').val(type);
+        $('#mdlmonthlyType').select2('val', type);
+        $('#mdlmonthlyDescription').val(description);
+        $('#mdlmonthlyDescription').select2('val', description);
+        $('#mdlmonthlyAmnt').val(amount);
+        $('#mdlmnthVarDatepicker').val(dateValueFormat(month));
+        // $("#updateMonVarData").show();
+        //  $('#addMonVarData').hide();
+        $('#modalEditMonVarDetails').modal('show');
+
+
+        // $("html, body").animate({ scrollTop: $("#MonthlyVariance").position().top }, "medium");
+
+
+
+
+    }
+
+
+    var PreviousTr;
+    var PreviousTd;
+    function ViewDetails(Id, CurrentElement) {
+        
+
+
+        var nTr = CurrentElement.parentNode.parentNode;
+        if ($("#summarizedMonVarDataTable").dataTable().fnIsOpen(PreviousTr) && PreviousTr != nTr) {
+            $("#summarizedMonVarDataTable").dataTable().fnClose(PreviousTr);
+            PreviousTd.src = "@Url.Content("~/Content/images/chevron-down.png")";
+        }
+        if ($("#summarizedMonVarDataTable").dataTable().fnIsOpen(nTr)) {
+            $("#summarizedMonVarDataTable").dataTable().fnClose(nTr);
+            CurrentElement.src = "@Url.Content("~/Content/images/chevron-down.png")";
+        } else {
+            CurrentElement.src = "@Url.Content("~/Content/images/chevron-up.png")";
+            var rowval = CurrentElement.closest("tr");
+            var row_data = $('#summarizedMonVarDataTable').DataTable().row(rowval).data();
+            $.ajax({
+                type: "GET",
+                data: { EmpId: EmpId, type: row_data.TYPE, description: row_data.DESCRIPTION },
+                url: '@Url.Content("~/Payroll/GetMonthlyVarianceData")',
+                success: function (data) {
+                    //  MonthVarianceData = JSON.parse(data.result2);
+                    $("#summarizedMonVarDataTable").dataTable().fnOpen(nTr, mapDetails(JSON.parse(data.result2)), 'details');
+                    // summarizedMonthVarianceTable.columns(0).search(nTr["cells"][0].innerHTML).columns(1).search(nTr["cells"][1].innerHTML).draw();
+                    // MonthVarianceTable.columns(0).search(row_data.TYPE).columns(1).search(row_data.DESCRIPTION).draw();
+                    PreviousTr = nTr;
+                    PreviousTd = CurrentElement;
+                }
+            });
+
+        }
+    }
+
+
+
+    function getEmployeesName() {
+        
+        $.each(EmployeesList, function (i) {
+            $("#drpdwnEmpName").append('<option value="' + EmployeesList[i].id + '">' + EmployeesList[i].Firstname + '' + EmployeesList[i].Lastname + '');
+        });
+
+    }
+    function GetEmployeesList() {
+        $.ajax({
+            type: "get",
+            url: '@Url.Content("~/Payroll/GetEmployeesList")',
+            //  data: { EmpId: 64, type: 1, description: 2, Amount: 1000, month: "January-2019" },
+            success: function (data) {
+                EmployeesList = JSON.parse(data);
+                getEmployeesName();
+            }
+        });
+    }
+
+    function LoadMonthVarianceData() {
+        
+        if ($.fn.DataTable.isDataTable('#monVarDataTable')) {
+            $('#monVarDataTable').dataTable().fnDestroy();
+        }
+        MonthVarianceTable = $("#monVarDataTable").DataTable({
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "iDisplayLength": 5,
+            "bFilter": true,
+            "bProcessing": true,
+            //"data":Data,
+            "ajax": {
+                type: "GET",
+                data: { EmpId: EmpId },
+                url: '@Url.Content("~/Payroll/GetMonthlyVarianceData")',
+                dataSrc: function (data) {
+                    MonthVarianceData = JSON.parse(data.result2);
+                    //return null;
+                    return JSON.parse(data.result2);
+                }
+            },
+            "aoColumns": [
+                { "mData": "TYPE", "sTitle": "Type", "sClass": "text-center", "sWidth": "2%", }  //0
+                , { "mData": "DESCRIPTION", "sTitle": "Description", "sClass": "text-center" }  //1
+                , { "mData": "EFFECTIVE_MONTH", "sTitle": "Month & Year", "sClass": "text-center" }  //2
+                 , { "mData": "AMOUNT", "sTitle": "Amount(Rs.)", "sClass": "text-center" }  //3
+
+            ],
+            "aoColumnDefs": [{
+                "aTargets": [0]
+                         , "mRender": function (data, type, row) {
+                             if (data == 1) {
+                                 return 'Earnings';
+                             }
+                             if (data == 2) {
+                                 return 'Deductions';
+                             }
+                             else {
+                                 return '';
+                             }
+                         }
+            },
+
+            {
+                "aTargets": [1]
+                         , "mRender": function (data, type, row) {
+                             return data;
+                         }
+            },
+
+            {
+                "aTargets": [2]
+                         , "mRender": function (data, type, row) {
+                             if (data != null) {
+                                 return dateValueFormat(data);
+                             }
+                             else {
+                                 return '';
+                             }
+
+                         }
+            },
+            ]
+
+        });
+    }
+
+
+    function dateValueFormat(date) {
+        var d = new Date(date);
+        var months = ["January", "February", "March", "April", "May", "June", "July",
+                        "August", "September", "October", "November", "December"];
+        var val = months[d.getMonth()] + "-" + d.getFullYear();
+        return val;
+    }
+
+    function AddMonthlyVarianceData() {
+        
+        $('.field-validation-valid').text('');
+        $('.field-validation-valid').show();
+
+        for (var i = 1; i < $('.select2cls:visible').length; i = i + 2) {
+            if ($('#' + $('.select2cls:visible')[i].id).val() == 0) {
+                $('<span class="field-validation-valid">' + ' This field is required...!</span>').css('color', 'red').insertAfter('#' + $('.select2cls:visible')[i].id);
+            }
+        }
+
+        if ($('#mnthVarDatepicker').val() == '') {
+            $('<span class="field-validation-valid">' + ' This field is required...!</span>').css('color', 'red').insertAfter($('#mnthVarDatepicker'));
+        }
+        if ($('#monthlyAmnt').val() == '') {
+            $('<span class="field-validation-valid">' + ' This field is required...!</span>').css('color', 'red').insertAfter($('#monthlyAmnt'));
+        }
+
+        if ($('.field-validation-valid').text() != '') {
+            return false;
+        }
+
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Content("~/Payroll/AddMonthlyVarianceData")',
+            data: { EmpId: EmpId, type: $('#monthlyType').val(), description: $('#monthlyDescription').val(), Amount: $('#monthlyAmnt').val(), month: $('#mnthVarDatepicker').val() },
+            success: function (response) {
+                if (parseInt(response.success) == 1) {
+                    //LoadLeavePolicy();
+                    //$('#empDetails').show();
+                    //$('#addLeavePolicyNew').hide();
+                    //$('#leavetypenew').empty();
+                    //$('#readPolicyCard').show();
+                    toastr.success("successfully Added");
+                    summarizedMonthlyVarianceData();
+                    //   LoadMonthVarianceData();
+                }
+                else {
+                    //   toastr.warning("Failed to Add");
+
+                    toastr.warning("Already exist");
+                }
+            }
+        });
+    }
+</script>

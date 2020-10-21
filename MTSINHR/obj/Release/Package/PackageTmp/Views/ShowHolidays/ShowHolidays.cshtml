@@ -1,0 +1,139 @@
+﻿@model MTSINHR.Models.Holidays
+
+@{
+    ViewBag.Title = "ShowHolidays";
+}
+@System.Web.Optimization.Styles.Render("~/bundles/bootstrapdt")
+@System.Web.Optimization.Styles.Render("~/bundles/fontawesome")
+@System.Web.Optimization.Styles.Render("~/bundles/datepickercss")
+@System.Web.Optimization.Scripts.Render("~/bundles/datatable")
+@System.Web.Optimization.Scripts.Render("~/bundles/datepicker")
+<script src="~/Scripts/ValidationFunction.js"></script>
+<script src="~/Scripts/DataTables/datatables.sorting.natural.js"></script>
+
+<script>
+    var groupTable;
+    $(document).ready(function () {
+
+        var currentyear = new Date().getFullYear();
+        var nextyear = new Date().getFullYear() + 1;
+
+        var myOptions = {
+            currentyear: new Date().getFullYear(),
+            nextyear: new Date().getFullYear() + 1
+        };
+        var mySelect = $('#Year');
+        $.each(myOptions, function (val, text) {
+            mySelect.append(
+                $('<option></option>').val(val).html(text)
+            );
+        });
+
+        var sd = currentyear;
+        LoadDatatable();
+
+    });
+</script>
+
+<script>
+
+    function LoadDatatable() {
+
+        groupTable = $("#getHolidays").DataTable({
+            "data": "",
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+            "iDisplayLength": 10,
+            "bFilter": true,
+            "bProcessing": true,
+
+
+            "aoColumns": [
+                  { "mData": "id", "sTitle": "S.No", "sClass": "text-right", "sWidth": "80px", "bVisible": false }
+                 , { "mData": "HolidayReason", "sTitle": "Holiday Reason", "sClass": "text-left" }
+                 , { "mData": "DateOfHoliday", 'sType': 'date', "sTitle": "Date of Holiday", "sClass": "text-left" }
+                 , { "mData": "DayNameofDate", "sTitle": "Day", "sClass": "text-left" }
+            ],
+        });
+    }
+
+
+    function LoadHolidayTable(HolidayYear) {
+
+        $.ajax({
+
+            type: "POST",
+            url: '@Url.Content("~/ShowHolidays/Read")',
+            data: { str: HolidayYear },
+
+            success: function (data) {
+                groupTable.clear();
+                groupTable.rows.add(JSON.parse(data));
+                groupTable.draw();
+            }
+
+        });
+
+    }
+
+</script>
+
+<script>
+
+    function seletedyear() {
+
+        var selectedyear = $('#Year :selected').text();
+        var HolidayYear = Number(selectedyear);
+        $("#actiontitle").text(selectedyear + " Holidays");
+        $("#Holiday").modal('show');
+        LoadHolidayTable(HolidayYear);
+
+
+    }
+</script>
+
+<html>
+
+<body>
+    <div class="form-signin">
+        <div class="card card-shadow">
+            <div class="card-header text-center">
+                Holidays
+            </div>
+            <div class="card-body">
+                <div>                    
+                    <div class="form-group">
+                        <label>Year</label>
+                        <select class="form-control" id="Year" name="Year"></select>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <button type="button" class="btn btn-primary" id="Holidaybutton" name="Holidaybutton" onclick="seletedyear()">Show Holidays</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="Holiday" data-backdrop="static" keyboard="false">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="actiontitle" class="modal-title"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="MTS_Table">
+                        <table id="getHolidays" class="table table-bordered table-hover tabel-sm table-responsive" cellspacing="0" width="100%">
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer ">
+                    <div class="dataurl ">
+                        <button type="button" class="btn btn-success" onclick="Close('Holiday')">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
