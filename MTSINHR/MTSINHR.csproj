@@ -679,6 +679,13 @@
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\bootstrap_dataTable.js" />
+    <Content Include="Scripts\bxslider-4.2.1\jquery.bxslider.js" />
+    <Content Include="Scripts\DataTable-Excel-Export\buttons.html5.min.js" />
+    <Content Include="Scripts\DataTable-Excel-Export\buttons.print.min.js" />
+    <Content Include="Scripts\DataTable-Excel-Export\dataTables.buttons.min.js" />
+    <Content Include="Scripts\DataTable-Excel-Export\jszip.min.js" />
+    <Content Include="Scripts\DataTable-Excel-Export\pdfmake.min.js" />
+    <Content Include="Scripts\DataTable-Excel-Export\vfs_fonts.js" />
     <Content Include="Scripts\DataTables\autoFill.bootstrap.js" />
     <Content Include="Scripts\DataTables\autoFill.bootstrap.min.js" />
     <Content Include="Scripts\DataTables\autoFill.bootstrap4.js" />
@@ -760,6 +767,7 @@
     <Content Include="Scripts\daterangepicker.min.js" />
     <Content Include="Scripts\dropzone-amd-module.js" />
     <Content Include="Scripts\dropzone.js" />
+    <Content Include="Scripts\fine-uploader-5.14.2\fine-uploader.js" />
     <Content Include="Scripts\g.pie.js" />
     <Content Include="Scripts\g.raphael.js" />
     <Content Include="Scripts\jquery-1.11.3.js" />
@@ -901,6 +909,8 @@
     <Content Include="Scripts\jquery-ui-1.10.3.min.js" />
     <Content Include="Scripts\jquery-ui-1.12.1.js" />
     <Content Include="Scripts\jquery-ui-1.12.1.min.js" />
+    <Content Include="Scripts\jquery-validate-1.15\jquery.validate.js" />
+    <Content Include="Scripts\jquery-validate-1.15\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.datetimepicker.js" />
     <Content Include="Scripts\jquery.imgareaselect.js" />
     <Content Include="Scripts\jquery.imgareaselect.min.js" />
@@ -942,13 +952,20 @@
     <Content Include="Scripts\particles.json" />
     <Content Include="Scripts\pdfobject.js" />
     <Content Include="Scripts\queryLoader.js" />
+    <Content Include="Scripts\range.js" />
     <Content Include="Scripts\raphael.js" />
+    <Content Include="Scripts\select2.js" />
     <Content Include="Scripts\select2.min.js" />
     <Content Include="Scripts\sha1.js" />
     <Content Include="Scripts\toastr.js" />
     <Content Include="Scripts\toastr.min.js" />
     <Content Include="Scripts\ValidationFunction.js" />
     <Content Include="Scripts\viewer.min.js" />
+    <Content Include="Scripts\widgets.js" />
+    <Content Include="Scripts\wysihtml5-0.0.3\advanced.js" />
+    <Content Include="Scripts\wysihtml5-0.0.3\wysihtml-toolbar.js" />
+    <Content Include="Scripts\wysihtml5-0.0.3\wysihtml.js" />
+    <Content Include="Scripts\wysihtml5-0.0.3\wysihtml5-0.3.0.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -1060,6 +1077,7 @@
     <Content Include="Views\AssetDashboard\AssetDashboard.cshtml" />
     <Content Include="Views\UpdateTimeLine\Messages.cshtml" />
     <Content Include="Views\UpdateTimeLine\ShowMessages.cshtml" />
+    <Content Include="Uploads\Salary Statement_Jan%2718_Projects_COPY.xlsx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
