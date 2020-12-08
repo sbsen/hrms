@@ -1,9 +1,0 @@
-D:\Suriya\HR SVN\Constants\bin\Release\HRConstants.dll
-D:\Suriya\HR SVN\Constants\bin\Release\HRConstants.pdb
-D:\Suriya\HR SVN\Constants\obj\Release\HRConstants.csprojResolveAssemblyReference.cache
-D:\Suriya\HR SVN\Constants\obj\Release\HRConstants.dll
-D:\Suriya\HR SVN\Constants\obj\Release\HRConstants.pdb
-D:\HRMS-LATEST\hrms_20-10_3\Constants\bin\Release\HRConstants.dll
-D:\HRMS-LATEST\hrms_20-10_3\Constants\bin\Release\HRConstants.pdb
-D:\HRMS-LATEST\hrms_20-10_3\Constants\obj\Release\HRConstants.dll
-D:\HRMS-LATEST\hrms_20-10_3\Constants\obj\Release\HRConstants.pdb
