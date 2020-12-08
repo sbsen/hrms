@@ -24,6 +24,7 @@
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <UseGlobalApplicationHostFile />
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -55,6 +56,10 @@
     </Reference>
     <Reference Include="DocumentFormat.OpenXml">
       <HintPath>..\packages\DocumentFormat.OpenXml.2.5\lib\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="HRConstants, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\HRConstants\bin\Debug\HRConstants.dll</HintPath>
     </Reference>
     <Reference Include="Humanizer">
       <HintPath>..\packages\Humanizer.Core.2.0.1\lib\portable-win+net45+wp8+wpa81\Humanizer.dll</HintPath>
@@ -677,13 +682,6 @@
     <Content Include="Images\xchefX.png" />
     <Content Include="img\loading.gif" />
     <Content Include="img\progressbar.gif" />
-    <Content Include="Message Images\company-names-for-sale.jpg" />
-    <Content Include="Message Images\company-real-estate.jpg" />
-    <Content Include="Message Images\company-registration-slider-4.jpg" />
-    <Content Include="Message Images\company3.jpg" />
-    <Content Include="Message Images\dormant-company.jpg" />
-    <Content Include="Message Images\home-13-1280x443.jpg" />
-    <Content Include="Message Images\VOLLMER_Company_01.jpg" />
     <Content Include="Rotativa\wkhtmltopdf.exe" />
     <Content Include="Scripts\app.js" />
     <Content Include="Scripts\bootbox.js" />
@@ -875,8 +873,6 @@
     <Content Include="App_Browsers\qt.browser" />
     <Content Include="Content\toastr.scss" />
     <Content Include="Content\toastr.less" />
-    <Content Include="Logs\1705b128-9c4c-435a-80db-6275ade6e18dAllError_rolling.log" />
-    <Content Include="Logs\AllError_rolling.log" />
     <None Include="Properties\PublishProfiles\local.pubxml" />
     <None Include="Properties\PublishProfiles\MTSHR1.pubxml" />
     <None Include="Properties\PublishProfiles\PUBLISH.pubxml" />
@@ -1101,13 +1097,11 @@
     <Content Include="Views\PerformanceAppraisal\ModeratorReviewPage.cshtml" />
     <Content Include="Views\ITDeclaration\ITDeclarationEmployeeDetails.cshtml" />
     <Content Include="Views\ITDeclaration\ITDeclarationForm.cshtml" />
-    <Content Include="Uploads\Salary Statement_Jan%2718_Projects_COPY.xlsx" />
-    <Content Include="Views\UpdateTimeLine\Messages.cshtml" />
-    <Content Include="Views\UpdateTimeLine\ShowMessages.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Images\NewFolder1\" />
+    <Folder Include="Views\Appraisal\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">
@@ -1178,10 +1172,6 @@
     <Content Include="Areas\MTS.Login\Views\App_LocalResources\UserView.resx" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Constants\HRConstants.csproj">
-      <Project>{cc8a2488-7355-4994-a722-fb788da3a624}</Project>
-      <Name>HRConstants</Name>
-    </ProjectReference>
     <ProjectReference Include="..\DataBlock\DataBlock.csproj">
       <Project>{cd785cab-f697-49e4-827c-22bfdf195f5c}</Project>
       <Name>DataBlock</Name>

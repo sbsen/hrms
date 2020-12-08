@@ -107,7 +107,7 @@ namespace MTSINHR.Controllers
             int RoleId = Convert.ToInt32(SessionRoleID);
             MTSHRDataLayer.Messages data_posts = new MTSHRDataLayer.Messages();
             var result = JsonConvert.SerializeObject(data_posts.ReadBirthDays(isUpcommingBD));
-            return Json(result, JsonRequestBehavior.AllowGet);
+            return Json(result);
         }
 
         public ActionResult GetNewJoiners()

@@ -72,8 +72,6 @@ namespace MTSINHR.Controllers
                 TempData.Keep("FormMonth");
                 TempData["Authentication"] = Request.Headers["auth"];
                 TempData.Keep("Authentication");
-                TempData["Employee_Id"] = Employee_Id;
-                TempData.Keep("Employee_Id");
                 if (datas.Payform == "0")
                 {
 
@@ -87,6 +85,8 @@ namespace MTSINHR.Controllers
                         TempData.Keep("year");
                         TempData["month"] = period[1];
                         TempData.Keep("month");
+                        TempData["Employee_Id"] = Employee_Id;
+                        TempData.Keep("Employee_Id");
                         return 1;
                     }
                     else if (TempData["Authentication"].ToString() == "admin")
@@ -293,8 +293,7 @@ namespace MTSINHR.Controllers
                     Int64 formYear = Convert.ToInt64(TempData["FormMonth"]);
                     string Filename = TempData["Filename"].ToString();
                     string Combinedpath = TempData["Combinedpath"].ToString();
-                    //string Employee_Id = Session["EmployeeId"].ToString();
-                    string Employee_Id = TempData["Employee_Id"].ToString();
+                    string Employee_Id = Session["EmployeeId"].ToString();
                     byte[] form16Bytes = GetForm16PDF(Combinedpath, Employee_Id, formYear);
                     return File(form16Bytes, "application/pdf", Employee_Id + "_Form-16.pdf");
 
