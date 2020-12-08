@@ -57,8 +57,7 @@
     <Reference Include="DocumentFormat.OpenXml">
       <HintPath>..\packages\DocumentFormat.OpenXml.2.5\lib\DocumentFormat.OpenXml.dll</HintPath>
     </Reference>
-    <Reference Include="HRConstants, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="HRConstants">
       <HintPath>..\HRConstants\bin\Debug\HRConstants.dll</HintPath>
     </Reference>
     <Reference Include="Humanizer">
