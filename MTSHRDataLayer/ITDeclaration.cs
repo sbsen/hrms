@@ -24,6 +24,23 @@ namespace MTSHRDataLayer
             return DataAccess.ExecuteDataTable("MTS_GET_IT_DECLARATION_FINANCIAL_YEAR", parameterValues);
         }
 
+        public DataSet getITLiablity(params object[] parameterValues)
+        {
+            return DataAccess.ExecuteDataset("MTS_GET_IT_DECLARATION_ITLIABLITY", parameterValues);
+
+        }
+
+        public Int64 SubmitITLiablity(params object[] parameterValues)
+        {
+            return DataAccess.ExecuteNonQuery("MTS_INSERT_UPDATE_IT_DECLARATION_PAYROLL", parameterValues);
+
+        }
+
+        public DataTable getAssignedEmployees()
+        {
+            return DataAccess.ExecuteDataTable("MTS_IT_DECLARATION_EMP_IDS");
+        }
+
         public DataSet getSectionDescriptionDetails(params object[] parameterValues)
         {
             return DataAccess.ExecuteDataset("MTS_GET_IT_DECLARATION_SECTION_SUBSECTION_DETAILS", parameterValues);
@@ -38,9 +55,9 @@ namespace MTSHRDataLayer
         {
             return DataAccess.ExecuteDataset("MTS_GET_IT_DECLARATION_SUMMARY", parameterValues);
         }
-        public DataSet getOtherSourceIncomeDetails(params object[] parameterValues)
+        public DataTable getOtherSourceIncomeDetails(params object[] parameterValues)
         {
-            return DataAccess.ExecuteDataset("MTS_GET_IT_DECLARATION_OTHER_SOURCE_INCOME", parameterValues);
+            return DataAccess.ExecuteDataTable("MTS_GET_IT_DECLARATION_OTHER_SOURCE_INCOME", parameterValues);
         }
         public DataSet getHomeLoanDetails(params object[] parameterValues)
         {
