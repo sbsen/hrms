@@ -1307,18 +1307,6 @@ IF EXISTS (
 		)
 	DROP PROCEDURE [dbo].MTS_CALCULATELEAVE_ALLEMPLOYEE_YEARLYONCE
 GO
-/****** Object:  StoredProcedure [dbo].[MTS_CALCULATELEAVE_ALLEMPLOYEE_YEARLYONCE_NEW]    Script Date: 4/21/2018 4:07:37 PM ******/
-IF EXISTS (
-		SELECT *
-		FROM sys.objects
-		WHERE object_id = OBJECT_ID(N'[dbo].[MTS_CALCULATELEAVE_ALLEMPLOYEE_YEARLYONCE_NEW]')
-			AND type IN (
-				N'P'
-				,N'PC'
-				)
-		)
-	DROP PROCEDURE [dbo].MTS_CALCULATELEAVE_ALLEMPLOYEE_YEARLYONCE_NEW
-GO
 /****** Object:  StoredProcedure [dbo].[MTS_CALCULATELEAVE_ATJOIN]    Script Date: 4/21/2018 4:07:37 PM ******/
 IF EXISTS (
 		SELECT *
@@ -1342,18 +1330,6 @@ IF EXISTS (
 				)
 		)
 	DROP PROCEDURE [dbo].MTS_CALCULATELEAVE_ATJOIN_MULTIPLE_EMPLOYEES
-GO
-/****** Object:  StoredProcedure [dbo].[MTS_CALCULATELEAVE_ATJOIN_NEW]    Script Date: 4/21/2018 4:07:37 PM ******/
-IF EXISTS (
-		SELECT *
-		FROM sys.objects
-		WHERE object_id = OBJECT_ID(N'[dbo].[MTS_CALCULATELEAVE_ATJOIN_NEW]')
-			AND type IN (
-				N'P'
-				,N'PC'
-				)
-		)
-	DROP PROCEDURE [dbo].MTS_CALCULATELEAVE_ATJOIN_NEW
 GO
 /****** Object:  StoredProcedure [dbo].[MTS_CALCULATELEAVE_EARNED_FOR_EMPLOYEE]    Script Date: 4/21/2018 4:07:37 PM ******/
 IF EXISTS (
@@ -4055,8 +4031,6 @@ IF EXISTS (
 		)
 	DROP PROCEDURE [dbo].XC_REPORT_TENANT_WISE_INVOICE_COUNT
 GO
-
-
 /****** Object:  StoredProcedure [dbo].[ACTIVATEACCOUNT]    Script Date: 5/17/2020 12:31:56 AM ******/
 SET ANSI_NULLS ON
 GO
@@ -4682,6 +4656,8 @@ CREATE PROC [dbo].[ADD_EMPLOYEE_LEAVE_BALANCE] (
 	)
 AS
 BEGIN
+	DECLARE @YEAR INT = DATEPART(YEAR, GETDATE())
+
 	IF NOT EXISTS (
 			SELECT *
 			FROM EmployeeLeaveBalance WITH (NOLOCK)
@@ -4695,6 +4671,7 @@ BEGIN
 			,Leavebalance
 			,AdvanceCredit
 			,AdvanceAvailed
+			,Year
 			)
 		VALUES (
 			@Employee_Id
@@ -4702,6 +4679,7 @@ BEGIN
 			,@Leavebalance
 			,@AdvanceCredit
 			,@AdvanceAvailed
+			,@YEAR
 			)
 
 		SELECT 1
@@ -11049,7 +11027,7 @@ BEGIN
 											AND Year = @CurrentYear
 										)
 								BEGIN
-									INSERT INTO EmployeeLeaveBalance
+									INSERT INTO EmployeeLeaveBalance (Employee_Id, LeaveType, Leavebalance, AdvanceCredit, AdvanceAvailed, Year)
 									VALUES (
 										@EMPLOYEEID
 										,@LT_ID
@@ -11158,7 +11136,7 @@ BEGIN
 												AND Year = @CurrentYear
 											)
 									BEGIN
-										INSERT INTO EmployeeLeaveBalance
+										INSERT INTO EmployeeLeaveBalance (Employee_Id, LeaveType, Leavebalance, AdvanceCredit, AdvanceAvailed, Year)
 										VALUES (
 											@EMPLOYEEID
 											,@LT_ID
@@ -11189,7 +11167,7 @@ BEGIN
 												AND Year = @CurrentYear
 											)
 									BEGIN
-										INSERT INTO EmployeeLeaveBalance
+										INSERT INTO EmployeeLeaveBalance (Employee_Id, LeaveType, Leavebalance, AdvanceCredit, AdvanceAvailed, Year)
 										VALUES (
 											@EMPLOYEEID
 											,@LT_ID
@@ -11245,335 +11223,6 @@ BEGIN
 	DEALLOCATE EMPLOYEE_CURSOR
 END
 GO
-
-/****** Object:  StoredProcedure [dbo].[MTS_CALCULATELEAVE_ALLEMPLOYEE_YEARLYONCE_NEW]    Script Date: 5/17/2020 12:31:56 AM ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
-
-CREATE PROCEDURE [dbo].[MTS_CALCULATELEAVE_ALLEMPLOYEE_YEARLYONCE_NEW]
-AS
-BEGIN
-	DECLARE @LEAVE_CODE VARCHAR(5)
-		,@ASSIGNED_AFTER BIGINT
-		,@APPLICABLE_FOR BIGINT
-		,@MARITAL_STATUS BIGINT
-		,@ACCURAL BIT
-		,@MAX_ALLOWED_BALANCE BIGINT
-		,@PRO_RATA BIT
-	DECLARE @EMPLOYEEID BIGINT
-		,@EMP_JOINDATE DATE
-		,@EMP_DEPARTMENT BIGINT
-		,@EMP_GENDER BIGINT
-		,@EMP_MARITALSTATUS BIGINT
-		,@EMPLOYEE_GENDER BIGINT
-		,@EMPLOYEETOTALMONTH BIGINT
-	DECLARE @NumberOfMthPerYear BIGINT = 12
-	DECLARE @APPLICABLE_FOR_BOTH_GENDER INT = 3
-	DECLARE @APPLICABLE_FOR_BOTH_STATUS INT = 3
-	DECLARE @CARRYFORWARD BIT = 1
-	DECLARE @EmployeeLeave_ApproredLeaveType INT = 2
-	DECLARE @CurrentYear INT = YEAR(getdate())
-	DECLARE @PreviousYear INT = YEAR(getdate()) - 1
-
-	DECLARE EMPLOYEE_CURSOR CURSOR
-	FOR
-	SELECT id
-		,Dateofjoin
-		,DepartmentId
-		,Gender
-		,MaritalStatus
-	FROM Employee WITH (NOLOCK)
-
-	OPEN EMPLOYEE_CURSOR
-
-	FETCH NEXT
-	FROM EMPLOYEE_CURSOR
-	INTO @EMPLOYEEID
-		,@EMP_JOINDATE
-		,@EMP_DEPARTMENT
-		,@EMP_GENDER
-		,@EMP_MARITALSTATUS
-
-	WHILE @@FETCH_STATUS = 0
-	BEGIN
-		DECLARE LEAVECALC_CURSOR CURSOR
-		FOR
-		SELECT LEAVE_CODE
-			,ASSIGNED_AFTER
-			,APPLICABLE_FOR
-			,MARITAL_STATUS
-			,ACCURAL
-			,MAX_ALLOWED_BALANCE
-			,PRORATA
-		FROM MTS_LeavePolicy
-
-		OPEN LEAVECALC_CURSOR
-
-		FETCH NEXT
-		FROM LEAVECALC_CURSOR
-		INTO @LEAVE_CODE
-			,@ASSIGNED_AFTER
-			,@APPLICABLE_FOR
-			,@MARITAL_STATUS
-			,@ACCURAL
-			,@MAX_ALLOWED_BALANCE
-			,@PRO_RATA
-
-		WHILE @@FETCH_STATUS = 0
-		BEGIN
-			IF (YEAR(@EMP_JOINDATE) != YEAR(getdate()))
-			BEGIN
-				SET @EMPLOYEE_GENDER = CASE 
-						WHEN @EMP_GENDER = 0
-							THEN 1
-						WHEN @EMP_GENDER = 1
-							THEN 2
-						ELSE 3
-						END
-
-				IF (
-						@APPLICABLE_FOR = @EMPLOYEE_GENDER
-						OR @APPLICABLE_FOR = @APPLICABLE_FOR_BOTH_GENDER
-						)
-				BEGIN
-					IF (
-							@MARITAL_STATUS = @EMP_MARITALSTATUS
-							OR @MARITAL_STATUS = @APPLICABLE_FOR_BOTH_STATUS
-							)
-					BEGIN
-						DECLARE @LT_ID INT
-						DECLARE @NOD_LEAVE INT
-
-						SELECT @LT_ID = ID
-							,@NOD_LEAVE = Numberofdays
-						FROM MTS_LeaveType
-						WHERE Leavetype = @LEAVE_CODE
-							AND DepartmentId = @EMP_DEPARTMENT
-
-						IF @NOD_LEAVE IS NULL
-						BEGIN
-							SET @NOD_LEAVE = 0;
-						END
-
-						IF (DATEDIFF(MONTH, @EMP_JOINDATE, GETDATE()) > @ASSIGNED_AFTER)
-						BEGIN
-							IF NOT EXISTS (
-									SELECT *
-									FROM EmployeeLeaveBalance WITH (NOLOCK)
-									WHERE Employee_Id = @EMPLOYEEID
-										AND LeaveType = @LT_ID
-										AND Year = @PreviousYear
-									)
-							BEGIN
-								IF NOT EXISTS (
-										SELECT *
-										FROM EmployeeLeaveBalance WITH (NOLOCK)
-										WHERE Employee_Id = @EMPLOYEEID
-											AND LeaveType = @LT_ID
-											AND Year = @CurrentYear
-										)
-								BEGIN
-									IF (@PRO_RATA = 1)
-									BEGIN
-										INSERT INTO EmployeeLeaveBalance
-										VALUES (
-											@EMPLOYEEID
-											,@LT_ID
-											,@NOD_LEAVE
-											,0
-											,0
-											,@CurrentYear
-											)
-									END
-									ELSE
-									BEGIN
-										INSERT INTO EmployeeLeaveBalance
-										VALUES (
-											@EMPLOYEEID
-											,@LT_ID
-											,@NOD_LEAVE
-											,0
-											,0
-											,@CurrentYear
-											)
-									END
-								END
-								ELSE
-								BEGIN
-									IF (@PRO_RATA = 1)
-									BEGIN
-										UPDATE EmployeeLeaveBalance
-										SET Leavebalance = @NOD_LEAVE
-										WHERE Employee_Id = @EMPLOYEEID
-											AND LeaveType = @LT_ID
-											AND Year = @CurrentYear
-									END
-									ELSE
-									BEGIN
-										UPDATE EmployeeLeaveBalance
-										SET Leavebalance = @NOD_LEAVE
-										WHERE Employee_Id = @EMPLOYEEID
-											AND LeaveType = @LT_ID
-											AND Year = @CurrentYear
-									END
-								END
-							END
-							ELSE
-							BEGIN
-								DECLARE @PREVIOUSLEAVEBALANCE FLOAT = 0
-								DECLARE @TAKENLEAVE FLOAT = 0
-								DECLARE @AVAILABLELEAVEBALANCE FLOAT = 0
-								DECLARE @CARRYFORWARDLEAVECOUNT FLOAT = 0
-
-								IF (@ACCURAL = @CARRYFORWARD)
-								BEGIN
-									SELECT @PREVIOUSLEAVEBALANCE = Leavebalance
-									FROM EmployeeLeaveBalance WITH (NOLOCK)
-									WHERE Employee_Id = @EMPLOYEEID
-										AND LeaveType = @LT_ID
-										AND Year = @PreviousYear
-
-									SELECT @TAKENLEAVE = SUM(Numberofdays)
-									FROM Employee_leave WITH (NOLOCK)
-									WHERE Employee_Id = @EMPLOYEEID
-										AND Approval = @EmployeeLeave_ApproredLeaveType
-										AND isLOP = 0
-										AND LeaveType = @LT_ID
-										AND year(FromDate) = @PreviousYear
-
-									IF @TAKENLEAVE IS NULL
-									BEGIN
-										SET @TAKENLEAVE = 0;
-									END
-
-									IF (@PREVIOUSLEAVEBALANCE - @TAKENLEAVE > 0)
-									BEGIN
-										SET @AVAILABLELEAVEBALANCE = @PREVIOUSLEAVEBALANCE - @TAKENLEAVE
-
-										IF (@AVAILABLELEAVEBALANCE < @MAX_ALLOWED_BALANCE)
-										BEGIN
-											SET @CARRYFORWARDLEAVECOUNT = @AVAILABLELEAVEBALANCE
-										END
-										ELSE
-										BEGIN
-											SET @CARRYFORWARDLEAVECOUNT = @MAX_ALLOWED_BALANCE
-										END
-									END
-								END
-
-								DECLARE @ADVANCEAVAILED FLOAT
-
-								SELECT @ADVANCEAVAILED = AdvanceAvailed
-								FROM EmployeeLeaveBalance WITH (NOLOCK)
-								WHERE Employee_Id = @EMPLOYEEID
-									AND LeaveType = @LT_ID
-									AND Year = @PreviousYear
-
-								IF @ADVANCEAVAILED IS NULL
-								BEGIN
-									SET @ADVANCEAVAILED = 0;
-								END
-
-								IF @NOD_LEAVE IS NULL
-								BEGIN
-									SET @NOD_LEAVE = 0;
-								END
-
-								IF NOT EXISTS (
-										SELECT *
-										FROM EmployeeLeaveBalance WITH (NOLOCK)
-										WHERE Employee_Id = @EMPLOYEEID
-											AND LeaveType = @LT_ID
-											AND Year = @CurrentYear
-										)
-								BEGIN
-									IF (@PRO_RATA = 1)
-									BEGIN
-										INSERT INTO EmployeeLeaveBalance
-										VALUES (
-											@EMPLOYEEID
-											,@LT_ID
-											,@CARRYFORWARDLEAVECOUNT + @NOD_LEAVE - @ADVANCEAVAILED
-											,0
-											,0
-											,@CurrentYear
-											)
-									END
-									ELSE
-									BEGIN
-										INSERT INTO EmployeeLeaveBalance
-										VALUES (
-											@EMPLOYEEID
-											,@LT_ID
-											,@CARRYFORWARDLEAVECOUNT + @NOD_LEAVE - @ADVANCEAVAILED
-											,0
-											,0
-											,@CurrentYear
-											)
-									END
-								END
-								ELSE
-								BEGIN
-									IF (@PRO_RATA = 1)
-									BEGIN
-										UPDATE EmployeeLeaveBalance
-										SET Leavebalance = @CARRYFORWARDLEAVECOUNT + @NOD_LEAVE - @ADVANCEAVAILED
-											,AdvanceCredit = 0
-											,AdvanceAvailed = 0
-										WHERE Employee_Id = @EMPLOYEEID
-											AND LeaveType = @LT_ID
-											AND Year = @CurrentYear
-									END
-									ELSE
-									BEGIN
-										UPDATE EmployeeLeaveBalance
-										SET Leavebalance = @CARRYFORWARDLEAVECOUNT + @NOD_LEAVE - @ADVANCEAVAILED
-											,AdvanceCredit = 0
-											,AdvanceAvailed = 0
-										WHERE Employee_Id = @EMPLOYEEID
-											AND LeaveType = @LT_ID
-											AND Year = @CurrentYear
-									END
-								END
-							END
-						END
-					END
-				END
-			END
-
-			FETCH NEXT
-			FROM LEAVECALC_CURSOR
-			INTO @LEAVE_CODE
-				,@ASSIGNED_AFTER
-				,@APPLICABLE_FOR
-				,@MARITAL_STATUS
-				,@ACCURAL
-				,@MAX_ALLOWED_BALANCE
-				,@PRO_RATA
-		END
-
-		CLOSE LEAVECALC_CURSOR
-
-		DEALLOCATE LEAVECALC_CURSOR
-
-		FETCH NEXT
-		FROM EMPLOYEE_CURSOR
-		INTO @EMPLOYEEID
-			,@EMP_JOINDATE
-			,@EMP_DEPARTMENT
-			,@EMP_GENDER
-			,@EMP_MARITALSTATUS
-	END
-
-	CLOSE EMPLOYEE_CURSOR
-
-	DEALLOCATE EMPLOYEE_CURSOR
-END
-GO
-
 /****** Object:  StoredProcedure [dbo].[MTS_CALCULATELEAVE_ATJOIN]    Script Date: 5/17/2020 12:31:56 AM ******/
 SET ANSI_NULLS ON
 GO
@@ -11687,7 +11336,7 @@ BEGIN
 											SET @TOTALNOD = ROUND(((CONVERT(DECIMAL(18, 2), @NOD_LEAVE) / @NumberOfMthPerYear) * (@NumberOfMthPerYear - (DATEDIFF(MONTH, @EMP_JOINDATE, getdate())) + 1)), 1) --IF(@ASSIGNED_AFTER <= (DATEDIFF(MONTH, @EMP_JOINDATE, getdate())))
 										END
 
-										INSERT INTO EmployeeLeaveBalance
+										INSERT INTO EmployeeLeaveBalance (Employee_Id, LeaveType, Leavebalance, AdvanceCredit, AdvanceAvailed, Year)
 										VALUES (
 											@EMPLOYEEID
 											,@LT_ID
@@ -11710,7 +11359,7 @@ BEGIN
 													AND Year = @CurrentYear
 												)
 										BEGIN
-											INSERT INTO EmployeeLeaveBalance
+											INSERT INTO EmployeeLeaveBalance (Employee_Id, LeaveType, Leavebalance, AdvanceCredit, AdvanceAvailed, Year)
 											VALUES (
 												@EMPLOYEEID
 												,@LT_ID
@@ -11739,7 +11388,7 @@ BEGIN
 											AND Year = @CurrentYear
 										)
 								BEGIN
-									INSERT INTO EmployeeLeaveBalance
+									INSERT INTO EmployeeLeaveBalance (Employee_Id, LeaveType, Leavebalance, AdvanceCredit, AdvanceAvailed, Year)
 									VALUES (
 										@EMPLOYEEID
 										,@LT_ID
@@ -11810,199 +11459,6 @@ BEGIN
 	CLOSE EMPLOYEE_DETAILS_CUR
 
 	DEALLOCATE EMPLOYEE_DETAILS_CUR
-END
-GO
-
-/****** Object:  StoredProcedure [dbo].[MTS_CALCULATELEAVE_ATJOIN_NEW]    Script Date: 5/17/2020 12:31:56 AM ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
-
-CREATE PROCEDURE [dbo].[MTS_CALCULATELEAVE_ATJOIN_NEW] (@EMPLOYEEID BIGINT)
-AS
-BEGIN
-	DECLARE @LEAVE_CODE VARCHAR(5)
-		,@ASSIGNED_AFTER BIGINT
-		,@APPLICABLE_FOR BIGINT
-		,@MARITAL_STATUS BIGINT
-	DECLARE @EMP_JOINDATE DATE
-		,@EMP_DEPARTMENT BIGINT
-		,@EMP_GENDER BIGINT
-		,@EMP_MARITALSTATUS BIGINT
-		,@PRO_RATA BIT
-	DECLARE @NumberOfMthPerYear BIGINT = 12
-	DECLARE @APPLICABLE_FOR_BOTH_GENDER INT = 3
-	DECLARE @APPLICABLE_FOR_BOTH_STATUS INT = 3
-	DECLARE @LeaveCalculateAfterDays INT = 15
-	DECLARE @CurrentYear INT = YEAR(getdate())
-
-	SELECT @EMP_JOINDATE = Dateofjoin
-		,@EMP_DEPARTMENT = DepartmentId
-		,@EMP_GENDER = (
-			CASE 
-				WHEN Gender = 0
-					THEN 1
-				WHEN Gender = 1
-					THEN 2
-				ELSE 3
-				END
-			)
-		,@EMP_MARITALSTATUS = MaritalStatus
-	FROM Employee
-	WHERE id = @EMPLOYEEID
-
-	DECLARE LEAVECALC_CURSOR CURSOR
-	FOR
-	SELECT LEAVE_CODE
-		,ASSIGNED_AFTER
-		,APPLICABLE_FOR
-		,MARITAL_STATUS
-		,PRORATA
-	FROM MTS_LeavePolicy WITH (NOLOCK)
-
-	OPEN LEAVECALC_CURSOR
-
-	FETCH NEXT
-	FROM LEAVECALC_CURSOR
-	INTO @LEAVE_CODE
-		,@ASSIGNED_AFTER
-		,@APPLICABLE_FOR
-		,@MARITAL_STATUS
-		,@PRO_RATA
-
-	WHILE @@FETCH_STATUS = 0
-	BEGIN
-		DECLARE @EARNED_LEAVE BIGINT = 0
-
-		IF EXISTS (
-				SELECT *
-				FROM MTS_LeaveType WITH (NOLOCK)
-				WHERE Leavetype = @LEAVE_CODE
-					AND DepartmentId = @EMP_DEPARTMENT
-				)
-		BEGIN
-			IF (YEAR(@EMP_JOINDATE) = YEAR(getdate()))
-			BEGIN
-				IF ((DAY(@EMP_JOINDATE)) <= @LeaveCalculateAfterDays)
-				BEGIN
-					IF ((MONTH(getdate())) - (MONTH(@EMP_JOINDATE) - 1) > @ASSIGNED_AFTER)
-					BEGIN
-						IF (
-								@APPLICABLE_FOR = @EMP_GENDER
-								OR @APPLICABLE_FOR = @APPLICABLE_FOR_BOTH_GENDER
-								)
-						BEGIN
-							IF (
-									@MARITAL_STATUS = @EMP_MARITALSTATUS
-									OR @MARITAL_STATUS = @APPLICABLE_FOR_BOTH_STATUS
-									)
-							BEGIN
-								DECLARE @LT_ID INT
-								DECLARE @NOD_LEAVE INT
-
-								SELECT @LT_ID = ID
-									,@NOD_LEAVE = Numberofdays
-								FROM MTS_LeaveType WITH (NOLOCK)
-								WHERE Leavetype = @LEAVE_CODE
-									AND DepartmentId = @EMP_DEPARTMENT
-
-								IF (@PRO_RATA = 1)
-								BEGIN
-									INSERT INTO EmployeeLeaveBalance
-									VALUES (
-										@EMPLOYEEID
-										,@LT_ID
-										,ROUND(((CONVERT(DECIMAL(18, 2), @NOD_LEAVE) / @NumberOfMthPerYear) * (@NumberOfMthPerYear - (MONTH(@EMP_JOINDATE) - 1))), 1)
-										,0
-										,0
-										,@CurrentYear
-										)
-								END
-								ELSE
-								BEGIN
-									INSERT INTO EmployeeLeaveBalance
-									VALUES (
-										@EMPLOYEEID
-										,@LT_ID
-										,@NOD_LEAVE
-										,0
-										,0
-										,@CurrentYear
-										)
-								END
-							END
-						END
-					END
-				END
-
-				IF ((DAY(@EMP_JOINDATE)) > @LeaveCalculateAfterDays)
-				BEGIN
-					IF ((MONTH(getdate())) - (MONTH(@EMP_JOINDATE) - 1) > @ASSIGNED_AFTER)
-					BEGIN
-						IF (
-								@APPLICABLE_FOR = @EMP_GENDER
-								OR @APPLICABLE_FOR = @APPLICABLE_FOR_BOTH_GENDER
-								)
-						BEGIN
-							IF (
-									@MARITAL_STATUS = @EMP_MARITALSTATUS
-									OR @MARITAL_STATUS = @APPLICABLE_FOR_BOTH_STATUS
-									)
-							BEGIN
-								DECLARE @LeaveType_ID INT
-								DECLARE @NumOfDay_LEAVE INT
-
-								SELECT @LeaveType_ID = ID
-									,@NumOfDay_LEAVE = Numberofdays
-								FROM MTS_LeaveType WITH (NOLOCK)
-								WHERE Leavetype = @LEAVE_CODE
-									AND DepartmentId = @EMP_DEPARTMENT
-
-								IF (@PRO_RATA = 1)
-								BEGIN
-									INSERT INTO EmployeeLeaveBalance
-									VALUES (
-										@EMPLOYEEID
-										,@LeaveType_ID
-										,ROUND(((CONVERT(DECIMAL(18, 2), @NumOfDay_LEAVE) / @NumberOfMthPerYear) * (@NumberOfMthPerYear - (MONTH(@EMP_JOINDATE)))), 1)
-										,0
-										,0
-										,@CurrentYear
-										)
-								END
-								ELSE
-								BEGIN
-									INSERT INTO EmployeeLeaveBalance
-									VALUES (
-										@EMPLOYEEID
-										,@LeaveType_ID
-										,@NumOfDay_LEAVE
-										,0
-										,0
-										,@CurrentYear
-										)
-								END
-							END
-						END
-					END
-				END
-			END
-		END
-
-		FETCH NEXT
-		FROM LEAVECALC_CURSOR
-		INTO @LEAVE_CODE
-			,@ASSIGNED_AFTER
-			,@APPLICABLE_FOR
-			,@MARITAL_STATUS
-			,@PRO_RATA
-	END
-
-	CLOSE LEAVECALC_CURSOR
-
-	DEALLOCATE LEAVECALC_CURSOR
 END
 GO
 
@@ -12390,15 +11846,8 @@ BEGIN
 											AND Year = @NextYear
 										)
 								BEGIN
-									INSERT INTO EmployeeLeaveBalance
-									VALUES (
-										@EMPLOYEEID
-										,@LT_ID
-										,@NOD_LEAVE
-										,0
-										,0
-										,@NextYear
-										)
+									INSERT INTO EmployeeLeaveBalance (Employee_Id, LeaveType, Leavebalance, AdvanceCredit, AdvanceAvailed, Year)
+									VALUES ( @EMPLOYEEID ,@LT_ID ,@NOD_LEAVE ,0 ,0 ,@NextYear )
 								END
 								ELSE
 								BEGIN
@@ -12490,15 +11939,8 @@ BEGIN
 												AND Year = @NextYear
 											)
 									BEGIN
-										INSERT INTO EmployeeLeaveBalance
-										VALUES (
-											@EMPLOYEEID
-											,@LT_ID
-											,@CARRYFORWARDLEAVECOUNT + @NOD_LEAVE - @ADVANCEAVAILED
-											,0
-											,0
-											,@NextYear
-											)
+										INSERT INTO EmployeeLeaveBalance (Employee_Id, LeaveType, Leavebalance, AdvanceCredit, AdvanceAvailed, Year)
+										VALUES ( @EMPLOYEEID ,@LT_ID ,@CARRYFORWARDLEAVECOUNT + @NOD_LEAVE - @ADVANCEAVAILED ,0 ,0 ,@NextYear)
 									END
 									ELSE
 									BEGIN
@@ -12521,15 +11963,8 @@ BEGIN
 												AND Year = @NextYear
 											)
 									BEGIN
-										INSERT INTO EmployeeLeaveBalance
-										VALUES (
-											@EMPLOYEEID
-											,@LT_ID
-											,@NOD_LEAVE - @ADVANCEAVAILED
-											,0
-											,0
-											,@NextYear
-											)
+										INSERT INTO EmployeeLeaveBalance (Employee_Id, LeaveType, Leavebalance, AdvanceCredit, AdvanceAvailed, Year)
+										VALUES ( @EMPLOYEEID ,@LT_ID ,@NOD_LEAVE - @ADVANCEAVAILED ,0 ,0 ,@NextYear)
 									END
 									ELSE
 									BEGIN
@@ -12706,7 +12141,7 @@ BEGIN
 							BEGIN
 								IF (@PRO_RATA = 1)
 								BEGIN
-									INSERT INTO EmployeeLeaveBalance
+									INSERT INTO EmployeeLeaveBalance (Employee_Id, LeaveType, Leavebalance, AdvanceCredit, AdvanceAvailed, Year)
 									VALUES (
 										@EMPLOYEEID
 										,@LT_ID
@@ -12718,7 +12153,7 @@ BEGIN
 								END
 								ELSE
 								BEGIN
-									INSERT INTO EmployeeLeaveBalance
+									INSERT INTO EmployeeLeaveBalance (Employee_Id, LeaveType, Leavebalance, AdvanceCredit, AdvanceAvailed, Year)
 									VALUES (
 										@EMPLOYEEID
 										,@LT_ID
@@ -12841,7 +12276,7 @@ BEGIN
 								BEGIN
 									IF (@AVAILABLELEAVEBALANCE + @NOD_LEAVE <= @MAX_ALLOWED_BALANCE)
 									BEGIN
-										INSERT INTO EmployeeLeaveBalance
+										INSERT INTO EmployeeLeaveBalance (Employee_Id, LeaveType, Leavebalance, AdvanceCredit, AdvanceAvailed, Year)
 										VALUES (
 											@EMPLOYEEID
 											,@LT_ID
@@ -12855,7 +12290,7 @@ BEGIN
 									BEGIN
 										DECLARE @CF_LEAVECOUNT FLOAT = @MAX_ALLOWED_BALANCE - @NOD_LEAVE;
 
-										INSERT INTO EmployeeLeaveBalance
+										INSERT INTO EmployeeLeaveBalance (Employee_Id, LeaveType, Leavebalance, AdvanceCredit, AdvanceAvailed, Year)
 										VALUES (
 											@EMPLOYEEID
 											,@LT_ID
@@ -12868,7 +12303,7 @@ BEGIN
 								END
 								ELSE
 								BEGIN
-									INSERT INTO EmployeeLeaveBalance
+									INSERT INTO EmployeeLeaveBalance (Employee_Id, LeaveType, Leavebalance, AdvanceCredit, AdvanceAvailed, Year)
 									VALUES (
 										@EMPLOYEEID
 										,@LT_ID
@@ -14409,7 +13844,7 @@ AS
 BEGIN
 	DECLARE @YEAR_ID BIGINT
 
-	SELECT @YEAR_ID = Financial_Year
+	SELECT @YEAR_ID = Id
 	FROM MTS_IT_DECLARATION_FINANCIAL_YEAR WITH (NOLOCK)
 	WHERE [status] = 1
 

@@ -38,7 +38,7 @@ namespace MTSHRDataLayer
 
         public DataTable getAssignedEmployees()
         {
-            return DataAccess.ExecuteDataTable("MTS_IT_DECLARATION_EMP_IDS");
+            return DataAccess.ExecuteDataTable("MTS_IT_DECLARATION_EMP_IDS", null);
         }
 
         public DataSet getSectionDescriptionDetails(params object[] parameterValues)
@@ -49,7 +49,6 @@ namespace MTSHRDataLayer
         {
             return DataAccess.ExecuteDataset("VIEW_EMPLOYEEDETAILS", parameterValues);
         }
-
 
         public DataSet getSummaryTabDetails(params object[] parameterValues)
         {
