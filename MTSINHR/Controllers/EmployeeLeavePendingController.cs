@@ -1054,7 +1054,7 @@ namespace MTSINHR.Controllers
                     DateTime ToDate = FromDate.AddMonths(1);
                     ToDate = new DateTime(ToDate.Year, ToDate.Month, 20);
                     Int64 report = leave_approve.LeaveReport(2, leavetype, empid, year, month, 0, numberofdays);
-                    totalnumberofdays(FromDate, ToDate, check = 2, leavetype, empid, LeaveFromSession, LeaveToSession);
+                    //totalnumberofdays(FromDate, ToDate, check = 2, leavetype, empid, LeaveFromSession, LeaveToSession);
 
                 }
                 else
