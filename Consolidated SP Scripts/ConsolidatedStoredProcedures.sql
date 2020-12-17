@@ -85,7 +85,7 @@ IF EXISTS (
 	DROP PROCEDURE [dbo].[ADD_EMPLOYEE_LEAVE_BALANCE]
 GO
 
-/****** Object:  StoredProcedure [dbo].[ADD_EMPLOYEE_LEAVE_DETAILS]    Script Date: 4/21/2018 4:07:37 PM ******/
+/****** Object:  StoredProcedure [dbo].[ADD_EMPLOYEE_LEAVE_DETAILS]    Script Date: 12/17/2020 4:16:50 PM ******/
 IF EXISTS (
 		SELECT *
 		FROM sys.objects
@@ -98,7 +98,7 @@ IF EXISTS (
 	DROP PROCEDURE [dbo].[ADD_EMPLOYEE_LEAVE_DETAILS]
 GO
 
-/****** Object:  StoredProcedure [dbo].[ADD_EMPLOYEE_LEAVE_DETAILS_ADJUSTMENT_LEAVE_AGAINST]    Script Date: 4/21/2018 4:07:37 PM ******/
+/****** Object:  StoredProcedure [dbo].[ADD_EMPLOYEE_LEAVE_DETAILS_ADJUSTMENT_LEAVE_AGAINST]    Script Date: 12/17/2020 4:17:14 PM ******/
 IF EXISTS (
 		SELECT *
 		FROM sys.objects
@@ -4691,284 +4691,264 @@ BEGIN
 END
 GO
 
-/****** Object:  StoredProcedure [dbo].[ADD_EMPLOYEE_LEAVE_DETAILS]    Script Date: 5/17/2020 12:31:56 AM ******/
+/****** Object:  StoredProcedure [dbo].[ADD_EMPLOYEE_LEAVE_DETAILS]    Script Date: 12/17/2020 4:16:50 PM ******/
 SET ANSI_NULLS ON
 GO
 
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE PROCEDURE [dbo].[ADD_EMPLOYEE_LEAVE_DETAILS] @LEAVE_ID BIGINT
-	,@APPLIED_LEAVE_TYPE BIGINT
-	,@islop BIT
-AS
-BEGIN
-	DECLARE @INCLUDE_HOLIDAY BIT
-		,@FROM_DATE DATE
-		,@TO_DATE DATE
-		,@DATE DATE
-
-	SELECT @FROM_DATE = EL.FromDate
-		,@TO_DATE = EL.ToDate
-	FROM Employee_Leave EL WITH (NOLOCK)
-	WHERE EL.id = @LEAVE_ID
-
-	SELECT @INCLUDE_HOLIDAY = HolidayAsLeave
-	FROM MTS_LeaveType MLT WITH (NOLOCK)
-	WHERE MLT.id = @APPLIED_LEAVE_TYPE
-
-	SET @DATE = @FROM_DATE
-
-	WHILE @DATE <= @TO_DATE
-	BEGIN
-		IF @INCLUDE_HOLIDAY = 1
-			OR (
-				DATEPART(DW, @DATE) <> 1
-				AND DATEPART(DW, @DATE) <> 7
-				AND @DATE NOT IN (
-					SELECT DateOfHoliday
-					FROM HolidaysList WITH (NOLOCK)
-					WHERE YearOfHoliday = DATEPART(YEAR, @DATE)
-					)
-				)
-		BEGIN
-			INSERT INTO EMPLOYEE_LEAVE_DETAILS
-			SELECT @LEAVE_ID
-				,Employee_Id
-				,LeaveType
-				,@DATE
-				,CASE 
-					WHEN @DATE = @FROM_DATE
-						THEN LeaveFromSession
-					ELSE 1
-					END
-				,@DATE
-				,CASE 
-					WHEN @DATE = @TO_DATE
-						THEN LeaveToSession
-					ELSE 1
-					END
-				,Reason
-				,Approval
-				,ApprovedBy
-				,AppliedDate
-				,ApprovedDate
-				,Managerid
-				,CanceledBy
-				,CanceledDate
-				,CASE 
-					WHEN @FROM_DATE = @TO_DATE
-						AND LeaveFromSession <> 1
-						THEN 0.5
-					WHEN @DATE = @FROM_DATE
-						AND LeaveFromSession <> 1
-						THEN 0.5
-					WHEN @DATE = @TO_DATE
-						AND LeaveToSession <> 1
-						THEN 0.5
-					ELSE 1
-					END
-				,NULL
-				,@islop
-				,@APPLIED_LEAVE_TYPE
-				,NULL
-			FROM Employee_Leave WITH (NOLOCK)
-			WHERE id = @LEAVE_ID
-		END
-
-		SET @DATE = DATEADD(DAY, 1, @DATE)
-	END
-END
+  
+CREATE PROCEDURE [dbo].[ADD_EMPLOYEE_LEAVE_DETAILS] @LEAVE_ID BIGINT  
+ ,@APPLIED_LEAVE_TYPE BIGINT  
+ ,@islop bit  
+AS  
+BEGIN  
+ DECLARE @INCLUDE_HOLIDAY BIT,@FROM_DATE DATE ,@TO_DATE DATE ,@DATE DATE ,@LEAVE_FROM_SESSION INT, @LEAVE_TO_SESSION INT
+  
+ SELECT @FROM_DATE = EL.FromDate ,@TO_DATE = EL.ToDate  , @LEAVE_FROM_SESSION = LeaveFromSession, @LEAVE_TO_SESSION = LeaveToSession
+ FROM Employee_Leave EL WITH (NOLOCK)  
+ WHERE EL.id = @LEAVE_ID  
+  
+ SELECT @INCLUDE_HOLIDAY = HolidayAsLeave  
+ FROM MTS_LeaveType MLT WITH (NOLOCK)  
+ WHERE MLT.id = @APPLIED_LEAVE_TYPE  
+  
+ SET @DATE = @FROM_DATE  
+  
+ WHILE @DATE <= @TO_DATE  
+ BEGIN  
+  IF @INCLUDE_HOLIDAY = 1  
+   OR (DATEPART(DW, @DATE) <> 1 AND DATEPART(DW, @DATE) <> 7  
+    AND @DATE NOT IN ( SELECT DateOfHoliday  FROM HolidaysList WITH (NOLOCK) WHERE YearOfHoliday = DATEPART(YEAR, @DATE)))  
+  BEGIN  
+   INSERT INTO EMPLOYEE_LEAVE_DETAILS  
+			([LeaveId]
+           ,[Employee_Id]
+           ,[LeaveType]
+           ,[FromDate]
+           ,[LeaveFromSession]
+           ,[ToDate]
+           ,[LeaveToSession]
+           ,[Reason]
+           ,[Approval]
+           ,[ApprovedBy]
+           ,[AppliedDate]
+           ,[ApprovedDate]
+           ,[Managerid]
+           ,[CanceledBy]
+           ,[CanceledDate]
+           ,[Numberofdays]
+           ,[Leavebalance]
+           ,[isLOP]
+           ,[AppliedLeaveType]
+           ,[AdvanceCredit])
+   SELECT @LEAVE_ID  
+    ,Employee_Id  
+    ,LeaveType  
+    ,@DATE  
+    ,CASE
+     WHEN @DATE = @FROM_DATE AND ((@LEAVE_FROM_SESSION = 1 AND @FROM_DATE<>@TO_DATE) OR (@LEAVE_FROM_SESSION = 3))
+      THEN @LEAVE_FROM_SESSION 
+     WHEN @DATE = @TO_DATE AND @LEAVE_TO_SESSION = 2
+      THEN @LEAVE_TO_SESSION
+     ELSE 1  
+     END  
+    ,@DATE  
+    ,CASE
+     WHEN @DATE = @FROM_DATE AND ((@LEAVE_FROM_SESSION = 1 AND @FROM_DATE<>@TO_DATE) OR (@LEAVE_FROM_SESSION = 3))
+      THEN @LEAVE_FROM_SESSION 
+     WHEN @DATE = @TO_DATE AND @LEAVE_TO_SESSION = 2
+      THEN @LEAVE_TO_SESSION
+     ELSE 1  
+     END  
+    ,Reason  
+    ,Approval  
+    ,ApprovedBy  
+    ,AppliedDate  
+    ,ApprovedDate  
+    ,Managerid  
+    ,CanceledBy  
+    ,CanceledDate  
+    ,CASE  
+     WHEN @FROM_DATE = @TO_DATE  
+      AND LeaveFromSession <> 1  
+      THEN 0.5  
+     WHEN @DATE = @FROM_DATE  
+      AND LeaveFromSession <> 1  
+      THEN 0.5  
+     WHEN @DATE = @TO_DATE  
+      AND LeaveToSession <> 1  
+      THEN 0.5  
+     ELSE 1  
+     END  
+    ,NULL  
+    ,@islop  
+    ,@APPLIED_LEAVE_TYPE  
+    ,NULL  
+   FROM Employee_Leave WITH (NOLOCK)  
+   WHERE id = @LEAVE_ID  
+  END  
+  
+  SET @DATE = DATEADD(DAY, 1, @DATE)  
+ END  
+END 
 GO
 
-/****** Object:  StoredProcedure [dbo].[ADD_EMPLOYEE_LEAVE_DETAILS_ADJUSTMENT_LEAVE_AGAINST]    Script Date: 5/17/2020 12:31:56 AM ******/
+/****** Object:  StoredProcedure [dbo].[ADD_EMPLOYEE_LEAVE_DETAILS_ADJUSTMENT_LEAVE_AGAINST]    Script Date: 12/17/2020 4:17:14 PM ******/
 SET ANSI_NULLS ON
 GO
 
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE PROCEDURE [dbo].[ADD_EMPLOYEE_LEAVE_DETAILS_ADJUSTMENT_LEAVE_AGAINST] (
-	@empid BIGINT
-	,@leaveCode VARCHAR(255)
-	,@leaveName VARCHAR(255)
-	,@leaveTypeId BIGINT
-	,@appliedLeaveTypeID BIGINT
-	,@availableLeaveCount FLOAT
-	,@isLOP BIT
-	,@fromSession BIGINT
-	,@toSession BIGINT
-	,@LeaveID BIGINT
-	,@fromDate DATE
-	,@toDate DATE
-	)
-AS
-BEGIN
-	DECLARE @INCLUDE_HOLIDAY BIT
-		,@FROM_DATE DATE
-		,@TO_DATE DATE
-		,@DATE DATE
-
-	SET @FROM_DATE = @fromDate
-	SET @TO_DATE = @toDate
-
-	SELECT @INCLUDE_HOLIDAY = HolidayAsLeave
-	FROM MTS_LeaveType MLT WITH (NOLOCK)
-	WHERE MLT.id = @appliedLeaveTypeID
-
-	SET @DATE = @FROM_DATE
-
-	WHILE @DATE <= @TO_DATE
-	BEGIN
-		IF @INCLUDE_HOLIDAY = 1
-			OR (
-				DATEPART(DW, @DATE) <> 1
-				AND DATEPART(DW, @DATE) <> 7
-				AND @DATE NOT IN (
-					SELECT DateOfHoliday
-					FROM HolidaysList WITH (NOLOCK)
-					WHERE YearOfHoliday = DATEPART(YEAR, @DATE)
-					)
-				)
-		BEGIN
-			IF (@fromSession = 1)
-			BEGIN
-				SET @fromSession = 2
-			END
-
-			IF (@toSession = 1)
-			BEGIN
-				SET @toSession = 3
-			END
-
-			INSERT INTO EMPLOYEE_LEAVE_DETAILS
-			SELECT @LeaveID
-				,Employee_Id
-				,@leaveTypeId
-				,@DATE
-				,CASE 
-					WHEN (
-							@FROM_DATE = @TO_DATE
-							OR @DATE = @FROM_DATE
-							)
-						AND @fromSession <> 1
-						THEN @fromSession
-					WHEN @DATE = @TO_DATE
-						AND @toSession = 3
-						THEN 2
-					WHEN @DATE = @TO_DATE
-						AND @toSession <> 1
-						THEN @toSession
-					ELSE 2
-					END
-				,@DATE
-				,CASE 
-					WHEN @FROM_DATE = @TO_DATE
-						AND @fromSession = 2
-						AND @toSession = 3
-						THEN @toSession
-					WHEN @FROM_DATE = @TO_DATE
-						AND @fromSession = 2
-						THEN 2
-					WHEN (
-							@FROM_DATE <> @TO_DATE
-							AND @TO_DATE = @DATE
-							AND @fromSession = 2
-							)
-						THEN 3
-					WHEN (
-							@FROM_DATE = @TO_DATE
-							OR @FROM_DATE = @DATE
-							)
-						AND @fromSession = 2
-						THEN 3
-					WHEN (
-							@FROM_DATE = @TO_DATE
-							OR @DATE = @TO_DATE
-							)
-						AND @toSession <> 1
-						THEN @toSession
-					WHEN @DATE = @FROM_DATE
-						AND @fromSession <> 1
-						THEN @fromSession
-					ELSE 3
-					END
-				,Reason
-				,Approval
-				,ApprovedBy
-				,AppliedDate
-				,ApprovedDate
-				,Managerid
-				,CanceledBy
-				,CanceledDate
-				,CASE 
-					WHEN @FROM_DATE = @TO_DATE
-						AND @fromSession = 2
-						AND @toSession = 2
-						THEN 0.5
-					WHEN @FROM_DATE = @TO_DATE
-						AND @fromSession = 3
-						AND @toSession = 2
-						THEN 1.0
-					WHEN (
-							@FROM_DATE = @TO_DATE
-							OR @FROM_DATE = @DATE
-							)
-						AND @fromSession = 2
-						THEN 1.0
-					WHEN (
-							@FROM_DATE = @TO_DATE
-							OR @FROM_DATE = @DATE
-							)
-						AND @fromSession = 3
-						THEN 0.5
-					WHEN (
-							@FROM_DATE <> @TO_DATE
-							AND @TO_DATE = @DATE
-							AND @fromSession = 2
-							AND @toSession = 2
-							)
-						THEN 1.0
-					WHEN (
-							@FROM_DATE <> @TO_DATE
-							AND @TO_DATE = @DATE
-							)
-						AND @toSession = 2
-						THEN 0.5
-					WHEN (
-							@FROM_DATE <> @TO_DATE
-							AND @TO_DATE = @DATE
-							)
-						AND @toSession = 2
-						THEN 1.0
-					WHEN (
-							@FROM_DATE = @TO_DATE
-							OR @TO_DATE = @DATE
-							)
-						AND (
-							@fromSession = 2
-							AND @toSession = 2
-							)
-						OR (
-							@fromSession = 3
-							AND @toSession = 3
-							)
-						THEN 1.0
-					ELSE 1
-					END
-				,NULL
-				,@isLOP
-				,@appliedLeaveTypeID
-				,NULL
-			FROM Employee_Leave WITH (NOLOCK)
-			WHERE id = @LeaveID
-		END
-
-		SET @DATE = DATEADD(DAY, 1, @DATE)
-
-		SELECT 1
-	END
-END
+  
+CREATE PROCEDURE [dbo].[ADD_EMPLOYEE_LEAVE_DETAILS_ADJUSTMENT_LEAVE_AGAINST] (  
+  @empid BIGINT  
+  ,@leaveCode VARCHAR(255)  
+  ,@leaveName VARCHAR(255)  
+  ,@leaveTypeId BIGINT  
+  ,@appliedLeaveTypeID BIGINT  
+  ,@availableLeaveCount FLOAT  
+  ,@isLOP BIT  
+  ,@fromSession BIGINT  
+  ,@toSession BIGINT  
+  ,@LeaveID BIGINT  
+  ,@fromDate DATE  
+  ,@toDate DATE)  
+AS  
+BEGIN  
+ DECLARE @INCLUDE_HOLIDAY BIT  
+  ,@FROM_DATE DATE  
+  ,@TO_DATE DATE  
+  ,@DATE DATE  
+  
+ SET @FROM_DATE = @fromDate  
+ SET @TO_DATE = @toDate  
+  
+ SELECT @INCLUDE_HOLIDAY = HolidayAsLeave  
+ FROM MTS_LeaveType MLT WITH (NOLOCK)  
+ WHERE MLT.id = @appliedLeaveTypeID  
+  
+ SET @DATE = @FROM_DATE  
+ WHILE @DATE <= @TO_DATE  
+ BEGIN  
+   IF @INCLUDE_HOLIDAY = 1  
+   OR (  
+    DATEPART(DW, @DATE) <> 1  
+    AND DATEPART(DW, @DATE) <> 7  
+    AND @DATE NOT IN (  
+     SELECT DateOfHoliday  
+     FROM HolidaysList WITH (NOLOCK)  
+     WHERE YearOfHoliday = DATEPART(YEAR, @DATE)  
+     )  
+    )  
+  BEGIN  
+    
+   IF(@fromSession = 1)  
+   BEGIN  
+    SET @fromSession = 2  
+   END  
+   IF(@toSession = 1)  
+   BEGIN  
+    SET @toSession = 3  
+   END  
+  
+   INSERT INTO EMPLOYEE_LEAVE_DETAILS   
+			([LeaveId]
+           ,[Employee_Id]
+           ,[LeaveType]
+           ,[FromDate]
+           ,[LeaveFromSession]
+           ,[ToDate]
+           ,[LeaveToSession]
+           ,[Reason]
+           ,[Approval]
+           ,[ApprovedBy]
+           ,[AppliedDate]
+           ,[ApprovedDate]
+           ,[Managerid]
+           ,[CanceledBy]
+           ,[CanceledDate]
+           ,[Numberofdays]
+           ,[Leavebalance]
+           ,[isLOP]
+           ,[AppliedLeaveType]
+           ,[AdvanceCredit])
+   SELECT @LeaveID  
+    ,Employee_Id  
+    ,@leaveTypeId  
+    ,@DATE  
+    ,CASE   
+     WHEN (@FROM_DATE = @TO_DATE OR  @DATE = @FROM_DATE) AND @fromSession <> 1   
+      THEN @fromSession  
+     WHEN @DATE = @TO_DATE AND @toSession = 3  
+      THEN 2  
+     WHEN @DATE = @TO_DATE AND @toSession <> 1  
+      THEN @toSession  
+     ELSE 2  
+     END  
+    ,@DATE  
+    ,CASE   
+     WHEN @FROM_DATE = @TO_DATE AND @fromSession = 2 AND @toSession = 3  
+      THEN @toSession  
+     WHEN @FROM_DATE = @TO_DATE AND @fromSession = 2  
+      THEN 2  
+     WHEN (@FROM_DATE <> @TO_DATE AND @TO_DATE = @DATE AND @fromSession = 2)  
+      THEN 2  
+     WHEN (@FROM_DATE = @TO_DATE OR @FROM_DATE = @DATE) AND @fromSession = 2  
+      THEN 3  
+     WHEN (@FROM_DATE = @TO_DATE OR @DATE = @TO_DATE) AND @toSession <> 1  
+      THEN @toSession  
+     WHEN @DATE = @FROM_DATE AND @fromSession <> 1   
+      THEN @fromSession  
+     ELSE 3  
+     END  
+    ,Reason  
+    ,Approval  
+    ,ApprovedBy  
+    ,AppliedDate  
+    ,ApprovedDate  
+    ,Managerid  
+    ,CanceledBy  
+    ,CanceledDate  
+    ,CASE   
+     WHEN @FROM_DATE = @TO_DATE  AND @fromSession = 2 AND @toSession = 2  
+      THEN 0.5  
+     WHEN @FROM_DATE = @TO_DATE  AND @fromSession = 3 AND @toSession = 2  
+      THEN 1.0  
+     WHEN (@FROM_DATE = @TO_DATE OR @FROM_DATE = @DATE)  
+      AND @fromSession = 2  
+      THEN 1.0  
+     WHEN (@FROM_DATE = @TO_DATE OR @FROM_DATE = @DATE)  
+      AND @fromSession = 3  
+      THEN 0.5  
+     WHEN (@FROM_DATE <> @TO_DATE AND  @TO_DATE = @DATE AND @fromSession = 2 AND @toSession = 2)  
+      THEN 0.5 
+     WHEN (@FROM_DATE <> @TO_DATE AND  @TO_DATE = @DATE)  
+      AND @toSession = 2  
+      THEN 0.5  
+     WHEN (@FROM_DATE <> @TO_DATE AND  @TO_DATE = @DATE)  
+      AND @toSession = 2  
+      THEN 1.0  
+     WHEN (@FROM_DATE = @TO_DATE OR  @TO_DATE = @DATE)  
+      AND (@fromSession = 2 AND @toSession = 2 ) OR (@fromSession = 3 AND @toSession = 3 )  
+      THEN 1.0  
+     ELSE 1  
+     END  
+    ,NULL  
+    ,@isLOP  
+    ,@appliedLeaveTypeID  
+    ,NULL  
+   FROM Employee_Leave WITH (NOLOCK)  
+   WHERE id = @LeaveID  
+  END  
+  
+  SET @DATE = DATEADD(DAY, 1, @DATE)  
+  SELECT 1  
+ END  
+  
+END  
 GO
 
 /****** Object:  StoredProcedure [dbo].[ADD_EMPLOYEE_MONTHLY_VARIANCE_PAYROLL]    Script Date: 5/17/2020 12:31:56 AM ******/

@@ -1034,7 +1034,12 @@ namespace MTSINHR.Controllers
                                                                                     string decimal_place = regex.Match(_leaveAdjustTo.availableLeaveCount.ToString()).Value;
                                                                                     if (_leaveAdjustTo.fromSession == LeaveSessionConstants.Afternoon && leavebalance >= 1.0M && (decimal_place != "5" || decimal_place != "50"))
                                                                                     {
-                                                                                        aBalance++;
+                                                                                        List<leaveAdjustTo> leaveAdjList = _leaveAdjustToList.Where(ld => regex.Match(ld.availableLeaveCount.ToString()).Value == "5").ToList();
+                                                                                        Int64 halfDayLeaveCount = leaveAdjList.Count();
+                                                                                        if (halfDayLeaveCount % 2 == 0)
+                                                                                        {
+                                                                                            aBalance++;
+                                                                                        }
                                                                                     }
                                                                                     _leaveAdjustTo.toDate = getfromandtodate(aBalance, _leaveAdjustTo.fromDate, leaveapply.LeaveType, year);
                                                                                 }
@@ -1148,7 +1153,12 @@ namespace MTSINHR.Controllers
                                                                                     string decimal_place = regex.Match(_leaveAdjustTo.availableLeaveCount.ToString()).Value;
                                                                                     if (_leaveAdjustTo.fromSession == LeaveSessionConstants.Afternoon && leavebalance >= 1.0M && (decimal_place != "5" || decimal_place != "50"))
                                                                                     {
-                                                                                        aBalance++;
+                                                                                        List<leaveAdjustTo>  leaveAdjList = _leaveAdjustToList.Where(ld => regex.Match(ld.availableLeaveCount.ToString()).Value == "5").ToList();
+                                                                                        Int64 halfDayLeaveCount = leaveAdjList.Count();
+                                                                                        if(halfDayLeaveCount % 2 == 0)
+                                                                                        {
+                                                                                            aBalance++;
+                                                                                        }
                                                                                     }
                                                                                     _leaveAdjustTo.toDate = getfromandtodate(aBalance, _leaveAdjustTo.fromDate, leaveapply.LeaveType, year);
                                                                                 }
@@ -1276,7 +1286,12 @@ namespace MTSINHR.Controllers
                                                                     string decimal_place = regex.Match(leavebalance.ToString()).Value;
                                                                     if (_leaveAdjustTo.fromSession == LeaveSessionConstants.Afternoon && leavebalance >= 1.0M && (decimal_place != "5" || decimal_place != "50"))
                                                                     {
-                                                                        aBalance++;
+                                                                        List<leaveAdjustTo> leaveAdjList = _leaveAdjustToList.Where(ld => regex.Match(ld.availableLeaveCount.ToString()).Value == "5").ToList();
+                                                                        Int64 halfDayLeaveCount = leaveAdjList.Count();
+                                                                        if (halfDayLeaveCount % 2 == 0)
+                                                                        {
+                                                                            aBalance++;
+                                                                        }
                                                                     }
                                                                     _leaveAdjustTo.toDate = getfromandtodate(aBalance, _leaveAdjustTo.fromDate, leaveapply.LeaveType, year);
                                                                 }
