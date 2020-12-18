@@ -76,7 +76,7 @@
     }
 
     .lgFBFntSize {
-        font-size: 40px;
+        font-size: 30px;
     }
 
     .btnclose {
@@ -246,14 +246,18 @@
                         This is a success alert—check it out!
                         </div>*@
                     <div id="CompletionTimeDiv"></div>
-                    <div class="row col-lg-12 form-group t-p-10" id="feedBackSummary">
+                    <div class="row col-lg-12 form-group t-p-10" id="feedBackSummary" style="background: #e6e7e87a;height: 60px;">
                         <div class="row col-lg-12 t-p-20">
-                            <div class="col-lg-4 text-center p-t-15"><b>FeedBack</b></div>
-                            <div class="col-lg-1 text-center"><label>Reward</label><span class="clsFB spanedit smFBFntSize fa fa-star" id="reward"></span></div>
-                            <div class="col-lg-1 text-center"><label>Positive</label><span class="clsFB spanedit smFBFntSize fa fa-thumbs-o-up" id="positive"></span></div>
-                            <div class="col-lg-1 text-center p-l-5"><label>Observation</label><span class="clsFB spanedit smFBFntSize fa fa-eye m-l-10" id="observation"></span></div>
-                            <div class="col-lg-1 text-center"><label>Training</label><span class="clsFB spanedit smFBFntSize fa fa-certificate" id="training"></span></div>
-                            <div class="col-lg-1 text-center"><label>Negative</label><span class="clsFB spanedit smFBFntSize fa fa-thumbs-o-down" id="negative"></span></div>
+                            <div class="col-lg-4 text-center p-t-15" style="color: #0069d9"><b>FeedBack</b></div>
+
+                            <div class="col-lg-8 text-left p-t-15">
+                                <label>Reward</label>&nbsp;<span class="clsFB spanedit smFBFntSize fa fa-star" id="reward"></span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <label>Positive</label>&nbsp;<span class="clsFB spanedit smFBFntSize fa fa-thumbs-o-up" id="positive"></span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <label>Observation</label>&nbsp;<span class="clsFB spanedit smFBFntSize fa fa-eye m-l-10" id="observation"></span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <label>Training</label>&nbsp;<span class="clsFB spanedit smFBFntSize fa fa-certificate" id="training"></span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <label>Negative</label>&nbsp;<span class="clsFB spanedit smFBFntSize fa fa-thumbs-o-down" id="negative"></span>
+                            </div>
+
                         </div>
                     </div>
 
@@ -407,7 +411,7 @@
             }
 
             $('.clsFB').css("color", "");
-            var feedBackCategorycolor = this.id == "reward" ? '#FFDF00' : this.id == "positive" ? '#008000' : this.id == "observation" ? '#6ca580' : this.id == "training" ? '' : this.id == "negative" ? '#ff0000' : '';
+            var feedBackCategorycolor = this.id == "reward" ? '#FFDF00' : this.id == "positive" ? '#20e820' : this.id == "observation" ? '#37b563' : this.id == "training" ? '#007bff' : this.id == "negative" ? '#ff0000' : '';
             $(this).css("color", feedBackCategorycolor);
 
         });
@@ -500,7 +504,6 @@
             url: '@Url.Content("~/PerformanceAppraisal/getFeedbackComments")',
             data: { EmpId: user, AppraisalProcessId: '@ViewBag.AppraisalProcessId' },
             success: function (data) {
-
                 feedbackComments = JSON.parse(data.result1);
                 for (var i = 0; i < feedbackComments.length; i++) {
                     $('.feedbacklist').append($('<li><div class="commenterImage"><img height="30" width="30" src="data:image/png;base64,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"></div><div class="commentText"><p class="">' + feedbackComments[i].FeedBack + '</p><span class="date sub-text">' + feedbackComments[i].ManagerName + ' - ' + 'on ' + dateValueFormat(feedbackComments[i].CreatedOn) + '</span></div></li>'));
@@ -818,7 +821,7 @@
                         $('#' + descriptionList[0].FEEDBACK_CATEGORY).addClass('lgFBFntSize')
                         //$('.clsFB').trigger('click');
                         feedBackCategory = descriptionList[0].FEEDBACK_CATEGORY;
-                        var feedBackCategorycolor = feedBackCategory == "reward" ? '#FFDF00' : feedBackCategory == "positive" ? '#008000' : feedBackCategory == "observation" ? '#6ca580' : feedBackCategory == "training" ? '' : feedBackCategory == "negative" ? '#ff0000' : '';
+                        var feedBackCategorycolor = feedBackCategory == "reward" ? '#FFDF00' : feedBackCategory == "positive" ? '#20e820' : feedBackCategory == "observation" ? '#37b563' : feedBackCategory == "training" ? '#007bff' : feedBackCategory == "negative" ? '#ff0000' : '';
                         $('#' + feedBackCategory).css("color", feedBackCategorycolor);
                     }
 
@@ -1179,7 +1182,7 @@
                             $('#' + descriptionList[0].FEEDBACK_CATEGORY).addClass('lgFBFntSize')
                             $('.clsFB').trigger('click');
                             feedBackCategory = descriptionList[0].FEEDBACK_CATEGORY;
-                            var feedBackCategorycolor = feedBackCategory == "reward" ? '#FFDF00' : feedBackCategory == "positive" ? '#008000' : feedBackCategory == "observation" ? '#6ca580' : feedBackCategory == "training" ? '' : feedBackCategory == "negative" ? '#ff0000' : '';
+                            var feedBackCategorycolor = feedBackCategory == "reward" ? '#FFDF00' : feedBackCategory == "positive" ? '#20e820' : feedBackCategory == "observation" ? '#37b563' : feedBackCategory == "training" ? '#007bff' : feedBackCategory == "negative" ? '#ff0000' : '';
                             $('#' + feedBackCategory).css("color", feedBackCategorycolor);
                         }
 
@@ -1453,57 +1456,57 @@
         }
     }
     function getempRatingsForKraSkills(selfDirect, empid, AppraisalProcessId) {
-
         $.ajax({
             type: 'GET',
             url: '@Url.Content("~/PerformanceAppraisal/getempRatingsForKraSkills")',
             data: { EmpId: empid, AppraisalProcessId: AppraisalProcessId, isSelfDirectAppraisalPage: isSelfDirectAppraisalPage, viewType: '@ViewBag.ViewType' },
             success: function (data) {
+                if (data.result != "NoMappingIsAvailable") {
+                    empRatings = JSON.parse(data.result1);
+                    if (empRatings.length >= 1) {
 
-                empRatings = JSON.parse(data.result1);
-                if (empRatings.length >= 1) {
+                        if (selfDirect == "True") {
+                            if (empRatings[0].Self_KRA_Rating != null && empRatings[0].Staging1 >= 1)
+                                $('#KRARatingoutoffive').html('<label style="color: blue;"> KRA Rating: ' + empRatings[0].Self_KRA_Rating + '/5.00</label>');
+                            if (empRatings[0].Self_Skill_Rating != null && empRatings[0].Staging1 >= 1)
+                                $('#SkillsRatingoutoffive').html('<label style="color: blue;"> Skills Rating: ' + empRatings[0].Self_Skill_Rating + '%</label>');
 
-                    if (selfDirect == "True") {
-                        if (empRatings[0].Self_KRA_Rating != null && empRatings[0].Staging1 >= 1)
-                            $('#KRARatingoutoffive').html('<label style="color: blue;"> KRA Rating: ' + empRatings[0].Self_KRA_Rating + '/5.00</label>');
-                        if (empRatings[0].Self_Skill_Rating != null && empRatings[0].Staging1 >= 1)
-                            $('#SkillsRatingoutoffive').html('<label style="color: blue;"> Skills Rating: ' + empRatings[0].Self_Skill_Rating + '%</label>');
+                            if (empRatings[0].Evaluator_KRA_Rating != null && empRatings[0].Staging1 == 3 && descriptionList[0].Manager_Id != 0)
+                                $('#Evaluator_KRARatingoutoffive').html('<label style="color: blue;"> Manager Rating: ' + empRatings[0].Evaluator_KRA_Rating + '/5.00</label>');
+                            if (empRatings[0].Evaluator_Skill_Rating != null && empRatings[0].Staging1 == 3 && descriptionList[0].Manager_Id != 0)
+                                $('#Evaluator_SkillsRatingoutoffive').html('<label style="color: blue;"> Manager Rating: ' + empRatings[0].Evaluator_Skill_Rating + '%</label>');
+                            if (empRatings[0].Final_Evaluator_Skill_Rating != null && empRatings[0].Staging1 == 3)
+                                $('#Final_Evaluator_KRARatingoutoffive').html('<label style="color: blue;"> Final Rating: ' + empRatings[0].Final_Evaluator_KRA_Rating + '/5.00</label>');
+                            if (empRatings[0].Final_Evaluator_Skill_Rating != null && empRatings[0].Staging1 == 3)
+                                $('#Final_Evaluator_SkillsRatingoutoffive').html('<label style="color: blue;"> Final Rating: ' + empRatings[0].Final_Evaluator_Skill_Rating + '%</label>');
 
-                        if (empRatings[0].Evaluator_KRA_Rating != null && empRatings[0].Staging1 == 3 && descriptionList[0].Manager_Id != 0)
-                            $('#Evaluator_KRARatingoutoffive').html('<label style="color: blue;"> Manager Rating: ' + empRatings[0].Evaluator_KRA_Rating + '/5.00</label>');
-                        if (empRatings[0].Evaluator_Skill_Rating != null && empRatings[0].Staging1 == 3 && descriptionList[0].Manager_Id != 0)
-                            $('#Evaluator_SkillsRatingoutoffive').html('<label style="color: blue;"> Manager Rating: ' + empRatings[0].Evaluator_Skill_Rating + '%</label>');
-                        if (empRatings[0].Final_Evaluator_Skill_Rating != null && empRatings[0].Staging1 == 3)
-                            $('#Final_Evaluator_KRARatingoutoffive').html('<label style="color: blue;"> Final Rating: ' + empRatings[0].Final_Evaluator_KRA_Rating + '/5.00</label>');
-                        if (empRatings[0].Final_Evaluator_Skill_Rating != null && empRatings[0].Staging1 == 3)
-                            $('#Final_Evaluator_SkillsRatingoutoffive').html('<label style="color: blue;"> Final Rating: ' + empRatings[0].Final_Evaluator_Skill_Rating + '%</label>');
+                            if (empRatings[0].Overall_Rating1 != null && empRatings[0].Staging1 == 3)
+                                $('#OverAllRating').html('<label style="color: blue;"> Overall Rating: ' + empRatings[0].Overall_Rating1 + '</label>');
+                            //if (empRatings[0].Performance != null && descriptionList[0].Staging == 3)
+                            //    $('#performanceDiv').html('<label style="color: blue;"> Performance: ' + empRatings[0].Performance + '</label>');
+                            //if (empRatings[0].Potential != null && descriptionList[0].Staging == 3)
+                            //    $('#potentialDiv').html('<label style="color: blue;"> Potential: ' + empRatings[0].Potential + '</label>');
+                        } else {
+                            if (empRatings[0].Self_KRA_Rating != null && empRatings[0].Staging1 >= 1)
+                                $('#KRARatingoutoffive').html('<label style="color: blue;"> Self Rating: ' + empRatings[0].Self_KRA_Rating + '/5.00</label>');
+                            if (empRatings[0].Self_Skill_Rating != null && empRatings[0].Staging1 >= 1)
+                                $('#SkillsRatingoutoffive').html('<label style="color: blue;"> Self Rating: ' + empRatings[0].Self_Skill_Rating + '%</label>');
+                            if (empRatings[0].Evaluator_KRA_Rating != null && empRatings[0].Staging1 >= 2 && descriptionList[0].Manager_Id != 0)
+                                $('#Evaluator_KRARatingoutoffive').html('<label style="color: blue;"> Manager Rating: ' + empRatings[0].Evaluator_KRA_Rating + '/5.00</label>');
+                            if (empRatings[0].Evaluator_Skill_Rating != null && empRatings[0].Staging1 >= 2 && descriptionList[0].Manager_Id != 0)
+                                $('#Evaluator_SkillsRatingoutoffive').html('<label style="color: blue;"> Manager Rating: ' + empRatings[0].Evaluator_Skill_Rating + '%</label>');
+                            if (empRatings[0].Final_Evaluator_Skill_Rating != null && empRatings[0].Staging1 == 3)
+                                $('#Final_Evaluator_KRARatingoutoffive').html('<label style="color: blue;"> Final Rating: ' + empRatings[0].Final_Evaluator_KRA_Rating + '/5.00</label>');
+                            if (empRatings[0].Final_Evaluator_Skill_Rating != null && empRatings[0].Staging1 == 3)
+                                $('#Final_Evaluator_SkillsRatingoutoffive').html('<label style="color: blue;"> Final Rating: ' + empRatings[0].Final_Evaluator_Skill_Rating + '%</label>');
+                            if (empRatings[0].Overall_Rating1 != null && empRatings[0].Staging1 == 3)
+                                $('#OverAllRating').html('<label style="color: blue;"> Overall Rating: ' + empRatings[0].Overall_Rating1 + '</label>');
+                            if (empRatings[0].Performance != null && empRatings[0].Staging1 == 3)
+                                $('#performanceDiv').html('<label style="color: blue;"> Performance: ' + empRatings[0].Performance + '</label>');
+                            if (empRatings[0].Potential != null && empRatings[0].Staging1 == 3)
+                                $('#potentialDiv').html('<label style="color: blue;"> Potential: ' + empRatings[0].Potential + '</label>');
 
-                        if (empRatings[0].Overall_Rating1 != null && empRatings[0].Staging1 == 3)
-                            $('#OverAllRating').html('<label style="color: blue;"> Overall Rating: ' + empRatings[0].Overall_Rating1 + '</label>');
-                        //if (empRatings[0].Performance != null && descriptionList[0].Staging == 3)
-                        //    $('#performanceDiv').html('<label style="color: blue;"> Performance: ' + empRatings[0].Performance + '</label>');
-                        //if (empRatings[0].Potential != null && descriptionList[0].Staging == 3)
-                        //    $('#potentialDiv').html('<label style="color: blue;"> Potential: ' + empRatings[0].Potential + '</label>');
-                    } else {
-                        if (empRatings[0].Self_KRA_Rating != null && empRatings[0].Staging1 >= 1)
-                            $('#KRARatingoutoffive').html('<label style="color: blue;"> Self Rating: ' + empRatings[0].Self_KRA_Rating + '/5.00</label>');
-                        if (empRatings[0].Self_Skill_Rating != null && empRatings[0].Staging1 >= 1)
-                            $('#SkillsRatingoutoffive').html('<label style="color: blue;"> Self Rating: ' + empRatings[0].Self_Skill_Rating + '%</label>');
-                        if (empRatings[0].Evaluator_KRA_Rating != null && empRatings[0].Staging1 >= 2 && descriptionList[0].Manager_Id != 0)
-                            $('#Evaluator_KRARatingoutoffive').html('<label style="color: blue;"> Manager Rating: ' + empRatings[0].Evaluator_KRA_Rating + '/5.00</label>');
-                        if (empRatings[0].Evaluator_Skill_Rating != null && empRatings[0].Staging1 >= 2 && descriptionList[0].Manager_Id != 0)
-                            $('#Evaluator_SkillsRatingoutoffive').html('<label style="color: blue;"> Manager Rating: ' + empRatings[0].Evaluator_Skill_Rating + '%</label>');
-                        if (empRatings[0].Final_Evaluator_Skill_Rating != null && empRatings[0].Staging1 == 3)
-                            $('#Final_Evaluator_KRARatingoutoffive').html('<label style="color: blue;"> Final Rating: ' + empRatings[0].Final_Evaluator_KRA_Rating + '/5.00</label>');
-                        if (empRatings[0].Final_Evaluator_Skill_Rating != null && empRatings[0].Staging1 == 3)
-                            $('#Final_Evaluator_SkillsRatingoutoffive').html('<label style="color: blue;"> Final Rating: ' + empRatings[0].Final_Evaluator_Skill_Rating + '%</label>');
-                        if (empRatings[0].Overall_Rating1 != null && empRatings[0].Staging1 == 3)
-                            $('#OverAllRating').html('<label style="color: blue;"> Overall Rating: ' + empRatings[0].Overall_Rating1 + '</label>');
-                        if (empRatings[0].Performance != null && empRatings[0].Staging1 == 3)
-                            $('#performanceDiv').html('<label style="color: blue;"> Performance: ' + empRatings[0].Performance + '</label>');
-                        if (empRatings[0].Potential != null && empRatings[0].Staging1 == 3)
-                            $('#potentialDiv').html('<label style="color: blue;"> Potential: ' + empRatings[0].Potential + '</label>');
-
+                        }
                     }
                 }
             }
