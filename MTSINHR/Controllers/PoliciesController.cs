@@ -130,12 +130,6 @@ namespace MTSINHR.Controllers
         {
             try
             {
-                //Int64 Employee_Id = Convert.ToInt64(Request.Headers["employeeid"]);
-
-                //if (Employee_Id == 0)
-                //{
-                //    Employee_Id = Convert.ToInt64(Session["UserID"]);
-                //}
                 int Documentid = Convert.ToInt32(Documents);
                 MTSHRDataLayer.Policies data_document = new MTSHRDataLayer.Policies();
                 DataTable Documentimage = data_document.Read(Documentid);
