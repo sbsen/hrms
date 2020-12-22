@@ -65,7 +65,6 @@ namespace MTSINHR.Controllers
                 string Employee_Id = string.IsNullOrEmpty(datas.Employee_ID) ? "0" : datas.Employee_ID;
                 string Filename = Employee_Id + ".pdf";
                 string FormMonth = datas.Date;
-                string webconfigpath;
                 TempData["Payform"] = datas.Payform;
                 TempData.Keep("Payform");
                 TempData["FormMonth"] = FormMonth;
