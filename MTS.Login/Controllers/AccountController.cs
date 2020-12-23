@@ -57,6 +57,7 @@ namespace MTS.Login.Controllers
             }
 
             UserLogonData userLogon = new UserLogonData();
+            Session["isMtsProject"] = ConfigurationManager.AppSettings["isMtsProject"].ToString();
             userLogon.GetData();
             if (Request.QueryString.Count > 0)
             {

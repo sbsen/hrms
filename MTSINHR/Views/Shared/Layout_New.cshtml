@@ -1,8 +1,14 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    @*<title>xtraCHEF</title>*@
-    <title>MTS-HR</title>
+    @if (Session["isMtsProject"].ToString() == "true")
+    {
+        <title>MTS-HR</title>
+    }
+    else
+    {
+        <title>xtraCHEF</title>
+    }
     <meta http-equiv="x-ua-compatible" content="IE=10;IE=11;IE=Edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="~/Content/toastr.min.css" rel="stylesheet" />
@@ -104,8 +110,14 @@
                 <div class="navbar-header">
                     <a class="navbar-brand p0 m0" href="#">
                         <div class="brand-logo">
-                            <img src="~/Images/logo.png" height="45">
-                            @*<img src="~/Images/xchef.png" height="45">*@
+                            @if (Session["isMtsProject"].ToString() == "true")
+                            {
+                                <img id="logo" src="~/Images/logo.png" height="45"/>
+                            }
+                            else
+                            {
+                                <img id="logo" src="~/Images/xchef.png" height="45"/>
+                            }
                         </div>
                     </a>
                 </div>
@@ -652,7 +664,6 @@
 
         })
         $(document).ajaxError(function (event, request, settings, exception) {
-
             if (request.status == 403) {
                 window.location.href = '@Url.Content("~/MTS.Login/Account/LogOn")'
             }

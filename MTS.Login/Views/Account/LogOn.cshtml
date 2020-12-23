@@ -129,8 +129,14 @@
 
                 <div class="p25">
                     <div class="logo text-center" style="margin-bottom: 30px;">
-                        @*<img id="logo" src="~/Images/xchef.png" />*@
-                        <img id="logo" src="~/Images/logo.png" />
+                        @if (Session["isMtsProject"].ToString() == "true")
+                        {
+                            <img id="logo" src="~/Images/logo.png" />
+                        }
+                        else
+                        {
+                            <img id="logo" src="~/Images/xchef.png" />
+                        }
                     </div>
                     <p class="text-muted">Please enter your user name and password to login</p>
                     @using (Html.BeginForm("LogOn", "Account", FormMethod.Post, new { @class = "form-signin", @id = "frmLogon", @name = "frmLogon", @onsubmit = "encryptPassword();" }))
@@ -176,7 +182,8 @@
     <script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")" type="text/javascript"></script>
     <script src="@Url.Content("~/Scripts/sha1.js")" type="text/javascript"></script>
     <script src="~/Scripts/particles.js"></script>
-    <script src="~/Scripts/app.js"></script>
+    <script src="~/Scripts/app.js"></script>
+
 
 
 

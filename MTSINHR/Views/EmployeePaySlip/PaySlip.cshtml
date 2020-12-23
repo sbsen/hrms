@@ -15,8 +15,14 @@
             <p>Ph.: +91-44-4360-5060   www.mtsin.com</p>
         </div>
         <div class="col-sm-3 col-md-6 col-lg-6" style="text-align: -webkit-right">
-            <img src="~/Images/logo.png" />
-            @*<img src="~/Images/xchef.png" />*@
+            @if (Session["isMtsProject"].ToString() == "true")
+            {
+                <img id="logo" src="~/Images/logo.png" />
+            }
+            else
+            {
+                <img id="logo" src="~/Images/xchef.png" />
+            }
         </div>
     </div>
     <br />
