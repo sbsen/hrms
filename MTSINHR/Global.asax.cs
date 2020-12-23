@@ -9,6 +9,7 @@ using System.Web.Routing;
 using MTS.Helpers;
 using MTSINHR.App_Start;
 using MTSEntBlocks.ExceptionBlock.Handlers;
+using HRMS.Utility;
 
 namespace MTSINHR
 {
@@ -16,8 +17,10 @@ namespace MTSINHR
     // visit http://go.microsoft.com/?LinkId=9394801
     public class MvcApplication : System.Web.HttpApplication
     {
+     
         protected void Application_Start()
         {
+            SecretsConfigHelper objSecretsConfigHelper = new SecretsConfigHelper();
             AreaRegistration.RegisterAllAreas();
 
             WebApiConfig.Register(GlobalConfiguration.Configuration);

@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Blend for Visual Studio 14
+# Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MTS.Login", "MTS.Login\MTS.Login.csproj", "{F13DCE71-15FD-4045-9AD5-81E159B41CE9}"
@@ -33,6 +33,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExceptionBlock", "ExceptionBlock\ExceptionBlock.csproj", "{7E93826A-4881-47EB-A61B-C1F3ABF921D2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HRConstants", "HRConstants\HRConstants.csproj", "{DE53E6E7-B7BB-4E19-8E76-AF1C9C357569}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HRMS.Utility", "HRMS.Utility\HRMS.Utility.csproj", "{C9154562-EF2F-4053-8F3A-240283985E3C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -84,6 +86,10 @@ Global
 		{DE53E6E7-B7BB-4E19-8E76-AF1C9C357569}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DE53E6E7-B7BB-4E19-8E76-AF1C9C357569}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DE53E6E7-B7BB-4E19-8E76-AF1C9C357569}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9154562-EF2F-4053-8F3A-240283985E3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9154562-EF2F-4053-8F3A-240283985E3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9154562-EF2F-4053-8F3A-240283985E3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9154562-EF2F-4053-8F3A-240283985E3C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
