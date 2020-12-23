@@ -1179,6 +1179,10 @@
       <Project>{7e93826a-4881-47eb-a61b-c1f3abf921d2}</Project>
       <Name>ExceptionBlock</Name>
     </ProjectReference>
+    <ProjectReference Include="..\HRMS.Utility\HRMS.Utility.csproj">
+      <Project>{c9154562-ef2f-4053-8f3a-240283985e3c}</Project>
+      <Name>HRMS.Utility</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MTS.Controllers\MTS.Controllers.csproj">
       <Project>{be8d410e-ef54-4647-b31f-b883a1b0de40}</Project>
       <Name>MTS.Controllers</Name>
