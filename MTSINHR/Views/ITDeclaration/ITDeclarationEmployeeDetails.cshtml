@@ -5,13 +5,13 @@
 @System.Web.Optimization.Styles.Render("~/bundles/datepickercss")
 @System.Web.Optimization.Scripts.Render("~/bundles/datepicker")
 <style>
-      input::-webkit-outer-spin-button,
+    input::-webkit-outer-spin-button,
     input::-webkit-inner-spin-button {
         -webkit-appearance: none;
         margin: 0;
     }
 
-       .badge {
+    .badge {
         display: inline-block;
         padding: 0.25em 0.4em;
         font-size: 78%;
@@ -23,7 +23,6 @@
         vertical-align: baseline;
         border-radius: 0.25rem;
     }
-
 </style>
 <body>
     <div class="">
@@ -61,11 +60,9 @@
                 <div class="col-lg-12  row p-l-30" id="dvConfirm">
                     <div class="col-lg-6"></div>
                     <div class="col-lg-6 enableCls">
-
                         <div class="row float-right">
                             <button class="btn btn-success" onclick="EnableDisableDeclarations(true)">Confirm</button>
                         </div>
-
                     </div>
                     <div class="col-lg-6 disableCls text-right">
                         <div class="p-b-5">
@@ -73,21 +70,21 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-12" id="isFilterDiv">
+                <div class="col-lg-12">
                     <div class="col-lg-6">
                         <span>Filter: &nbsp;</span>
-                        <select id="ddlFilter" >
+                        <select id="ddlFilter">
                             <option>All</option>
                             <option>Submission Pending</option>
                             <option>Proof Submission Pending</option>
                             <option>Approval Pending</option>
                         </select>
                     </div>
-                    <div class="col-lg-6">
-
-                    </div>
+                    @*<div class="col-lg-6">
+                            <input type="checkbox" id="chkEnabled" onchange="CheckEnabledDetails()" />
+                            <span>IT Declaration Enabled Employees</span>
+                        </div>*@
                 </div>
-                <br />
                 <div class="MTS_Table">
                     <table class="table-bordered table-responsive table" width="100%" id="declarationTable"></table>
                 </div>
@@ -100,10 +97,6 @@
     var financialYearDetails = [];
     var CurrYear = [];
     $(document).ready(function () {
-        $("#dvConfirm").hide();
-        $("#dvEnable").hide();
-        $("#isFilterDiv").hide();
-        
         getFinancialYear();
         //$('#FinancialYear').datepicker({
         //    //dateFormat: 'yyyy',
@@ -115,7 +108,8 @@
         $("#ddlFinYear").html('');
         $("#ddlFinYear").append('<option value="' + 0 + '">' + "----Select Year----" + '</option>');
         $.each(CurrYear, function (i, val) {
-            $("#ddlFinYear").append('<option value="' + val.Id + '">' + val.Financial_Year + '</option>');
+	        $("#ddlFinYear").append('<option value="' + val.Financial_Year + '">' + val.Financial_Year + '</option>');
+            //$("#ddlFinYear").append('<option value="' + val.Id + '">' + val.Financial_Year + '</option>');
         });
 
         $('.disableCls').hide();
@@ -152,6 +146,14 @@
             declarationTableDetails.columns.adjust().draw();
         });
     });
+
+    //function CheckEnabledDetails() {
+    //    var chkval = $("#chkEnabled").val();
+    //    if (chkval) {
+
+    //    }
+    //}
+
     function dateValueFormat(date) {
         var d = new Date(date);
         var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
@@ -181,31 +183,27 @@
         }
         else
         {
-            year = $('#ddlFinYear option:selected').text();
+            year = $('#ddlFinYear').val();
         }
         $.ajax({
             type: 'get',
             url:'@Url.Content("~/ITDeclaration/getFinancialYearDetails")',
             data: { year: year },
             success: function (data) {
-                if (data.success) {
+                if(data.success){
                     financialYearDetails = JSON.parse(data.result1);
-                    if (financialYearDetails.length > 0) {
-                        $("#dvConfirm").show();
-                        $("#dvEnable").show();
-                        $("#isFilterDiv").show();
-                    } else {
-                        $("#dvConfirm").hide();
-                        $("#dvEnable").hide();
-                        $("#isFilterDiv").hide();
-                    }
                     declarationTableCall(financialYearDetails);
                     $.each(CurrYear, function (i, val) {
-                        if (val.Financial_Year == year && val.status == true) {
-                            declarationTableDetails.columns( 12).visible(false);
+                        if (val.Financial_Year == year && val.STATUS == true) {
+                            declarationTableDetails.columns(10, 12).visible(true);
+                            $("#dvConfirm").show();
+                            $("#dvEnable").show();
                         }
                         else {
-                            declarationTableDetails.columns( 12).visible(true);
+                            declarationTableDetails.columns(10, 12).visible(false);
+                            $("#dvConfirm").hide();
+                            $("#dvEnable").hide();
+
                         }
                     });
 
@@ -251,14 +249,24 @@
                             return dateValueFormat(data);
                         }
                     }
+                    , {
+                        "aTargets": [5,6,7],
+                        "mRender": function (data, type, row) {
+                            if (data != null) {
+                                return data.toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
+                            }
+                            //return parseFloat(data.replace(/,/g, ''));
+
+                        }
+                    }
                     ,
                     {
                         "aTargets": [10],
                         "mRender": function (data, type, row) {
-                            if (row.IT_Declaration_Enabled != 0 && row.IT_Declaration_Enabled != null)
-                                return '<button onclick="updateEmployeeITDetails(this)" id="btnEnable" style="background-color:green;cursor:pointer;" class="badge" >Enable</button>';
+                            if(!data)
+                                return '<button onclick="updateEmployeeITDetails(this)" id="btnEnable" style="background-color:gray;cursor:pointer;" class="badge" >Disabled</button>';
                             else
-                                return '<button  onclick="updateEmployeeITDetails(this)" id="btnDisable" style="background-color:gray;cursor:pointer;" class="badge" >Disable</button>';
+                                return '<button  onclick="updateEmployeeITDetails(this)" id="btnDisable" style="background-color:green;cursor:pointer;" class="badge" >Enabled</button>';
                         }
                     }
                     ,
@@ -283,13 +291,22 @@
     }
 
     function EnableDisableDeclarations(opt) {
+
+        var SelectedData = []
+        var financialYear = $('#ddlFinYear').val();
+        SelectedData = CurrYear.filter(m => m.Financial_Year = financialYear);
+        var Selectedyear = SelectedData[0].Id;
+
         if (declarationTableDetails.$('.checkboxcls').is(':checked')) {
             $.each(financialYearDetails, function (i, val) {
                 if (declarationTableDetails.$('input[name="' + val.Emp_Code + '"]').is(':checked') == true)
                 {
+                    if (!opt) {
+
+                    }
                     $.ajax({
                      type: 'POST'
-                    , data: { Employee_ID: val.id, year: $('#ddlFinYear').val(), IT_Declaration: opt, payable_tax: 0.00 }
+                    , data: { Employee_ID: val.id, year: Selectedyear, IT_Declaration: opt, payable_tax: 0.00 }
                     , url: '@Url.Content("~/ITDeclaration/ITDeclarationofEmployee")'
                     , success: function (data) {
                         if (data.result == 1) {
@@ -311,23 +328,36 @@
         }
     }
 
-  function showDetails(data) {
+    function showDetails(data) {
+        if ($('#ddlFinYear').val() == '' || $('#ddlFinYear').val() == null || $('#ddlFinYear').val() == 0) {
+            toastr.warning('Please Select Financial Year');
+            return false;
+        }
         var selectedDetails = [];
-        selectedDetails = financialYearDetails.filter(a => a.id = data)
+        selectedDetails = financialYearDetails.filter(a => a.id = data);
         //if (selectedDetails[0].STATUS == 'Submission Pending' || selectedDetails[0].STATUS == 'Proof Submission Pending') {
         //    toastr.warning('Employee Submission/Proof Submission is Pending. Kindly try after Submission');
         //    return false;
         //}
          //window.location.href = '@Url.Action("ITDeclarationForm", "ITDeclaration")';
-        window.location.href = '@Url.Content("~/ITDeclaration/RedirectFromITDeclaration?EmpID=")' + data;
+        window.location.href = '@Url.Content("~/ITDeclaration/RedirectFromITDeclaration?EmpID=")' + data + '&FinancialYear=' + $('#ddlFinYear').val();
     }
 
     function updateEmployeeITDetails(row) {
+        if ($('#ddlFinYear').val() == '' || $('#ddlFinYear').val() == null || $('#ddlFinYear').val() == 0) {
+            toastr.warning('Please Select Financial Year');
+            return false;
+        }
+        var SelectedData = []
+        var financialYear = $('#ddlFinYear').val();
+        SelectedData = CurrYear.filter(m => m.Financial_Year = financialYear);
+        var Selectedyear = SelectedData[0].Id;
+
         var rowval = row.closest("tr");
         var row_data = $('#declarationTable').DataTable().row(rowval).data();
         $.ajax({
             type: 'POST'
-                   , data: { Employee_ID: row_data.id, year: $('#ddlFinYear').val(), IT_Declaration: row_data.IT_Declaration_Enabled ? false : true, payable_tax: 0.00 }
+            , data: { Employee_ID: row_data.id, year: Selectedyear, IT_Declaration: row_data.IT_Declaration_Enabled ? false : true, payable_tax: 0.00 }
                    , url: '@Url.Content("~/ITDeclaration/ITDeclarationofEmployee")'
                    , success: function (data) {
                        if (data.result == 1) {

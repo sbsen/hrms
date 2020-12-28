@@ -393,7 +393,7 @@ namespace MTSINHR.Controllers
                 Directory.CreateDirectory(path);
 
 
-            checkandDeleteExistingfiles(path, fileNamewithall);
+            checkandDeleteExistingfiles(path, fileName);
             using (FileStream fs = new FileStream(Path.Combine(path, fileName), FileMode.CreateNew, FileAccess.Write))
             {
                 fs.Write(bytes, 0, (int)bytes.Length);
@@ -534,10 +534,14 @@ namespace MTSINHR.Controllers
         }
         public Boolean checkandDeleteExistingfiles(string directory, string filename)
         {
-            var files = Directory.GetFiles(directory, filename);
-            for (int i = 0; i < files.Length; i++)
+            string filename_without_extension = Path.GetFileNameWithoutExtension(filename);
+            var filesWithoutExtension = System.IO.Directory.GetFiles(directory).Where(c => Path.GetFileNameWithoutExtension(c) == filename_without_extension).ToList();
+            if (filesWithoutExtension.Count > 0)
             {
-                System.IO.File.Delete(files[i]);
+                foreach (var item in filesWithoutExtension)
+                {
+                    System.IO.File.Delete(item);
+                }
             }
 
             return true;
