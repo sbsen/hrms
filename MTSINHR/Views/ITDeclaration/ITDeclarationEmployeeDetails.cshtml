@@ -64,12 +64,13 @@
                             <button class="btn btn-success" onclick="EnableDisableDeclarations(true)">Confirm</button>
                         </div>
                     </div>
-                    <div class="col-lg-6 disableCls text-right">
-                        <div class="p-b-5">
+                    <div class="col-lg-6 disableCls">
+                        <div class="row float-right">
                             <button class="btn btn-danger form" onclick="EnableDisableDeclarations(false)">Confirm</button>
                         </div>
                     </div>
                 </div>
+                <br/>
                 <div class="col-lg-12">
                     <div class="col-lg-6">
                         <span>Filter: &nbsp;</span>
@@ -85,6 +86,7 @@
                             <span>IT Declaration Enabled Employees</span>
                         </div>*@
                 </div>
+                <br />
                 <div class="MTS_Table">
                     <table class="table-bordered table-responsive table" width="100%" id="declarationTable"></table>
                 </div>
@@ -97,6 +99,8 @@
     var financialYearDetails = [];
     var CurrYear = [];
     $(document).ready(function () {
+        $("#dvConfirm").hide();
+        $("#dvEnable").hide();
         getFinancialYear();
         //$('#FinancialYear').datepicker({
         //    //dateFormat: 'yyyy',
@@ -194,6 +198,7 @@
                     financialYearDetails = JSON.parse(data.result1);
                     declarationTableCall(financialYearDetails);
                     $.each(CurrYear, function (i, val) {
+                        debugger
                         if (val.Financial_Year == year && val.STATUS == true) {
                             declarationTableDetails.columns(10, 12).visible(true);
                             $("#dvConfirm").show();
