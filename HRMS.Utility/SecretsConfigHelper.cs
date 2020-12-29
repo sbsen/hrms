@@ -148,7 +148,7 @@ namespace HRMS.Utility
                         string connectionStringName = Contants.DATABASE_CONNECTION_NAME;
                         string providerName = "System.Data.SqlClient";
                         // Get the connectionString.
-                        string connectionString = $"Data Source={jObject["DB_HOST"]},{jObject["DB_PORT"]};Initial Catalog={jObject["DB_NAME"]};Integrated Security=false; user id={jObject["DB_USER_NAME"]};password={jObject["DB_PASSWORD"]}";
+                        string connectionString = $"Data Source={jObject["DB_HOST"]},{jObject["DB_PORT"]};Initial Catalog={jObject["HRDB_NAME"]};Integrated Security=false; user id={jObject["DB_USER_NAME"]};password={jObject["DB_PASSWORD"]}";
                         //string connectionString = $"Database = MTSHRMS_INT; Server = MTS0066; user id = sa; password = sadmin; Integrated Security = false;
 
                         if (IsConnectionString(ConfigurationManager.ConnectionStrings[connectionStringName]))
