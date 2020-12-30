@@ -12496,73 +12496,79 @@ GO
 CREATE PROCEDURE [dbo].[MTS_GET_IT_DECLARATION_EMPLOYEES] (@START_YEAR BIGINT,@END_YEAR BIGINT)
 AS
 BEGIN
-	DECLARE @START_DATE DATE
-		,@END_DATE DATE
-
-	SET @START_DATE = CAST(CAST(@START_YEAR AS VARCHAR) + '-04-01' AS DATE)
-	SET @END_DATE = EOMONTH(CAST(CAST(@END_YEAR + 1 AS VARCHAR) + '-03-01' AS DATE));
-
-	WITH PAYSLIP_DETAILS
-	AS (
-		SELECT Emp_No
-			,ISNULL(SUM(Gross_Earnings), 0) AS Gross_Earnings
-			,MAX(CAST(EP.Month + ' 01 ' + CAST(EP.Year AS VARCHAR) AS DATE)) AS Max_date
-		FROM EMPLOYEE_PAYSLIP EP WITH (NOLOCK)
-		WHERE CAST(EP.Month + ' 01 ' + CAST(EP.Year AS VARCHAR) AS DATE) BETWEEN @START_DATE
-				AND @END_DATE
-		GROUP BY Emp_No
-		)
-		,SALARY_FITMENTS
-	AS (
-		SELECT EE.EMP_ID AS EMP_ID
-			,CASE 
-				WHEN MONTH(Max_date) = MONTH(@END_DATE)
-					AND YEAR(Max_date) = YEAR(@END_DATE)
-					THEN 0
-				ELSE (DATEDIFF(MONTH, Max_date, @END_DATE) * EE.MONTHLY_GROSS)
-				END AS Projected_Annual_gross
-		FROM PAYSLIP_DETAILS PD WITH (NOLOCK)
-		INNER JOIN Employee E WITH (NOLOCK) ON E.Employee_Id = PD.Emp_No
-		INNER JOIN MTS_PAYROLL_EMPLOYEE_EARNINGS EE WITH (NOLOCK) ON EE.EMP_ID = E.ID
-			AND EE.ACTIVE = 1
-		)
-	SELECT E.id
-		,E.Employee_Id AS Emp_Code
-		,E.Firstname + ' ' + E.Lastname AS Emp_Name
-		,E.Dateofjoin AS Dateofjoin
-		,D.Department AS Department_Name
-		,DSG.Designation AS Designation_Name
-		,PD.Gross_Earnings AS Gross_Earnings
-		,SF.Projected_Annual_gross AS Projected_Annual_gross
-		,(PD.Gross_Earnings + SF.Projected_Annual_gross) AS Total_Earnings
-		,IT_Declaration_Enabled AS IT_Declaration_Enabled
-		,CASE 
-			WHEN Submitted_on IS NULL
-				THEN 'Submission Pending'
-			WHEN Submitted_on IS NOT NULL
-				AND Proof_Submitted_on IS NULL
-				THEN 'Proof Submission Pending'
-			WHEN Submitted_on IS NOT NULL
-				AND Proof_Submitted_on IS NOT NULL
-				AND Approved_On IS NULL
-				THEN 'Approval Pending'
-			ELSE NULL
-			END AS [STATUS]
-	FROM Employee E WITH (NOLOCK)
-	INNER JOIN MTS_LOGIN ML WITH (NOLOCK) ON ML.USERID = E.ID
-	INNER JOIN MTS_Department D WITH (NOLOCK) ON E.DepartmentId = D.id
-	LEFT JOIN MTS_Designation DSG WITH (NOLOCK) ON E.Designation = DSG.id
-	INNER JOIN PAYSLIP_DETAILS PD ON PD.Emp_No = E.Employee_Id
-	INNER JOIN SALARY_FITMENTS SF ON SF.EMP_ID = E.ID
-	LEFT JOIN MTS_IT_DECLARATION_EMPLOYEE_DETAILS ITDE WITH (NOLOCK) ON ITDE.Employee_id = E.ID
-	LEFT JOIN MTS_IT_DECLARATION_EMPLOYEE_SECTION_DETAILS ITDS WITH (NOLOCK) ON ITDS.EMP_IT_ID = ITDE.ID
-	WHERE (
-			ML.ACTIVE = 1
-			OR (
-				ML.ACTIVE = 0
-				AND ML.ResignedOn > @END_DATE
-				)
-			)
+	 DECLARE @START_DATE DATE          
+	  ,@END_DATE DATE          
+          
+	 SET @START_DATE = CAST(CAST(@START_YEAR AS VARCHAR) + '-04-01' AS DATE)    
+	 SET @END_DATE = EOMONTH(CAST(CAST(@END_YEAR AS VARCHAR) + '-03-01' AS DATE));         
+          
+	 WITH PAYSLIP_DETAILS          
+	 AS (          
+	  SELECT Emp_No          
+	   ,ISNULL(SUM(Gross_Earnings), 0) AS Gross_Earnings          
+	   ,MAX(CAST(EP.Month + ' 01 ' + CAST(EP.Year AS VARCHAR) AS DATE)) AS Max_date          
+	  FROM EMPLOYEE_PAYSLIP EP WITH (NOLOCK)          
+	  WHERE CAST(EP.Month + ' 01 ' + CAST(EP.Year AS VARCHAR) AS DATE) BETWEEN @START_DATE          
+		AND @END_DATE          
+	  GROUP BY Emp_No          
+	  )          
+	  ,SALARY_FITMENTS          
+	 AS (          
+	  SELECT EE.EMP_ID AS EMP_ID          
+	   ,CASE           
+		WHEN MONTH(Max_date) = MONTH(@END_DATE)          
+		 AND YEAR(Max_date) = YEAR(@END_DATE)          
+		 THEN 0          
+		ELSE (DATEDIFF(MONTH, Max_date, @END_DATE) * EE.MONTHLY_GROSS)          
+		END AS Projected_Annual_gross          
+	  FROM PAYSLIP_DETAILS PD WITH (NOLOCK)          
+	  INNER JOIN Employee E WITH (NOLOCK) ON E.Employee_Id = PD.Emp_No          
+	  INNER JOIN MTS_PAYROLL_EMPLOYEE_EARNINGS EE WITH (NOLOCK) ON EE.EMP_ID = E.ID          
+	   AND EE.ACTIVE = 1          
+	  )       
+		,EMPLOYEE_SECTION_DETAILS          
+	 AS (          
+	   SELECT TOP(1) EMP_IT_ID, Submitted_on, Proof_Submitted_on, Approved_On    
+	   FROM MTS_IT_DECLARATION_EMPLOYEE_SECTION_DETAILS   
+	   GROUP BY  EMP_IT_ID,Submitted_on, Proof_Submitted_on, Approved_On  
+	  )   
+	 SELECT E.id          
+	  ,E.Employee_Id AS Emp_Code          
+	  ,E.Firstname + ' ' + E.Lastname AS Emp_Name          
+	  ,E.Dateofjoin AS Dateofjoin          
+	  ,D.Department AS Department_Name          
+	  ,DSG.Designation AS Designation_Name          
+	  ,PD.Gross_Earnings AS Gross_Earnings          
+	  ,SF.Projected_Annual_gross AS Projected_Annual_gross          
+	  ,(PD.Gross_Earnings + SF.Projected_Annual_gross) AS Total_Earnings          
+	  ,IT_Declaration_Enabled AS IT_Declaration_Enabled          
+	  ,CASE           
+	   WHEN Submitted_on IS NULL          
+		THEN 'Submission Pending'          
+	   WHEN Submitted_on IS NOT NULL          
+		AND Proof_Submitted_on IS NULL          
+		THEN 'Proof Submission Pending'          
+	   WHEN Submitted_on IS NOT NULL          
+		AND Proof_Submitted_on IS NOT NULL          
+		AND Approved_On IS NULL          
+		THEN 'Approval Pending'          
+	   ELSE NULL          
+	   END AS [STATUS]          
+	 FROM Employee E WITH (NOLOCK)          
+	 INNER JOIN MTS_LOGIN ML WITH (NOLOCK) ON ML.USERID = E.ID          
+	 INNER JOIN MTS_Department D WITH (NOLOCK) ON E.DepartmentId = D.id          
+	 LEFT JOIN MTS_Designation DSG WITH (NOLOCK) ON E.Designation = DSG.id          
+	 INNER JOIN PAYSLIP_DETAILS PD ON PD.Emp_No = E.Employee_Id          
+	 INNER JOIN SALARY_FITMENTS SF ON SF.EMP_ID = E.ID          
+	 LEFT JOIN MTS_IT_DECLARATION_EMPLOYEE_DETAILS ITDE WITH (NOLOCK) ON ITDE.Employee_id = E.ID          
+	 LEFT JOIN EMPLOYEE_SECTION_DETAILS ITDS WITH (NOLOCK) ON ITDS.EMP_IT_ID = ITDE.ID          
+	 WHERE (          
+	   ML.ACTIVE = 1          
+	   OR (          
+		ML.ACTIVE = 0          
+		AND ML.ResignedOn > @END_DATE          
+		)          
+	   )        
 END
 GO
 
@@ -12689,51 +12695,64 @@ CREATE PROCEDURE [dbo].[MTS_GET_IT_DECLARATION_SECTION_SUBSECTION_DETAILS] (
 	)
 AS
 BEGIN
-	SELECT MD.SECTION
-		,MD.SUB_SECTION
-		,MSD.EMP_IT_ID
-		,DESCRIPTION
-		,NOTES
-		,MAX_LIMIT
-		,[PERCENTAGE]
-		,ACTIVE
-		,Submitted_amount
-		,Submitted_on
-		,Proof_Contents
-		,Proof_Submitted_on
-		,Approved_Amount
-		,Approved_By
-		,Approved_On
-	FROM MTS_IT_DECLARATION_SECTIONS MD WITH (NOLOCK)
-	LEFT JOIN MTS_IT_DECLARATION_EMPLOYEE_SECTION_DETAILS MSD WITH (NOLOCK) ON MSD.SECTION = MD.SECTION
-		AND MSD.sub_Section = MD.SUB_SECTION
-	LEFT JOIN MTS_IT_DECLARATION_EMPLOYEE_DETAILS ED WITH (NOLOCK) ON ED.ID = MSD.EMP_IT_ID
-		AND Employee_id = @Employee_id
-		AND Financial_Year = @Financial_Year
-	WHERE MD.SUB_SECTION = ''
+	
+;WITH EMP_SECTION_DETAILS        
+ AS (        
+  SELECT SD.Section ,SD.EMP_IT_ID ,SD.Submitted_amount ,SD.Submitted_on 
+  ,SD.Proof_Contents  ,SD.Proof_Submitted_on ,SD.Approved_Amount ,SD.Approved_By ,SD.Approved_On  
+  FROM MTS_IT_DECLARATION_EMPLOYEE_DETAILS ED WITH (NOLOCK)   
+  INNER JOIN MTS_IT_DECLARATION_EMPLOYEE_SECTION_DETAILS SD WITH (NOLOCK) ON ED.id= SD.EMP_IT_ID AND SD.sub_Section=''
+  WHERE ED.Employee_id =@Employee_id AND ED.Financial_Year = @Financial_Year
+  ) 
 
-	SELECT MD.SECTION
-		,MD.SUB_SECTION
-		,MSD.EMP_IT_ID
-		,DESCRIPTION
-		,NOTES
-		,MAX_LIMIT
-		,[PERCENTAGE]
-		,ACTIVE
-		,Submitted_amount
-		,Submitted_on
-		,Proof_Contents
-		,Proof_Submitted_on
-		,Approved_Amount
-		,Approved_By
-		,Approved_On
-	FROM MTS_IT_DECLARATION_SECTIONS MD WITH (NOLOCK)
-	LEFT JOIN MTS_IT_DECLARATION_EMPLOYEE_SECTION_DETAILS MSD WITH (NOLOCK) ON MSD.SECTION = MD.SECTION
-		AND MSD.sub_Section = MD.SUB_SECTION
-	LEFT JOIN MTS_IT_DECLARATION_EMPLOYEE_DETAILS ED WITH (NOLOCK) ON ED.ID = MSD.EMP_IT_ID
-		AND Employee_id = @Employee_id
-		AND Financial_Year = @Financial_Year
-	WHERE MD.SUB_SECTION <> ''
+ SELECT MD.ID AS Id    
+  ,MD.SECTION      
+  ,MD.SUB_SECTION      
+  ,ESD.EMP_IT_ID      
+  ,DESCRIPTION      
+  ,NOTES      
+  ,MAX_LIMIT      
+  ,[PERCENTAGE]      
+  ,ACTIVE      
+  ,Submitted_amount      
+  ,Submitted_on      
+  ,Proof_Contents      
+  ,Proof_Submitted_on      
+  ,Approved_Amount      
+  ,Approved_By      
+  ,Approved_On      
+ FROM MTS_IT_DECLARATION_SECTIONS MD WITH (NOLOCK)  
+  LEFT JOIN EMP_SECTION_DETAILS ESD ON ESD.Section = MD.SECTION     
+ WHERE MD.SUB_SECTION = ''
+
+ ;WITH EMP_SUB_SECTION_DETAILS        
+ AS (        
+  SELECT SD.Section , SD.sub_Section ,SD.EMP_IT_ID ,SD.Submitted_amount ,SD.Submitted_on 
+  ,SD.Proof_Contents  ,SD.Proof_Submitted_on ,SD.Approved_Amount ,SD.Approved_By ,SD.Approved_On  
+  FROM MTS_IT_DECLARATION_EMPLOYEE_DETAILS ED WITH (NOLOCK)   
+  INNER JOIN MTS_IT_DECLARATION_EMPLOYEE_SECTION_DETAILS SD WITH (NOLOCK) ON ED.id= SD.EMP_IT_ID AND SD.sub_Section<>''
+  WHERE ED.Employee_id =@Employee_id AND ED.Financial_Year = @Financial_Year
+  )  
+  
+ SELECT MD.ID AS Id    
+  ,MD.SECTION      
+  ,MD.SUB_SECTION      
+  ,ESSD.EMP_IT_ID      
+  ,DESCRIPTION      
+  ,NOTES      
+  ,MAX_LIMIT      
+  ,[PERCENTAGE]      
+  ,ACTIVE      
+  ,ESSD.Submitted_amount      
+  ,ESSD.Submitted_on      
+  ,ESSD.Proof_Contents      
+  ,ESSD.Proof_Submitted_on      
+  ,ESSD.Approved_Amount      
+  ,ESSD.Approved_By      
+  ,ESSD.Approved_On      
+ FROM MTS_IT_DECLARATION_SECTIONS MD WITH (NOLOCK)   
+ LEFT JOIN EMP_SUB_SECTION_DETAILS ESSD ON ESSD.Section = MD.SECTION AND ESSD.sub_Section = MD.SUB_SECTION
+ WHERE MD.SUB_SECTION <> '' 
 END
 GO
 

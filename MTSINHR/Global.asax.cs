@@ -20,7 +20,7 @@ namespace MTSINHR
      
         protected void Application_Start()
         {
-            SecretsConfigHelper objSecretsConfigHelper = new SecretsConfigHelper();
+            //SecretsConfigHelper objSecretsConfigHelper = new SecretsConfigHelper();
             AreaRegistration.RegisterAllAreas();
 
             WebApiConfig.Register(GlobalConfiguration.Configuration);
