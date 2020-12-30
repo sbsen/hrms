@@ -691,7 +691,6 @@
     }
 
     function ProrateITDedutions(currelement) {
-        
         if (ITDetails.filter(d => d.FLAG == 2)[0].DEDUCTION_SCHEDULED != $("#txtITLiablity").val()) {
             if (ITLiablityDetails.filter(d => d.FLAG == 2).length > 0) {
                 $.each(ITLiablityDetails.filter(d => d.FLAG == 2), function (i, val) {
@@ -705,8 +704,8 @@
                 var deduction = 0;
                 var current_Balance = parseFloat(ITLiablity).toFixed(2) - ITDeducted;
                 var months = ITDetailsSplit.filter(d => d.FLAG == 2).length;
-                var splitbalance = months != 0 ? current_Balance / months : current_Balance;
-                $(".inputschedulecls").val(splitbalance.toFixed(2));
+                var splitbalance = months != 0 ? parseFloat(current_Balance / months).toFixed(2) : current_Balance;
+                $(".inputschedulecls").val(splitbalance);
                 if (ITDetailsSplit.filter(d => d.FLAG == 2).length > 0) {
                     $.each(ITDetailsSplit.filter(d => d.FLAG == 2), function (i, val) {
                         val.DEDUCTED_AMOUNT = parseFloat(val.DEDUCTED_AMOUNT) + parseFloat(splitbalance);
@@ -1579,7 +1578,7 @@
 
 
     function ViewSubSectionDetails(CurrentElement) {
-
+    debugger
         var financialYear = $('#ddlFinYear').val();
         if (financialYear == '' || financialYear == 0) {
             toastr.warning('select financial year');
