@@ -129,16 +129,6 @@
     <Compile Include="Vendors.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DataBlock\DataBlock.csproj">
-      <Project>{cd785cab-f697-49e4-827c-22bfdf195f5c}</Project>
-      <Name>DataBlock</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ExceptionBlock\ExceptionBlock.csproj">
-      <Project>{7e93826a-4881-47eb-a61b-c1f3abf921d2}</Project>
-      <Name>ExceptionBlock</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="obj\Release\DesignTimeResolveAssemblyReferencesInput.cache" />
     <None Include="obj\Release\MTSHRDataLayer.csprojResolveAssemblyReference.cache" />
     <None Include="packages.config" />
@@ -196,6 +186,16 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="obj\Release\TempPE\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DataBlock\DataBlock.csproj">
+      <Project>{cd785cab-f697-49e4-827c-22bfdf195f5c}</Project>
+      <Name>DataBlock</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ExceptionBlock\ExceptionBlock.csproj">
+      <Project>{7e93826a-4881-47eb-a61b-c1f3abf921d2}</Project>
+      <Name>ExceptionBlock</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
