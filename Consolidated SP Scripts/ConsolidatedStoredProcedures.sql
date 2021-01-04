@@ -4031,6 +4031,18 @@ IF EXISTS (
 		)
 	DROP PROCEDURE [dbo].XC_REPORT_TENANT_WISE_INVOICE_COUNT
 GO
+/****** Object:  StoredProcedure [dbo].[MTS_CALCULATELEAVE_EMPID_YEAR]    Script Date: 4/21/2018 4:07:37 PM ******/
+IF EXISTS (
+		SELECT *
+		FROM sys.objects
+		WHERE object_id = OBJECT_ID(N'[dbo].[MTS_CALCULATELEAVE_EMPID_YEAR]')
+			AND type IN (
+				N'P'
+				,N'PC'
+				)
+		)
+	DROP PROCEDURE [dbo].[MTS_CALCULATELEAVE_EMPID_YEAR]
+GO
 /****** Object:  StoredProcedure [dbo].[ACTIVATEACCOUNT]    Script Date: 5/17/2020 12:31:56 AM ******/
 SET ANSI_NULLS ON
 GO
@@ -11210,194 +11222,117 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE PROCEDURE [dbo].[MTS_CALCULATELEAVE_ATJOIN] (@EMPLOYEEID BIGINT)
-AS
-BEGIN
-	DECLARE @LEAVE_CODE VARCHAR(5)
-		,@ASSIGNED_AFTER BIGINT
-		,@APPLICABLE_FOR BIGINT
-		,@MARITAL_STATUS BIGINT
-	DECLARE @EMP_JOINDATE DATE
-		,@EMP_DEPARTMENT BIGINT
-		,@EMP_GENDER BIGINT
-		,@EMP_MARITALSTATUS BIGINT
-		,@PRO_RATA BIT
-	DECLARE @NumberOfMthPerYear BIGINT = 12
-	DECLARE @APPLICABLE_FOR_BOTH_GENDER INT = 3
-	DECLARE @APPLICABLE_FOR_BOTH_STATUS INT = 3
-	DECLARE @CurrentYear INT = YEAR(getdate())
-
-	SELECT @EMP_JOINDATE = Dateofjoin
-		,@EMP_DEPARTMENT = DepartmentId
-		,@EMP_GENDER = (
-			CASE 
-				WHEN Gender = 0
-					THEN 1
-				WHEN Gender = 1
-					THEN 2
-				ELSE 3
-				END
-			)
-		,@EMP_MARITALSTATUS = MaritalStatus
-	FROM Employee WITH (NOLOCK)
-	WHERE id = @EMPLOYEEID
-
-	DECLARE LEAVECALC_CURSOR CURSOR
-	FOR
-	SELECT LEAVE_CODE
-		,ASSIGNED_AFTER
-		,APPLICABLE_FOR
-		,MARITAL_STATUS
-		,PRORATA
-	FROM MTS_LeavePolicy WITH (NOLOCK)
-
-	OPEN LEAVECALC_CURSOR
-
-	FETCH NEXT
-	FROM LEAVECALC_CURSOR
-	INTO @LEAVE_CODE
-		,@ASSIGNED_AFTER
-		,@APPLICABLE_FOR
-		,@MARITAL_STATUS
-		,@PRO_RATA
-
-	WHILE @@FETCH_STATUS = 0
-	BEGIN
-		IF EXISTS (
-				SELECT *
-				FROM MTS_LeaveType WITH (NOLOCK)
-				WHERE Leavetype = @LEAVE_CODE
-					AND DepartmentId = @EMP_DEPARTMENT
-				)
-		BEGIN
-			IF (YEAR(@EMP_JOINDATE) >= YEAR(getdate()) - 1)
+CREATE PROCEDURE [dbo].[MTS_CALCULATELEAVE_ATJOIN] (@EMPLOYEEID BIGINT)  
+AS  
+BEGIN  
+ DECLARE @LEAVE_CODE VARCHAR(5)  
+  ,@ASSIGNED_AFTER BIGINT  
+  ,@APPLICABLE_FOR BIGINT  
+  ,@MARITAL_STATUS BIGINT 
+  ,@EMP_JOINDATE DATE  
+  ,@EMP_DEPARTMENT BIGINT  
+  ,@EMP_GENDER BIGINT  
+  ,@EMP_MARITALSTATUS BIGINT  
+  ,@PRO_RATA BIT 
+  ,@NumberOfMthPerYear BIGINT = 12
+  ,@APPLICABLE_FOR_BOTH_GENDER INT = 3
+  ,@APPLICABLE_FOR_BOTH_STATUS INT = 3
+  
+ SELECT @EMP_JOINDATE = Dateofjoin  
+  ,@EMP_DEPARTMENT = DepartmentId  
+  ,@EMP_GENDER = (  
+   CASE   
+    WHEN Gender = 0  
+     THEN 1  
+    WHEN Gender = 1  
+     THEN 2  
+    ELSE 3  
+    END  
+   )  
+  ,@EMP_MARITALSTATUS = MaritalStatus  
+ FROM Employee WITH (NOLOCK)  
+ WHERE id = @EMPLOYEEID  
+  
+ DECLARE LEAVECALC_CURSOR CURSOR  
+ FOR  
+ SELECT LEAVE_CODE  
+  ,ASSIGNED_AFTER  
+  ,APPLICABLE_FOR  
+  ,MARITAL_STATUS  
+  ,PRORATA  
+ FROM MTS_LeavePolicy WITH (NOLOCK)  
+  
+ OPEN LEAVECALC_CURSOR  
+  
+ FETCH NEXT  
+ FROM LEAVECALC_CURSOR  
+ INTO @LEAVE_CODE  
+  ,@ASSIGNED_AFTER  
+  ,@APPLICABLE_FOR  
+  ,@MARITAL_STATUS  
+  ,@PRO_RATA  
+  
+ WHILE @@FETCH_STATUS = 0  
+ BEGIN
+ IF EXISTS (  
+    SELECT *  
+    FROM MTS_LeaveType WITH (NOLOCK)  
+    WHERE Leavetype = @LEAVE_CODE  
+     AND DepartmentId = @EMP_DEPARTMENT  
+    )  
+  BEGIN  
+	IF (@APPLICABLE_FOR = @EMP_GENDER OR @APPLICABLE_FOR = @APPLICABLE_FOR_BOTH_GENDER)  
+    BEGIN  
+     IF (@MARITAL_STATUS = @EMP_MARITALSTATUS OR @MARITAL_STATUS = @APPLICABLE_FOR_BOTH_STATUS)  
+     BEGIN 
+		 DECLARE @LT_ID INT, @NOD_LEAVE INT  
+  
+		  SELECT @LT_ID = ID ,@NOD_LEAVE = Numberofdays  
+		  FROM MTS_LeaveType WITH (NOLOCK)  
+		  WHERE Leavetype = @LEAVE_CODE AND DepartmentId = @EMP_DEPARTMENT
+		  
+			IF (@PRO_RATA = 1)  
 			BEGIN
-				IF (
-						@APPLICABLE_FOR = @EMP_GENDER
-						OR @APPLICABLE_FOR = @APPLICABLE_FOR_BOTH_GENDER
-						)
-				BEGIN
-					IF (
-							@MARITAL_STATUS = @EMP_MARITALSTATUS
-							OR @MARITAL_STATUS = @APPLICABLE_FOR_BOTH_STATUS
-							)
-					BEGIN
-						DECLARE @LT_ID INT
-						DECLARE @NOD_LEAVE INT
+				IF (@ASSIGNED_AFTER <= (DATEDIFF(MONTH, @EMP_JOINDATE, getdate())))  
+				BEGIN 
+					IF NOT EXISTS ( SELECT *  
+					   FROM EmployeeLeaveBalance WITH (NOLOCK)  
+					   WHERE Employee_Id = @EMPLOYEEID  AND LeaveType = @LT_ID  AND Year = YEAR(@EMP_JOINDATE)  
+					   )  
+					BEGIN 
+						DECLARE @TOTALNOD FLOAT
 
-						SELECT @LT_ID = ID
-							,@NOD_LEAVE = Numberofdays
-						FROM MTS_LeaveType WITH (NOLOCK)
-						WHERE Leavetype = @LEAVE_CODE
-							AND DepartmentId = @EMP_DEPARTMENT
+						SET @TOTALNOD = ROUND(((CONVERT(DECIMAL(18, 2), @NOD_LEAVE) / @NumberOfMthPerYear) * (@NumberOfMthPerYear - ((MONTH(@EMP_JOINDATE))-1))), 1) 
 
-						IF (@PRO_RATA = 1)
-						BEGIN
-							IF (@ASSIGNED_AFTER <= (DATEDIFF(MONTH, @EMP_JOINDATE, getdate())))
-							BEGIN
-								IF (YEAR(getdate()) > YEAR(@EMP_JOINDATE))
-								BEGIN
-									IF NOT EXISTS (
-											SELECT *
-											FROM EmployeeLeaveBalance WITH (NOLOCK)
-											WHERE Employee_Id = @EMPLOYEEID
-												AND LeaveType = @LT_ID
-												AND Year = @CurrentYear
-											)
-									BEGIN
-										DECLARE @TOTALNOD FLOAT
-
-										IF (@ASSIGNED_AFTER = 0)
-										BEGIN
-											SET @TOTALNOD = ROUND(((CONVERT(DECIMAL(18, 2), @NOD_LEAVE) / @NumberOfMthPerYear) * (@NumberOfMthPerYear - @ASSIGNED_AFTER)), 1)
-										END
-										ELSE
-										BEGIN
-											SET @TOTALNOD = ROUND(((CONVERT(DECIMAL(18, 2), @NOD_LEAVE) / @NumberOfMthPerYear) * (@NumberOfMthPerYear - (DATEDIFF(MONTH, @EMP_JOINDATE, getdate())) + 1)), 1) --IF(@ASSIGNED_AFTER <= (DATEDIFF(MONTH, @EMP_JOINDATE, getdate())))
-										END
-
-										INSERT INTO EmployeeLeaveBalance (Employee_Id, LeaveType, Leavebalance, AdvanceCredit, AdvanceAvailed, Year)
-										VALUES (
-											@EMPLOYEEID
-											,@LT_ID
-											,@TOTALNOD
-											,0
-											,0
-											,@CurrentYear
-											)
-									END
-								END
-								ELSE
-								BEGIN
-									IF (@ASSIGNED_AFTER <= (DATEDIFF(MONTH, @EMP_JOINDATE, getdate())))
-									BEGIN
-										IF NOT EXISTS (
-												SELECT *
-												FROM EmployeeLeaveBalance WITH (NOLOCK)
-												WHERE Employee_Id = @EMPLOYEEID
-													AND LeaveType = @LT_ID
-													AND Year = @CurrentYear
-												)
-										BEGIN
-											INSERT INTO EmployeeLeaveBalance (Employee_Id, LeaveType, Leavebalance, AdvanceCredit, AdvanceAvailed, Year)
-											VALUES (
-												@EMPLOYEEID
-												,@LT_ID
-												,ROUND(((CONVERT(DECIMAL(18, 2), @NOD_LEAVE) / @NumberOfMthPerYear) * (@NumberOfMthPerYear - (MONTH(@EMP_JOINDATE)) + 1)), 1)
-												,0
-												,0
-												,@CurrentYear
-												)
-										END
-									END
-								END
-							END
-						END
-						ELSE
-						BEGIN
-							IF (
-									((DATEDIFF(MONTH, @EMP_JOINDATE, getdate())) = @ASSIGNED_AFTER)
-									OR (YEAR(getdate()) > YEAR(@EMP_JOINDATE))
-									)
-							BEGIN
-								IF NOT EXISTS (
-										SELECT *
-										FROM EmployeeLeaveBalance WITH (NOLOCK)
-										WHERE Employee_Id = @EMPLOYEEID
-											AND LeaveType = @LT_ID
-											AND Year = @CurrentYear
-										)
-								BEGIN
-									INSERT INTO EmployeeLeaveBalance (Employee_Id, LeaveType, Leavebalance, AdvanceCredit, AdvanceAvailed, Year)
-									VALUES (
-										@EMPLOYEEID
-										,@LT_ID
-										,@NOD_LEAVE
-										,0
-										,0
-										,@CurrentYear
-										)
-								END
-							END
-						END
+						INSERT INTO EmployeeLeaveBalance (Employee_Id, LeaveType, Leavebalance, AdvanceCredit, AdvanceAvailed, Year)  
+						VALUES ( @EMPLOYEEID ,@LT_ID ,@TOTALNOD ,0 ,0 ,YEAR(@EMP_JOINDATE)) 
 					END
 				END
 			END
+			ELSE
+			BEGIN			
+				IF (@ASSIGNED_AFTER <= (DATEDIFF(MONTH, @EMP_JOINDATE, getdate())))  
+				BEGIN 
+					INSERT INTO EmployeeLeaveBalance (Employee_Id, LeaveType, Leavebalance, AdvanceCredit, AdvanceAvailed, Year)  
+					VALUES ( @EMPLOYEEID ,@LT_ID ,@NOD_LEAVE ,0 ,0 ,YEAR(@EMP_JOINDATE)) 
+				END
+			END
 		END
-
-		FETCH NEXT
-		FROM LEAVECALC_CURSOR
-		INTO @LEAVE_CODE
-			,@ASSIGNED_AFTER
-			,@APPLICABLE_FOR
-			,@MARITAL_STATUS
-			,@PRO_RATA
 	END
-
-	CLOSE LEAVECALC_CURSOR
-
-	DEALLOCATE LEAVECALC_CURSOR
-END
+  END
+  FETCH NEXT  
+  FROM LEAVECALC_CURSOR  
+  INTO @LEAVE_CODE  
+   ,@ASSIGNED_AFTER  
+   ,@APPLICABLE_FOR  
+   ,@MARITAL_STATUS  
+   ,@PRO_RATA  
+ END  
+  
+ CLOSE LEAVECALC_CURSOR  
+  
+ DEALLOCATE LEAVECALC_CURSOR  
+END  
 GO
 
 /****** Object:  StoredProcedure [dbo].[MTS_CALCULATELEAVE_ATJOIN_MULTIPLE_EMPLOYEES]    Script Date: 5/17/2020 12:31:56 AM ******/
@@ -12492,84 +12427,83 @@ GO
 
 SET QUOTED_IDENTIFIER ON
 GO
-
-CREATE PROCEDURE [dbo].[MTS_GET_IT_DECLARATION_EMPLOYEES] (@START_YEAR BIGINT,@END_YEAR BIGINT)
-AS
-BEGIN
-	 DECLARE @START_DATE DATE          
-	  ,@END_DATE DATE          
-          
-	 SET @START_DATE = CAST(CAST(@START_YEAR AS VARCHAR) + '-04-01' AS DATE)    
-	 SET @END_DATE = EOMONTH(CAST(CAST(@END_YEAR AS VARCHAR) + '-03-01' AS DATE));         
-          
-	 WITH PAYSLIP_DETAILS          
-	 AS (          
-	  SELECT Emp_No          
-	   ,ISNULL(SUM(Gross_Earnings), 0) AS Gross_Earnings          
-	   ,MAX(CAST(EP.Month + ' 01 ' + CAST(EP.Year AS VARCHAR) AS DATE)) AS Max_date          
-	  FROM EMPLOYEE_PAYSLIP EP WITH (NOLOCK)          
-	  WHERE CAST(EP.Month + ' 01 ' + CAST(EP.Year AS VARCHAR) AS DATE) BETWEEN @START_DATE          
-		AND @END_DATE          
-	  GROUP BY Emp_No          
-	  )          
-	  ,SALARY_FITMENTS          
-	 AS (          
-	  SELECT EE.EMP_ID AS EMP_ID          
-	   ,CASE           
-		WHEN MONTH(Max_date) = MONTH(@END_DATE)          
-		 AND YEAR(Max_date) = YEAR(@END_DATE)          
-		 THEN 0          
-		ELSE (DATEDIFF(MONTH, Max_date, @END_DATE) * EE.MONTHLY_GROSS)          
-		END AS Projected_Annual_gross          
-	  FROM PAYSLIP_DETAILS PD WITH (NOLOCK)          
-	  INNER JOIN Employee E WITH (NOLOCK) ON E.Employee_Id = PD.Emp_No          
-	  INNER JOIN MTS_PAYROLL_EMPLOYEE_EARNINGS EE WITH (NOLOCK) ON EE.EMP_ID = E.ID          
-	   AND EE.ACTIVE = 1          
-	  )       
-		,EMPLOYEE_SECTION_DETAILS          
-	 AS (          
-	   SELECT TOP(1) EMP_IT_ID, Submitted_on, Proof_Submitted_on, Approved_On    
-	   FROM MTS_IT_DECLARATION_EMPLOYEE_SECTION_DETAILS   
-	   GROUP BY  EMP_IT_ID,Submitted_on, Proof_Submitted_on, Approved_On  
-	  )   
-	 SELECT E.id          
-	  ,E.Employee_Id AS Emp_Code          
-	  ,E.Firstname + ' ' + E.Lastname AS Emp_Name          
-	  ,E.Dateofjoin AS Dateofjoin          
-	  ,D.Department AS Department_Name          
-	  ,DSG.Designation AS Designation_Name          
-	  ,PD.Gross_Earnings AS Gross_Earnings          
-	  ,SF.Projected_Annual_gross AS Projected_Annual_gross          
-	  ,(PD.Gross_Earnings + SF.Projected_Annual_gross) AS Total_Earnings          
-	  ,IT_Declaration_Enabled AS IT_Declaration_Enabled          
-	  ,CASE           
-	   WHEN Submitted_on IS NULL          
-		THEN 'Submission Pending'          
-	   WHEN Submitted_on IS NOT NULL          
-		AND Proof_Submitted_on IS NULL          
-		THEN 'Proof Submission Pending'          
-	   WHEN Submitted_on IS NOT NULL          
-		AND Proof_Submitted_on IS NOT NULL          
-		AND Approved_On IS NULL          
-		THEN 'Approval Pending'          
-	   ELSE NULL          
-	   END AS [STATUS]          
-	 FROM Employee E WITH (NOLOCK)          
-	 INNER JOIN MTS_LOGIN ML WITH (NOLOCK) ON ML.USERID = E.ID          
-	 INNER JOIN MTS_Department D WITH (NOLOCK) ON E.DepartmentId = D.id          
-	 LEFT JOIN MTS_Designation DSG WITH (NOLOCK) ON E.Designation = DSG.id          
-	 INNER JOIN PAYSLIP_DETAILS PD ON PD.Emp_No = E.Employee_Id          
-	 INNER JOIN SALARY_FITMENTS SF ON SF.EMP_ID = E.ID          
-	 LEFT JOIN MTS_IT_DECLARATION_EMPLOYEE_DETAILS ITDE WITH (NOLOCK) ON ITDE.Employee_id = E.ID          
-	 LEFT JOIN EMPLOYEE_SECTION_DETAILS ITDS WITH (NOLOCK) ON ITDS.EMP_IT_ID = ITDE.ID          
-	 WHERE (          
-	   ML.ACTIVE = 1          
-	   OR (          
-		ML.ACTIVE = 0          
-		AND ML.ResignedOn > @END_DATE          
-		)          
-	   )        
-END
+CREATE PROCEDURE [dbo].[MTS_GET_IT_DECLARATION_EMPLOYEES] (@START_YEAR BIGINT,@END_YEAR BIGINT)            
+AS            
+BEGIN            
+ DECLARE @START_DATE DATE            
+  ,@END_DATE DATE            
+            
+ SET @START_DATE = CAST(CAST(@START_YEAR AS VARCHAR) + '-04-01' AS DATE)      
+ SET @END_DATE = EOMONTH(CAST(CAST(@END_YEAR AS VARCHAR) + '-03-01' AS DATE));           
+            
+ WITH PAYSLIP_DETAILS            
+ AS (            
+  SELECT Emp_No            
+   ,ISNULL(SUM(Gross_Earnings), 0) AS Gross_Earnings            
+   ,MAX(CAST(EP.Month + ' 01 ' + CAST(EP.Year AS VARCHAR) AS DATE)) AS Max_date            
+  FROM EMPLOYEE_PAYSLIP EP WITH (NOLOCK)            
+  WHERE CAST(EP.Month + ' 01 ' + CAST(EP.Year AS VARCHAR) AS DATE) BETWEEN @START_DATE            
+    AND @END_DATE            
+  GROUP BY Emp_No            
+  )            
+  ,SALARY_FITMENTS            
+ AS (            
+  SELECT EE.EMP_ID AS EMP_ID            
+   ,CASE             
+    WHEN MONTH(Max_date) = MONTH(@END_DATE)            
+     AND YEAR(Max_date) = YEAR(@END_DATE)            
+     THEN 0            
+    ELSE (DATEDIFF(MONTH, Max_date, @END_DATE) * EE.MONTHLY_GROSS)            
+    END AS Projected_Annual_gross            
+  FROM PAYSLIP_DETAILS PD WITH (NOLOCK)            
+  INNER JOIN Employee E WITH (NOLOCK) ON E.Employee_Id = PD.Emp_No            
+  INNER JOIN MTS_PAYROLL_EMPLOYEE_EARNINGS EE WITH (NOLOCK) ON EE.EMP_ID = E.ID            
+   AND EE.ACTIVE = 1            
+  )         
+    ,EMPLOYEE_SECTION_DETAILS            
+ AS (            
+   SELECT EMP_IT_ID, Submitted_on, Proof_Submitted_on, Approved_On,IT_Declaration_Enabled AS IT_Declaration_Enabled, Employee_id
+   FROM  MTS_IT_DECLARATION_EMPLOYEE_DETAILS ITDE WITH (NOLOCK) 
+   LEFT JOIN MTS_IT_DECLARATION_EMPLOYEE_SECTION_DETAILS SD WITH (NOLOCK) ON SD.EMP_IT_ID = ITDE.ID
+   GROUP BY  EMP_IT_ID,Submitted_on, Proof_Submitted_on, Approved_On,IT_Declaration_Enabled,Employee_id
+  )     
+ SELECT E.id            
+  ,E.Employee_Id AS Emp_Code            
+  ,E.Firstname + ' ' + E.Lastname AS Emp_Name            
+  ,E.Dateofjoin AS Dateofjoin            
+  ,D.Department AS Department_Name            
+  ,DSG.Designation AS Designation_Name            
+  ,PD.Gross_Earnings AS Gross_Earnings            
+  ,SF.Projected_Annual_gross AS Projected_Annual_gross            
+  ,(PD.Gross_Earnings + SF.Projected_Annual_gross) AS Total_Earnings            
+  ,IT_Declaration_Enabled AS IT_Declaration_Enabled            
+  ,CASE             
+   WHEN Submitted_on IS NULL            
+    THEN 'Submission Pending'            
+   WHEN Submitted_on IS NOT NULL            
+    AND Proof_Submitted_on IS NULL            
+    THEN 'Proof Submission Pending'            
+   WHEN Submitted_on IS NOT NULL            
+    AND Proof_Submitted_on IS NOT NULL            
+    AND Approved_On IS NULL            
+    THEN 'Approval Pending'            
+   ELSE NULL            
+   END AS [STATUS]            
+ FROM Employee E WITH (NOLOCK)            
+ INNER JOIN MTS_LOGIN ML WITH (NOLOCK) ON ML.USERID = E.ID            
+ INNER JOIN MTS_Department D WITH (NOLOCK) ON E.DepartmentId = D.id            
+ LEFT JOIN MTS_Designation DSG WITH (NOLOCK) ON E.Designation = DSG.id            
+ INNER JOIN PAYSLIP_DETAILS PD ON PD.Emp_No = E.Employee_Id            
+ INNER JOIN SALARY_FITMENTS SF ON SF.EMP_ID = E.ID            
+ LEFT JOIN EMPLOYEE_SECTION_DETAILS ITDS WITH (NOLOCK) ON ITDS.Employee_id = E.ID           
+ WHERE (            
+   ML.ACTIVE = 1            
+   OR (            
+    ML.ACTIVE = 0            
+    AND ML.ResignedOn > @END_DATE            
+    )            
+   )            
+END 
 GO
 
 /****** Object:  StoredProcedure [dbo].[MTS_GET_IT_DECLARATION_FINANCIAL_YEAR]    Script Date: 5/17/2020 12:31:56 AM ******/
@@ -22861,4 +22795,124 @@ BEGIN
 	ORDER BY XT.TENANT_NAME
 		,XL.LOCATION_NAME
 END
+GO
+
+
+/****** Object:  StoredProcedure [dbo].[MTS_CALCULATELEAVE_EMPID_YEAR]    Script Date: 01/04/2021 12:31:56 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[MTS_CALCULATELEAVE_EMPID_YEAR] (@EMPLOYEEID BIGINT,@EMP_LEAVE_YEAR INT)  
+AS  
+BEGIN  
+ DECLARE @LEAVE_CODE VARCHAR(5)  
+  ,@ASSIGNED_AFTER BIGINT  
+  ,@APPLICABLE_FOR BIGINT  
+  ,@MARITAL_STATUS BIGINT 
+  ,@EMP_JOINDATE DATE = EOMONTH(CAST(CAST(@EMP_LEAVE_YEAR AS VARCHAR) + '-01-01' AS DATE))
+  ,@EMP_DEPARTMENT BIGINT  
+  ,@EMP_GENDER BIGINT  
+  ,@EMP_MARITALSTATUS BIGINT  
+  ,@PRO_RATA BIT 
+  ,@NumberOfMthPerYear BIGINT = 12
+  ,@APPLICABLE_FOR_BOTH_GENDER INT = 3
+  ,@APPLICABLE_FOR_BOTH_STATUS INT = 3
+  
+ SELECT @EMP_DEPARTMENT = DepartmentId  
+  ,@EMP_GENDER = (  
+   CASE   
+    WHEN Gender = 0  
+     THEN 1  
+    WHEN Gender = 1  
+     THEN 2  
+    ELSE 3  
+    END  
+   )  
+  ,@EMP_MARITALSTATUS = MaritalStatus  
+ FROM Employee WITH (NOLOCK)  
+ WHERE id = @EMPLOYEEID  
+  
+ DECLARE LEAVECALC_CURSOR CURSOR  
+ FOR  
+ SELECT LEAVE_CODE  
+  ,ASSIGNED_AFTER  
+  ,APPLICABLE_FOR  
+  ,MARITAL_STATUS  
+  ,PRORATA  
+ FROM MTS_LeavePolicy WITH (NOLOCK)  
+  
+ OPEN LEAVECALC_CURSOR  
+  
+ FETCH NEXT  
+ FROM LEAVECALC_CURSOR  
+ INTO @LEAVE_CODE  
+  ,@ASSIGNED_AFTER  
+  ,@APPLICABLE_FOR  
+  ,@MARITAL_STATUS  
+  ,@PRO_RATA  
+  
+ WHILE @@FETCH_STATUS = 0  
+ BEGIN
+ IF EXISTS (  
+    SELECT *  
+    FROM MTS_LeaveType WITH (NOLOCK)  
+    WHERE Leavetype = @LEAVE_CODE  
+     AND DepartmentId = @EMP_DEPARTMENT  
+    )  
+  BEGIN  
+	IF (@APPLICABLE_FOR = @EMP_GENDER OR @APPLICABLE_FOR = @APPLICABLE_FOR_BOTH_GENDER)  
+    BEGIN  
+     IF (@MARITAL_STATUS = @EMP_MARITALSTATUS OR @MARITAL_STATUS = @APPLICABLE_FOR_BOTH_STATUS)  
+     BEGIN 
+		 DECLARE @LT_ID INT, @NOD_LEAVE INT  
+  
+		  SELECT @LT_ID = ID ,@NOD_LEAVE = Numberofdays  
+		  FROM MTS_LeaveType WITH (NOLOCK)  
+		  WHERE Leavetype = @LEAVE_CODE AND DepartmentId = @EMP_DEPARTMENT
+		  
+			IF (@PRO_RATA = 1)  
+			BEGIN
+				IF (@ASSIGNED_AFTER <= (DATEDIFF(MONTH, @EMP_JOINDATE, getdate())))  
+				BEGIN 
+					IF NOT EXISTS ( SELECT *  
+					   FROM EmployeeLeaveBalance WITH (NOLOCK)  
+					   WHERE Employee_Id = @EMPLOYEEID  AND LeaveType = @LT_ID  AND Year = YEAR(@EMP_JOINDATE)  
+					   )  
+					BEGIN 
+						DECLARE @TOTALNOD FLOAT
+
+						SET @TOTALNOD = ROUND(((CONVERT(DECIMAL(18, 2), @NOD_LEAVE) / @NumberOfMthPerYear) * (@NumberOfMthPerYear - ((MONTH(@EMP_JOINDATE))-1))), 1) 
+
+						INSERT INTO EmployeeLeaveBalance (Employee_Id, LeaveType, Leavebalance, AdvanceCredit, AdvanceAvailed, Year)  
+						VALUES ( @EMPLOYEEID ,@LT_ID ,@TOTALNOD ,0 ,0 ,YEAR(@EMP_JOINDATE)) 
+					END
+				END
+			END
+			ELSE
+			BEGIN			
+				IF (@ASSIGNED_AFTER <= (DATEDIFF(MONTH, @EMP_JOINDATE, getdate())))  
+				BEGIN 
+					INSERT INTO EmployeeLeaveBalance (Employee_Id, LeaveType, Leavebalance, AdvanceCredit, AdvanceAvailed, Year)  
+					VALUES ( @EMPLOYEEID ,@LT_ID ,@NOD_LEAVE ,0 ,0 ,YEAR(@EMP_JOINDATE)) 
+				END
+			END
+		END
+	END
+  END
+  FETCH NEXT  
+  FROM LEAVECALC_CURSOR  
+  INTO @LEAVE_CODE  
+   ,@ASSIGNED_AFTER  
+   ,@APPLICABLE_FOR  
+   ,@MARITAL_STATUS  
+   ,@PRO_RATA  
+ END  
+  
+ CLOSE LEAVECALC_CURSOR  
+  
+ DEALLOCATE LEAVECALC_CURSOR  
+END  
 GO

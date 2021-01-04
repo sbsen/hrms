@@ -794,7 +794,7 @@ namespace MTS.Login.Controllers
                         {
                             return 6;
                         }
-                       
+
                         else if (no_of_attempts <= userDetails.MaxAttemps)
                         {
                             userLogon.UpdateUserAttempts(userDetails.UserId, 0);
@@ -920,7 +920,7 @@ namespace MTS.Login.Controllers
 
 
 
-                if (pwdHis.pwdHistory.Count >= pwdCount)
+                if (pwdHis.pwdHistory.Count >= pwdCount && pwdHis.pwdHistory.Count > 0)
                 {
                     pwdHistoryId = Int64.Parse(pwdHis.pwdHistory[0].Ph_Id.ToString());
                 }
