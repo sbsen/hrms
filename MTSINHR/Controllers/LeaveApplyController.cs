@@ -704,6 +704,9 @@ namespace MTSINHR.Controllers
             var CreateLeaveDetailsResult = 0;
             int year = leaveapply.FromDate.Year;
             int currentYear = DateTime.Now.Year;
+            if (leaveapply.LeaveFromSession == "3" && leaveapply.LeaveToSession == null)
+                leaveapply.LeaveToSession = "3";
+
             try
             {
                 var EmployeeListBWDateWtihoutLT = data_contact.GetEmployeeListBWDateWithoutLeaveType(leaveapply.FromDate, leaveapply.ToDate, leaveapply.LeaveFromSession, leaveapply.LeaveToSession, id);

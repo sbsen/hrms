@@ -829,7 +829,16 @@ namespace MTSINHR.Controllers
                 var Emp_Ratings = performanceAppraisal.Get_Emp_Ratings(Empl_ID, AppraisalProcessId, isSelfDirectAppraisalPage, ViewStatus);
                 if(Emp_Ratings.Tables.Count > 0)
                 {
-                    return Json(new { success = true, result1 = JsonConvert.SerializeObject(Emp_Ratings.Tables[0]) }, JsonRequestBehavior.AllowGet);
+                    DataTable dt1 = Emp_Ratings.Tables[0];
+                    if (dt1.Rows.Count > 0)
+                    {
+                        return Json(new { success = true, result1 = JsonConvert.SerializeObject(Emp_Ratings.Tables[0]) }, JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        string result = "NoMappingIsAvailable";
+                        return Json(new { success = true, result = result }, JsonRequestBehavior.AllowGet);
+                    }
                 } else
                 {
                     string result = "NoMappingIsAvailable";

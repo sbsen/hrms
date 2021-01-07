@@ -2963,7 +2963,7 @@ IF EXISTS (
 		)
 	DROP PROCEDURE [dbo].READ_EMPLOYEELEAVELIST_BETWEEN_DATE
 GO
-/****** Object:  StoredProcedure [dbo].[READ_EMPLOYEELEAVELIST_BETWEEN_DATE_WITHOUT_LeaveType]    Script Date: 4/21/2018 4:07:37 PM ******/
+/****** Object:  StoredProcedure [dbo].[READ_EMPLOYEELEAVELIST_BETWEEN_DATE_WITHOUT_LeaveType]    Script Date: 1/5/2021 3:30:03 PM ******/
 IF EXISTS (
 		SELECT *
 		FROM sys.objects
@@ -4523,6 +4523,15 @@ BEGIN
 						AND @Exising_Emp_appraisal = 0
 						)
 				BEGIN
+					DECLARE @MANAGER_COUNT INT, @MANAGER_ID BIGINT
+
+					SELECT  @MANAGER_COUNT =Count(*) from Employee_Reporting_Managers where EmployeeId=@empid
+
+					IF(@MANAGER_COUNT = 1)
+					BEGIN
+						SELECT  @MANAGER_ID =Count(*) from Employee_Reporting_Managers where EmployeeId=@empid
+					END
+
 					INSERT INTO MTS_APPRAISAL_EMPLOYEE_RATING_TABLE (
 						Employee_Id
 						,Appraisal_Process_Period_Id
@@ -4543,7 +4552,7 @@ BEGIN
 					VALUES (
 						@empid
 						,@PROCESS_DETAILS_ID
-						,NULL
+						,@MANAGER_ID
 						,NULL
 						,@EVALUATOR
 						,NULL
@@ -19083,46 +19092,62 @@ BEGIN
 END
 GO
 
-/****** Object:  StoredProcedure [dbo].[READ_EMPLOYEELEAVELIST_BETWEEN_DATE_WITHOUT_LeaveType]    Script Date: 5/17/2020 12:31:56 AM ******/
+/****** Object:  StoredProcedure [dbo].[READ_EMPLOYEELEAVELIST_BETWEEN_DATE_WITHOUT_LeaveType]    Script Date: 1/5/2021 3:30:03 PM ******/
 SET ANSI_NULLS ON
 GO
 
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE PROCEDURE [dbo].[READ_EMPLOYEELEAVELIST_BETWEEN_DATE_WITHOUT_LeaveType] (
-	@FromDate DATE
-	,@ToDate DATE
-	,@FromSession BIGINT
-	,@Tosession BIGINT
-	,@id BIGINT
-	)
-AS
-BEGIN
-	DECLARE @BeforeFromDate DATE = DATEADD(day, - 1, @FromDate)
-		,@BeforeToDate DATE = DATEADD(day, - 1, @ToDate)
-		,@AfterFromDate DATE = DATEADD(day, - 1, @FromDate)
-		,@AfterToDate DATE = DATEADD(day, - 1, @ToDate)
+  
+CREATE PROCEDURE [dbo].[READ_EMPLOYEELEAVELIST_BETWEEN_DATE_WITHOUT_LeaveType] (  
+ @FromDate DATE  
+ ,@ToDate DATE  
+ ,@FromSession BIGINT  
+ ,@Tosession BIGINT  
+ ,@id BIGINT  
+ )  
+AS  
+BEGIN  
+ DECLARE @BeforeFromDate DATE = DATEADD(day, - 1, @FromDate)  
+  ,@BeforeToDate DATE = DATEADD(day, - 1, @ToDate)  
+  ,@AfterFromDate DATE = DATEADD(day, - 1, @FromDate)  
+  ,@AfterToDate DATE = DATEADD(day, - 1, @ToDate) 
 
-	SELECT *
-	FROM Employee_Leave WITH (NOLOCK)
-	WHERE Approval <> 3
-		AND Approval <> 4
-		AND Employee_Id = @id
-		AND LeaveFromSession = @FromSession
-		AND LeaveToSession = @Tosession
-		AND (
-			@fromdate BETWEEN FromDate
-				AND ToDate
-			OR @todate BETWEEN FromDate
-				AND ToDate
-			OR FromDate BETWEEN @fromdate
-				AND @todate
-			OR ToDate BETWEEN @fromdate
-				AND @todate
-			)
+ SELECT *  INTO #Employee_Leave_List
+ FROM Employee_Leave WITH (NOLOCK)  
+ WHERE Approval <> 3  
+  AND Approval <> 4  
+  AND Employee_Id = @id  
+  AND (  
+   @fromdate BETWEEN FromDate  
+    AND ToDate  
+   OR @todate BETWEEN FromDate  
+    AND ToDate  
+   OR FromDate BETWEEN @fromdate  
+    AND @todate  
+   OR ToDate BETWEEN @fromdate  
+    AND @todate  
+   )  
+	IF((@FromSession = 1 AND @Tosession = 1) OR (@FromSession = 2 AND @Tosession = 3))
+	BEGIN
+		SELECT * FROM #Employee_Leave_List WHERE LeaveFromSession IN (1,2,3) AND LeaveToSession IN (1,2,3)
+	END
+	ELSE IF(@FromSession = 2 AND @Tosession = 2)
+	BEGIN
+		SELECT * FROM #Employee_Leave_List WHERE LeaveFromSession IN (1,2) AND LeaveToSession IN (1,2)
+	END
+	ELSE IF(@FromSession = 3 AND @Tosession = 3)
+	BEGIN
+		SELECT * FROM #Employee_Leave_List WHERE LeaveFromSession IN (1,3) AND LeaveToSession IN (1,3)
+	END
+	ELSE
+	BEGIN
+		SELECT * FROM #Employee_Leave_List WHERE LeaveFromSession = @Tosession AND LeaveToSession = @FromSession
+	END
 END
 GO
+
 
 /****** Object:  StoredProcedure [dbo].[READ_EMPLOYEELEAVELIST_BETWEEN_DATE_WITHOUT_LeaveType_OLD]    Script Date: 5/17/2020 12:31:56 AM ******/
 SET ANSI_NULLS ON
