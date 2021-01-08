@@ -497,6 +497,35 @@
     var row_data_def;
     $(document).ready(function () {
 
+        
+
+        if ('@ViewBag.DirectITDeclaration' == 'False') {
+            
+            $('.admincls').prop('disabled', true);
+
+            Employee_ID = '@ViewBag.EmpID';
+            $("#ddlFinYear").val(@ViewBag.FinancialYear);
+            $.each(CurrYear, function (i, val) {
+                if (val.Id == $("#ddlFinYear").val()) {
+                    finYearStatus = val.status;
+                    return false;
+                }
+            });
+            $("#ddlFinYear").trigger('change');
+            //   $("#ddlFinYear").attr('disabled', true);
+        }
+        else {
+            $.each(CurrYear, function (i, val) {
+                if (val.status == true) {
+                    finYearStatus = true;
+                    $("#ddlFinYear").val(val.Id);
+                    return false;
+                }
+            });
+            $("#ddlFinYear").trigger('change');
+            //   $("#ddlFinYear").attr('disabled', true);
+        }
+
         getEmployeeDetails();
         getSectionDescriptionDetails();
         //defineITLiablityTable(null);
@@ -540,32 +569,6 @@
         });
 
 
-        if ('@ViewBag.DirectITDeclaration' == 'False') {
-            $('.admincls').prop('disabled', true);
-
-            Employee_ID = '@ViewBag.EmpID';
-            $("#ddlFinYear").val(@ViewBag.FinancialYear);
-            $.each(CurrYear, function (i, val) {
-                if (val.Id == $("#ddlFinYear").val()) {
-                    finYearStatus = val.status;
-                    return false;
-                }
-            });
-            $("#ddlFinYear").trigger('change');
-            //   $("#ddlFinYear").attr('disabled', true);
-        }
-        else {
-            $.each(CurrYear, function (i, val) {
-                if (val.status == true) {
-                    finYearStatus = true;
-                    $("#ddlFinYear").val(val.Id);
-                    return false;
-                }
-            });
-            $("#ddlFinYear").trigger('change');
-            //   $("#ddlFinYear").attr('disabled', true);
-        }
-
         getITLiablity();
         setITLiablity();
 
@@ -578,7 +581,7 @@
 
 
         $('#ddlFinYear').on('change', function () {
-            
+
             $.each(CurrYear, function (i, val) {
                 if (val.Id == parseInt($('#ddlFinYear').val())) {
                     finYearStatus = val.status;
@@ -854,7 +857,7 @@
     }
 
     function setITLiablityNew(itDetails) {
-        
+
         ITLiablity = 0;
         $.each(itDetails, function (i, val) {
             ITLiablity = ITLiablity + (val.DEDUCTION_SCHEDULED == "" || val.DEDUCTION_SCHEDULED == null || val.DEDUCTION_SCHEDULED == undefined ? 0.00 : val.DEDUCTION_SCHEDULED);
@@ -863,7 +866,7 @@
     }
 
     function setITLiablity() {
-        
+
         if ($("#txtITLiablity").val() == 0 || $("#txtITLiablity").val() == '' || $("#txtITLiablity").val() == null || $("#txtITLiablity").val() == undefined) {
             $.each(ITDetails, function (i, val) {
                 ITLiablity = ITLiablity + (val.DEDUCTION_SCHEDULED == "" || val.DEDUCTION_SCHEDULED == null || val.DEDUCTION_SCHEDULED == undefined ? 0.00 : val.DEDUCTION_SCHEDULED);
@@ -901,13 +904,13 @@
             url: '@Url.Content("~/ITDeclaration/getEmployeeDetails")',
             data: { Employee_ID: Employee_ID },
             success: function (data) {
-                
                 if (data.success) {
                     employeeDetails = JSON.parse(data.result1);
                     if (employeeDetails.length != 0) {
                         var address = (employeeDetails[0].CurrentBuilding_Plot == null ? '' : employeeDetails[0].CurrentBuilding_Plot) + ' ' + (employeeDetails[0].CurrentCity == null ? '' : employeeDetails[0].CurrentCity) + ' ' + (employeeDetails[0].CurrentState == null ? '' : employeeDetails[0].CurrentState) + ' ' + (employeeDetails[0].CurrentPincode == null ? '' : employeeDetails[0].CurrentPincode)
-                        $('#empCode').val(employeeDetails[0].Emp_Code);
-                        $('#empName').val(employeeDetails[0].Emp_Name);
+                        $('#empCode').val(employeeDetails[0].Employee_Id);
+                        var fullName = employeeDetails[0].Firstname + ' ' + employeeDetails[0].Lastname;
+                        $('#empName').val(fullName);
                         $('#empDept').val(employeeDetails[0].Department);
                         $('#empDesgn').val(employeeDetails[0].Designation);
                         $('#empPAN').val(employeeDetails[0].Pancard);
@@ -991,7 +994,7 @@
                 {
                     "aTargets": [1],
                     "mRender": function (data, type, row) {
-                        
+
                         return Math.round(data);
                     }
                 },
@@ -1578,7 +1581,7 @@
 
 
     function ViewSubSectionDetails(CurrentElement) {
-    debugger
+    
         var financialYear = $('#ddlFinYear').val();
         if (financialYear == '' || financialYear == 0) {
             toastr.warning('select financial year');
@@ -1674,7 +1677,7 @@
     }
 
     function mapDeductionDetails(data, flag) {
-        
+
         data = data.filter(a => a.FLAG == flag);
         var sOut = '<table class="" style="margin-bottom: 1px!important;;width:100%;" id="ITSplitDetailsTable" border="0">';
         if (data == null || data == undefined || data.length == 0) {
@@ -1805,7 +1808,7 @@
     }
 
     function SubmitITLiablity() {
-        
+
         var FinYear = $('#ddlFinYear').val() == '' ? 0 : $('#ddlFinYear').val();
         if (FinYear != '0' && ITDetailsSplit != null) {
             ResultData = ITDetailsSplit.filter(d => d.FLAG == 2)
@@ -1969,7 +1972,7 @@
         });
     }
     function AutoUpload() {
-        
+
         var formData = new FormData();
         var fileInput = document.getElementById('Amc_or_insurance_file');
         formData.append(fileInput.files[0].name, fileInput.files[0]);
@@ -2044,6 +2047,7 @@
                         $('.qq-in-progress').html('Uploading...');
                     },
                     onComplete: function (id, xhr, isError) {
+                        
                         $('.qq-upload-list li').css({ "background-color": "#eaeef3", "color": "black", "font-size": "13px", "text-align": "center", "padding": "5px" });
                         $('.qq-upload-file').html('');
                         $('.qq-in-progress').html('');
@@ -2100,7 +2104,7 @@
                         $('.qq-in-progress').html('Uploading...');
                     },
                     onComplete: function (id, xhr, isError) {
-                        
+
                         $('.qq-upload-list li').css({ "background-color": "#eaeef3", "color": "black", "font-size": "13px", "text-align": "center", "padding": "5px" });
                         $('.qq-upload-file').html('');
                         $('.qq-in-progress').html('');
@@ -2119,7 +2123,7 @@
             });
     }
     @*function InitializeUploadnomodal(uploadername,description) {
-        
+
         var galleryUploader = new qq.FineUploader({
             element: document.getElementById(uploadername),
 
@@ -2163,7 +2167,7 @@
                     $('.qq-upload-file').html('');
                     $('.qq-in-progress').html('');
                     $('.qq-upload-success').html('Uploaded');
-                    
+
 
                     if (isError.success) {
 
@@ -2222,7 +2226,7 @@
     var description;
     var sectionid;
     function uploadmodalopen(data) {
-        
+
         let details = DescriptionDetails.find(a=>a.Id == data);
         if (details != undefined) {
             description = '';
@@ -2236,7 +2240,7 @@
         }
     }
     function ShowDocuments(data) {
-        debugger
+        
         let details = DescriptionDetails.find(a=>a.Id == data);
         if (true) {
             $.ajax({

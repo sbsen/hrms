@@ -535,7 +535,6 @@
         });
     }
     function getLeaveBalanceDetails(value) {
-        //
         if ($("#FromDate").val() != "" && $("#ToDate").val() != "" && $("#LeaveType").val() != "") {
             //
             var fromYear = new Date(($("#FromDate").val())).getFullYear();
@@ -788,7 +787,6 @@
     });
 
     $("#submit").click(function () {
-        //
         var currentYear = new Date().getFullYear()
         var disabled = $('#LeaveForm').find(':input:disabled').removeAttr('disabled');
         var fromYear = new Date(($("#FromDate").val())).getFullYear();

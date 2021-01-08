@@ -198,7 +198,7 @@
                     financialYearDetails = JSON.parse(data.result1);
                     declarationTableCall(financialYearDetails);
                     $.each(CurrYear, function (i, val) {
-                        debugger
+                        
                         if (val.Financial_Year == year && val.STATUS == true) {
                             declarationTableDetails.columns(10, 12).visible(true);
                             $("#dvConfirm").show();
@@ -334,6 +334,7 @@
     }
 
     function showDetails(data) {
+        
         if ($('#ddlFinYear').val() == '' || $('#ddlFinYear').val() == null || $('#ddlFinYear').val() == 0) {
             toastr.warning('Please Select Financial Year');
             return false;

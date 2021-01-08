@@ -152,10 +152,9 @@ namespace MTSINHR.Controllers
 
         public ActionResult getEmployeeDetails( Int64 Employee_ID = 0)
         {
-            var EmpID = Session["UserID"].ToString();
-
             if (Employee_ID == 0)
             {
+                var EmpID = Session["UserID"].ToString();
                 Employee_ID = Convert.ToInt64(EmpID);
             }
             MTSHRDataLayer.ITDeclaration data = new MTSHRDataLayer.ITDeclaration();
@@ -415,38 +414,28 @@ namespace MTSINHR.Controllers
         {
             try
             {
-                //Int64 Employee_Id = Convert.ToInt64(Request.Headers["employeeid"]);
-
-                //if (Employee_Id == 0)
-                //{
-                //    Employee_Id = Convert.ToInt64(Session["UserID"]);
-                //}
-                // int Documentid = Convert.ToInt32(Documents);
-                // MTSHRDataLayer.Policies data_document = new MTSHRDataLayer.Policies();
-                // DataTable Documentimage = data_document.Read(Documentid);
-                //Documentimage.Rows.Count > 0
                 string path = @"D:\HRFiles";
                 path = System.IO.Path.Combine(path, employeecode);
                 string filename = fileid + "-" + description;
                 if (true)
                 {
-                    bool fas = false;
                     byte[] imagedata;
 
                     filename = getfilename(path, filename);
-                    path = Path.Combine(path, filename);
-                    imagedata = getfile(path);
+                    if(filename != "")
+                    {
+                        path = Path.Combine(path, filename);
+                        imagedata = getfile(path);
 
+                        string imagename = filename;
 
-
-                    string imagename = filename;
-
-                    string baseimage = Convert.ToBase64String(imagedata);
-                    TempData["image"] = baseimage;
-                    TempData["imagename"] = imagename;
-                    //TempData["functiontype"] = functiontype;
-                    TempData.Keep("functiontype");
-                    return Content("Success");
+                        string baseimage = Convert.ToBase64String(imagedata);
+                        TempData["image"] = baseimage;
+                        TempData["imagename"] = imagename;
+                        //TempData["functiontype"] = functiontype;
+                        TempData.Keep("functiontype");
+                        return Content("Success");
+                    }
                 }
                 else
                 {
