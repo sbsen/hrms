@@ -399,7 +399,6 @@
     var KRA_SKILL_Pending = [];
     $(document).ready(function () {
 
-
         var table = $('#example').DataTable();
 
 
@@ -502,25 +501,6 @@
                 $('.SkipManager').hide();
             }
         });
-        //$('#assignModerator').click(function () {
-        //
-        //    var CurrentData = [];
-        //    chkBoxFlag = 1;
-
-        //    $.each(EmpMappingTableDetails, function (i, val) {
-        //        if (val.ASSIGNED_MODERATOR_ID == 0) {
-        //            CurrentData.push(val);
-        //        }
-        //    });
-        //    EmpMappingTableDetails = CurrentData;
-        //    Employee_mappingTable();
-        //    if (chkBoxFlag == 1) {
-        //        EmpMappingTable.column(19).visible(true);
-        //    }
-        //    else {
-        //        EmpMappingTable.column(19).visible(false);
-        //    }
-        //});
         setTimeout(function () { $('#appraisalProcessContentDiv').prop('hidden', false); }, 500)
 
     });
@@ -773,22 +753,8 @@
         if ($('#description').val() == '') {
             $('<span class="field-validation-valid">' + ' This field is required...!</span>').css('color', 'red').insertAfter($('#description'));
         }
-
-
     }
-    //$('.editWeightagecls').on('input', function () {
-    //
-    //    $('.field-validation-valid').text('');
-    //    $('.field-validation-valid').show();
-    //    if ($(this).val() > 100) {
-    //        $('<span class="field-validation-valid">' + 100 + ' is the maximum limit ...!</span>').css('color', 'red').insertAfter(this);
-    //    }
-    //    if ($(this).val() == 0) {
-    //        $('<span class="field-validation-valid">' + ' Weightage should be more than 0</span>').css('color', 'red').insertAfter(this);
-    //    }
-    //    $(this).val(Math.max(Math.min($(this).val(), 100), -(100)));
 
-    //});
     $('#weightage').on('input', function () {
 
         $('.field-validation-valid').text('');
@@ -802,12 +768,11 @@
         $(this).val(Math.max(Math.min($(this).val(), 100), -(100)));
 
     });
+
     function saveDesignationMapping() {
         var tempDescription = '';
         validationCall();
-        //if ($('#weightage').val() == 0) {
-        //    $('<span class="field-validation-valid">' + ' Weightage should be more than 0</span>').css('color', 'red').insertAfter($('#weightage'));
-        //}
+
         if ($('.field-validation-valid').text() != '') {
             return false;
         }
@@ -823,12 +788,8 @@
             success: function (data) {
                 if (JSON.parse(data.result) == 1) {
                     toastr.success("Added successfully");
-                    //     Get_Appraisal_Mapping_Table_Details();
                     Get_Appraisal_Employee_Mapping(EMPLOYEE_ID);
-                    //  Designation_mappingTable();
-                    //      Employee_mappingTable();
                     $('.field-validation-valid').text('');
-
                     clearinput2();
                 }
                 else {
@@ -885,7 +846,6 @@
     }
 
     function getEvaluatorsName(FinalModerator, Manager) {
-
         //$("#drpdwnEmpName,#managerFilter").html('');
         $.each(FinalModerator, function (i) {
             $("#drpdwnEmpName").append('<option value="' + FinalModerator[i].ID + '">' + FinalModerator[i].Evaluator_Name + '');
@@ -933,6 +893,7 @@
         });
     }
     function backAppraisalProcessDetails() {
+        $('#AppraisalDesc').html('');
         if ($('#tglOption').is(':checked')) {
             $('#tglOption').trigger('click');
         }
@@ -942,6 +903,7 @@
         $('#appraisalMappingDetails').show();
         $('#empMappingDetails').hide();
         $('#btnAddAppraisalProcessDiv').show();
+        getAppraisalDetails();
     }
     function validationAppraisalProcess() {
 
@@ -962,6 +924,7 @@
         $('#Process_Period').val('');
     }
     function saveAppraisalProcessDetails() {
+        
         var StartDate = $('input[name="datefilter"]').val().split("-")[0];
         var EndDate = $('input[name="datefilter"]').val().split("-")[1];
 

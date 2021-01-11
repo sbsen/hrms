@@ -158,12 +158,12 @@
     <div class="">
         <div class="card">
             <div class="card-header text-center ">
-                KRA/SKILL Taggingg
+                KRA/SKILL Tagging
             </div>
             <div class="card-body">
               <div class="row">
                   <div class="col-lg-6 p-l-30">
-                      <label class="col-lg-12 pad0">Filter: </label>
+                      <label class="col-lg-12 pad0">Filter By Functional Role: </label>
                       <select id="filter" class="col-lg-12 requir form-control  select2cls">
                           <option value="0">---All---</option>
                       </select>
@@ -632,9 +632,9 @@
                     toastr.success("Saved successfully");
                     Get_Appraisal_Mapping_Table_Details();
                     Designation_mappingTable();
-                    //      Employee_mappingTable();
                     $('.field-validation-valid').text('');
                     $('#KRA_SKillModal').modal('hide');
+                    $('#filter').select2('val', 0);
                     clearinput();
                 }
                 else {

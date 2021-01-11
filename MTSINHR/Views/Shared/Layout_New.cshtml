@@ -267,8 +267,7 @@
                                 <a href="#"><i class="fa fa-line-chart"></i><span>Performance <span class="badge badge-danger" id="PendingCount_1">!</span></span><i class="fa fa-caret-right pull-right"></i></a>
                                 <ul class="treeview-menu">
                                     <li><a href='@Url.Content("~/PerformanceAppraisal/AppraisalProcessDetails")' class="border0"><i class="fa fa-angle-right"></i><span>Appraisal Process Setup @*<span class="badge badge-dark" id=""></span>*@</span></a></li>
-                                    <li><a href='@Url.Content("~/PerformanceAppraisal/AppraisalMapping")' class="border0"><i class="fa fa-angle-right"></i><span>KRA/SKILL Taggingg </span></a></li>
-                                    @*<li><a href='@Url.Content("~/PerformanceAppraisal/SelfAppraisal")' class="border0"><i class="fa fa-angle-right"></i><span>Self Appraisal <span class="badge badge-dark" id="PendingCount3_1"></span></span></a></li>*@
+                                    <li><a href='@Url.Content("~/PerformanceAppraisal/AppraisalMapping")' class="border0"><i class="fa fa-angle-right"></i><span>KRA/SKILL Tagging </span></a></li>
                                     <li><a href='@Url.Content("~/PerformanceAppraisal/TeamMembersAppraisal")' class="border0"><i class="fa fa-angle-right"></i><span>Team Members Appraisal <span class="badge badge-dark" id="PendingCount2_1"></span></span></a></li>
                                     <li><a href='@Url.Content("~/PerformanceAppraisal/ModeratorReviewPage")' class="border0"><i class="fa fa-angle-right"></i><span>Moderator - Final Review<span class="badge badge-dark" id="PendingCount1_1"></span></span></a></li>
                                 </ul>
@@ -373,18 +372,10 @@
                                     </ul>
                                 </li>
                             }
-
-                            @*<li>
-                                    <a href='@Url.Content("~/Policies/UploadPolicy")'><i class="fa fa-upload"></i><span>Upload Policy</span></a>
-                                </li>*@
-
                             <li class="treeview">
                                 <a href="#"><i class="fa fa-line-chart"></i><span>Performance <span class="badge badge-danger" id="PendingCount_2">!</span></span><i class="fa fa-caret-right pull-right"></i></a>
                                 <ul class="treeview-menu">
-                                    @*<li><a href='@Url.Content("~/PerformanceAppraisal/AppraisalProcessDetails")' class="border0"><i class="fa fa-angle-right"></i><span>Appraisal Process Setup</span></a></li>
-                                        <li><a href='@Url.Content("~/PerformanceAppraisal/AppraisalMapping")' class="border0"><i class="fa fa-angle-right"></i><span>KRA/SKILL Taggingg</span></a></li>*@
                                     <li><a onclick="SelfAppraisalPageRedirect()" class="border0"><i class="fa fa-angle-right"></i><span>Self Appraisal <span class="badge badge-dark" id="PendingCount3_2"></span></span></a></li>
-                                    @*<li><a href='@Url.Content("~/PerformanceAppraisal/TeamMembersAppraisal")' class="border0"><i class="fa fa-angle-right"></i><span>Team Members Appraisal</span></a></li>*@
                                 </ul>
                             </li>
                             <li class="treeview itdecclass">
@@ -394,10 +385,6 @@
                             <li>
                                 <a href='@Url.Content("~/MTS.Login/Account/ChangePassword")'><i class="fa fa-key"></i><span>Change Password</span></a>
                             </li>
-
-                            @*<li>
-                                    <a href='@Url.Content("~/MTS.Login/Account/LogOff")'><i class="fa fa-sign-out"></i><span>Log Out</span></a>
-                                </li>*@
                         }
 
                         else if (Session["RoleId"].ToString() == "4")   //RoleId 4 HR
@@ -505,10 +492,7 @@
                             <li class="treeview">
                                 <a href="#"><i class="fa fa-line-chart"></i><span>Performance <span class="badge badge-danger" id="PendingCount_3"></span>!</span><i class="fa fa-caret-right pull-right"></i></a>
                                 <ul class="treeview-menu">
-                                    @*<li><a href='@Url.Content("~/PerformanceAppraisal/AppraisalProcessDetails")' class="border0"><i class="fa fa-angle-right"></i><span>Appraisal Process Setup</span></a></li>
-                                        <li><a href='@Url.Content("~/PerformanceAppraisal/AppraisalMapping")' class="border0"><i class="fa fa-angle-right"></i><span>KRA/SKILL Taggingg</span></a></li>*@
                                     <li><a onclick="SelfAppraisalPageRedirect()" class="border0"><i class="fa fa-angle-right"></i><span>Self Appraisal <span class="badge badge-dark" id="PendingCount3_3"></span></span></a></li>
-                                    @*<li><a href='@Url.Content("~/PerformanceAppraisal/TeamMembersAppraisal")' class="border0"><i class="fa fa-angle-right"></i><span>Team Members Appraisal</span></a></li>*@
                                 </ul>
                             </li>
                             <li class="treeview itdecclass">
@@ -554,9 +538,7 @@
                                     <li><a href='@Url.Content("~/Payroll/Payroll")'><i class="fa fa-angle-right"></i><span>Salary  Fitment</span></a></li>
                                     <li><a href='@Url.Content("~/Payroll/MonthlyVariance")'><i class="fa fa-angle-right"></i><span>Monthly Variance</span></a></li>
                                     <li><a href='@Url.Content("~/Payroll/PayrollLop")'><i class="fa fa-angle-right"></i><span>Payroll Lop</span></a></li>
-                                    <li>
-                                        <a href='@Url.Content("~/Payroll/PayrollCalculations")'><i class="fa fa-angle-right"></i><span>Payroll Process</span></a>
-                                    </li>
+                                    <li><a href='@Url.Content("~/Payroll/PayrollCalculations")'><i class="fa fa-angle-right"></i><span>Payroll Process</span></a></li>
                                     <li><a href='@Url.Content("~/Payroll/PayrollReport")'><i class="fa fa-angle-right"></i><span>Payroll Reports</span></a></li>
                                 </ul>
 
@@ -579,8 +561,6 @@
                             </li>
                             <li class="treeview">
                                 <a href="#"><i class="fa fa-line-chart"></i><span>Performance <span class="badge badge-danger" id="PendingCount">!</span></span><i class="fa fa-caret-right pull-right"></i></a>                                <ul class="treeview-menu">
-                                    @*<li><a href='@Url.Content("~/PerformanceAppraisal/AppraisalProcessDetails")' class="border0"><i class="fa fa-angle-right"></i><span>Appraisal Process Setup</span></a></li>
-                                        <li><a href='@Url.Content("~/PerformanceAppraisal/AppraisalMapping")' class="border0"><i class="fa fa-angle-right"></i><span>KRA/SKILL Taggingg</span></a></li>*@
                                     <li><a onclick="SelfAppraisalPageRedirect()" class="border0"><i class="fa fa-angle-right"></i><span>Self Appraisal <span class="badge badge-dark" id="PendingCount3_4"></span></span></a></li>
                                     <li><a href='@Url.Content("~/PerformanceAppraisal/TeamMembersAppraisal")' class="border0"><i class="fa fa-angle-right"></i><span>Team Members Appraisal <span class="badge badge-dark" id="PendingCount2_2"></span></span></a></li>
                                 </ul>
@@ -588,13 +568,6 @@
                             <li class="treeview itdecclass">
                                 <a href='@Url.Content("~/ITDeclaration/ITDeclarationForm")'><i class="fa fa-bullhorn"></i><span>IT Declaration</span></a>
                             </li>
-                            @*<li class="treeview">
-                                    <a href="#"><i class="fa fa-bullhorn"></i><span>Performance</span><i class="fa fa-caret-right pull-right"></i></a>
-                                    <ul class="treeview-menu">
-                                        <li><a href='@Url.Content("~/PerformanceAppraisal/SelfAppraisal")' class="border0"><i class="fa fa-angle-right"></i><span>Self Appraisal</span></a></li>
-                                        <li><a href='@Url.Content("~/PerformanceAppraisal/TeamMembersAppraisal")' class="border0"><i class="fa fa-angle-right"></i><span>Team Members Appraisal</span></a></li>
-                                    </ul>
-                                </li>*@
                             <li>
                                 <a href='@Url.Content("~/MTS.Login/Account/ChangePassword")'><i class="fa fa-key"></i><span>Change Password </span></a>
                             </li>
