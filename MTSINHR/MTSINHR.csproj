@@ -1096,6 +1096,7 @@
     <Content Include="Views\PerformanceAppraisal\ModeratorReviewPage.cshtml" />
     <Content Include="Views\ITDeclaration\ITDeclarationEmployeeDetails.cshtml" />
     <Content Include="Views\ITDeclaration\ITDeclarationForm.cshtml" />
+    <Content Include="Views\ITDeclaration\ViewImage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
