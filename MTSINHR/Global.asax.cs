@@ -9,8 +9,7 @@ using System.Web.Routing;
 using MTS.Helpers;
 using MTSINHR.App_Start;
 using MTSEntBlocks.ExceptionBlock.Handlers;
-using HRMS.Utility;
-
+using XtraChef.SecretsConfigHelper;
 namespace MTSINHR
 {
     // Note: For instructions on enabling IIS6 or IIS7 classic mode, 
@@ -20,7 +19,9 @@ namespace MTSINHR
      
         protected void Application_Start()
         {
-            //SecretsConfigHelper objSecretsConfigHelper = new SecretsConfigHelper();
+
+            SecretsConfig objSecretsConfigHelper = new SecretsConfig();
+          //  SecretsConfig.SetAppSettingsConfig();
             AreaRegistration.RegisterAllAreas();
 
             WebApiConfig.Register(GlobalConfiguration.Configuration);

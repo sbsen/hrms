@@ -34,7 +34,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExceptionBlock", "Exception
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HRConstants", "HRConstants\HRConstants.csproj", "{DE53E6E7-B7BB-4E19-8E76-AF1C9C357569}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HRMS.Utility", "HRMS.Utility\HRMS.Utility.csproj", "{C9154562-EF2F-4053-8F3A-240283985E3C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XtraChef.SecretsConfigHelper", "XtraChef.SecretsConfigHelper\XtraChef.SecretsConfigHelper\XtraChef.SecretsConfigHelper.csproj", "{54B9CB5B-C65C-4015-B0F3-615B10A59707}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -86,10 +86,10 @@ Global
 		{DE53E6E7-B7BB-4E19-8E76-AF1C9C357569}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DE53E6E7-B7BB-4E19-8E76-AF1C9C357569}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DE53E6E7-B7BB-4E19-8E76-AF1C9C357569}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C9154562-EF2F-4053-8F3A-240283985E3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C9154562-EF2F-4053-8F3A-240283985E3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C9154562-EF2F-4053-8F3A-240283985E3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C9154562-EF2F-4053-8F3A-240283985E3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54B9CB5B-C65C-4015-B0F3-615B10A59707}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54B9CB5B-C65C-4015-B0F3-615B10A59707}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54B9CB5B-C65C-4015-B0F3-615B10A59707}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54B9CB5B-C65C-4015-B0F3-615B10A59707}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

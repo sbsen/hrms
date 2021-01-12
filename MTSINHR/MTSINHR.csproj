@@ -57,9 +57,6 @@
     <Reference Include="DocumentFormat.OpenXml">
       <HintPath>..\packages\DocumentFormat.OpenXml.2.5\lib\DocumentFormat.OpenXml.dll</HintPath>
     </Reference>
-    <Reference Include="HRConstants">
-      <HintPath>..\HRConstants\bin\Debug\HRConstants.dll</HintPath>
-    </Reference>
     <Reference Include="Humanizer">
       <HintPath>..\packages\Humanizer.Core.2.0.1\lib\portable-win+net45+wp8+wpa81\Humanizer.dll</HintPath>
     </Reference>
@@ -1180,9 +1177,9 @@
       <Project>{7e93826a-4881-47eb-a61b-c1f3abf921d2}</Project>
       <Name>ExceptionBlock</Name>
     </ProjectReference>
-    <ProjectReference Include="..\HRMS.Utility\HRMS.Utility.csproj">
-      <Project>{c9154562-ef2f-4053-8f3a-240283985e3c}</Project>
-      <Name>HRMS.Utility</Name>
+    <ProjectReference Include="..\HRConstants\HRConstants.csproj">
+      <Project>{de53e6e7-b7bb-4e19-8e76-af1c9c357569}</Project>
+      <Name>HRConstants</Name>
     </ProjectReference>
     <ProjectReference Include="..\MTS.Controllers\MTS.Controllers.csproj">
       <Project>{be8d410e-ef54-4647-b31f-b883a1b0de40}</Project>
@@ -1207,6 +1204,10 @@
     <ProjectReference Include="..\UtilsBlock\UtilsBlock.csproj">
       <Project>{60c51b78-d847-4463-95fd-123d2e8fe1da}</Project>
       <Name>UtilsBlock</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\XtraChef.SecretsConfigHelper\XtraChef.SecretsConfigHelper\XtraChef.SecretsConfigHelper.csproj">
+      <Project>{54b9cb5b-c65c-4015-b0f3-615b10a59707}</Project>
+      <Name>XtraChef.SecretsConfigHelper</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
