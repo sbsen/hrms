@@ -480,7 +480,6 @@
             url: '@Url.Content("~/LeaveApply/GetLeaveBalanceDetails")',
             data: { LeaveTypeId: LeaveTypeId, year: toYear },
             success: function (response) {
-                
                 var jsonresponse = JSON.parse(response);
                 if (jsonresponse != null && jsonresponse.Table.length > 0) {
                     var approvalpending = 0;
@@ -489,18 +488,26 @@
                     $("#LeaveApprovalpending").text(0);
                     $("#LeaveAvailed").text(0);
                     for (var i = 0; i < jsonresponse.Table.length; i++) {
-                        $("#LeaveApprovalpending").text(jsonresponse.Table[0].PendingLeaveCount);
-                        $("#LeaveAvailed").text(jsonresponse.Table[0].ApproredLeaveCount);
+                        $("#LeaveApprovalpending").text(jsonresponse.Table[0].PendingLeaveCount);                        
                         approvalpending = jsonresponse.Table[0].PendingLeaveCount;
                         leaveAvailed = jsonresponse.Table[0].ApproredLeaveCount;
+
+                        if(leaveAvailed >= 0)
+                            $("#LeaveAvailed").text(leaveAvailed);
+                        else{
+                            leaveAvailed = 0;
+                            $("#LeaveAvailed").text(0);
+                        }
                     }
                     if (jsonresponse.Table.length > 0) {
                         openingBalance = jsonresponse.Table[0].AvailableLeave - (approvalpending + leaveAvailed)
                         $("#OpeningBalance").text(jsonresponse.Table[0].AvailableLeave);
+                        
                         if(openingBalance >= 0)
                             $("#LeaveBalance").text(openingBalance);
                         else
                             $("#LeaveBalance").text(0);
+
                         holidayAsLeave = parseInt(jsonresponse.Table[0].HolidayAsLeave);
                         //alert(holidayAsLeave)
                         if (holidayAsLeave == 1)
@@ -675,13 +682,14 @@
     });
     var totalDays;
     function validateLeave() {
-        //
+
         $.ajax({
 
             type: "POST",
             url: '@Url.Content("~/LeaveApply/validateLeave")',
             data: $('#LeaveForm').serialize(),
             success: function (response) {
+
                 
                 if (response.success == 1 || response.success == 2) {
                     leaveListTable.ajax.url("../LeaveApply/GetEmployeeLeaveList").load().draw();
