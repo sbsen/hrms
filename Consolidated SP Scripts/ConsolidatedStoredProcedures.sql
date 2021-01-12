@@ -4529,7 +4529,7 @@ BEGIN
 
 					IF(@MANAGER_COUNT = 1)
 					BEGIN
-						SELECT  @MANAGER_ID =Count(*) from Employee_Reporting_Managers where EmployeeId=@empid
+						SELECT  @MANAGER_ID = ManagerId from Employee_Reporting_Managers where EmployeeId=@empid
 					END
 
 					INSERT INTO MTS_APPRAISAL_EMPLOYEE_RATING_TABLE (
@@ -9487,7 +9487,6 @@ BEGIN
 	INNER JOIN MTS_APPRAISAL_PROCESS_DETAILS apd WITH (NOLOCK) ON apd.Id = rt.Appraisal_Process_Period_Id
 	WHERE (
 			erm.ManagerId = @MANAGER_ID
-			OR rt.Manager_Id = @MANAGER_ID
 			)
 		AND apd.Active = 2
 	GROUP BY emp.Id
@@ -18729,7 +18728,7 @@ BEGIN
 				AND year(FromDate) = @year
 				AND Approval IN (2)
 				AND LeaveType = @leavetype
-				AND isLOP = 0 --AND AdvanceCredit=1
+				AND isLOP = 0 AND AdvanceCredit=1
 
 			IF EXISTS (
 					SELECT Leavebalance + AdvanceCredit
