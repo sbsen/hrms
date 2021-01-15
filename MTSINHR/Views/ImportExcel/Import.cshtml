@@ -46,8 +46,8 @@
         var fileInput = document.getElementById('ExcelFileUpload');
         var filename = fileInput.files[0].name
         var extension = filename.split('.').pop().toUpperCase();
-        if (extension != "XLS" && extension != "XLSX") {
-            fileErrorMessage.innerHTML = 'Please select .xls or .xlsx files';
+        if (extension != "XLS") {
+            fileErrorMessage.innerHTML = 'Please select .xls files';
         }
         else {
             //Iterating through each files selected in fileInput  

@@ -246,7 +246,7 @@
                                     @Html.LabelFor(model => model.Dateofjoin)
                                 </div>
                                 <div class="editor-field">
-                                    @Html.TextBoxFor(model => model.Dateofjoin, "{0:MMM/dd/yyyy}", new { @class = "form-control requir" })
+                                    @Html.TextBoxFor(model => model.Dateofjoin, "{0:dd/MMM/yyyy}", new { @class = "form-control requir" })
                                     @Html.ValidationMessageFor(model => model.Dateofjoin)
                                 </div>
                             </div>
@@ -387,8 +387,6 @@
         var monthlimit = "-" + monthcount + "m";
         $('#Dateofjoin').datepicker({
             format: 'dd/M/yyyy',
-
-
             changeMonth: true,
             changeYear: true,
             autoclose: true,
@@ -401,10 +399,8 @@
             changeYear: true,
             autoclose: true,
             endDate: "-" + DOBlimit + "y"
-
-
-
         });
+
         $("#Maritalstatus").on("change", function () {
             var s = $("#Maritalstatus").val();
             if ((s == "1")) {

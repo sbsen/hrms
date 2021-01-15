@@ -2267,7 +2267,11 @@
                     },
                 success: function (data) {
                     if (data == "Success") {
-                        window.open('@Url.Content("/ITDeclaration/ViewDocuments")', '', '"width=200,height=300"');
+                        @*window.open('@Url.Content("/ITDeclaration/ViewDocuments")', '', '"width=200,height=300"');*@
+                        var left = (screen.width / 2) - (1100 / 2);
+                        var top = (screen.height / 2) - (800 / 2);
+                        window.open('@Url.Action("ViewDocuments", "ITDeclaration")', 'Document', 'toolbar=0 scrollbars=no, resizable,width= 1100, height= 800, top=' + top + ', left=' + left);
+
                     }
                     else {
                         $(".errorspan").show();

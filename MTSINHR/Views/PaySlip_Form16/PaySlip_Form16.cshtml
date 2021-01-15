@@ -88,31 +88,37 @@
 <script>
 
     function cancel() {
-        window.location.href = '@Url.Action("UserList", "UserList")';
+        var sessionRole = '@Session["RoleId"].ToString()';
+        if (sessionRole == '1') {
+            window.location.href = '@Url.Action("AdminMessages", "Messages")';
+        }
+        else {
+            window.location.href = '@Url.Action("ShowMessages", "Messages")';
+        }
     }
 
 
     function payslip() {
-        
+
         var datas = {
             Payform: $("#Payform").val(),
             Date: $("#Date").val()
         }
         if ($(".form-signin").valid()) {
-          
+
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/PaySlip_Form16/PaySlip_Form16")',
                 headers: {
                     auth: "user"
                 },
-                data: 
+                data:
                 $(".form-signin").serialize(),
-               
+
                 success: function (result) {
-                   
+
                     if (result == 0) {
-                        
+
                         toastr.error("No File Generated");
                     }
                     else if (result == 1) {
@@ -145,7 +151,7 @@
                 $(".form-signin").serialize(),
 
                 success: function (result) {
-                    
+
                     if (result == 0) {
                         $(".generate i").hide();
                         toastr.error("No File Generated");

@@ -125,8 +125,8 @@ namespace MTSINHR.Controllers
             [HttpPost]
         public ActionResult SetPrimaryid(Int64 id)
         {
-            TempData["employeeid"] = id;
-            TempData.Keep("employeeid");
+            TempData["EmpUserId"] = id;    //TempData["employeeid"] = id;
+            TempData.Keep("EmpUserId");    //TempData.Keep("employeeid");
             return Content("success");
         }
 
@@ -159,9 +159,9 @@ namespace MTSINHR.Controllers
         public ActionResult ReadEmployeeDetails()
         {
             try
-            {
-                Int64 id = (Int64)TempData["employeeid"];
-                TempData.Keep("employeeid");
+            {                
+                Int64 id = (Int64)TempData["EmpUserId"];   //Int64 id = (Int64)TempData["employeeid"];
+                TempData.Keep("EmpUserId");    //TempData.Keep("employeeid");
                 MTSHRDataLayer.Employee data_emp = new MTSHRDataLayer.Employee();
                 var employeeData = Json(JsonConvert.SerializeObject(data_emp.Read(id)), JsonRequestBehavior.AllowGet);
                 ViewBag.EmployeeData = employeeData.Data;
@@ -366,9 +366,11 @@ namespace MTSINHR.Controllers
             MTSHRDataLayer.Employee employee = new MTSHRDataLayer.Employee();
             Int64 result = new Int64();
             try
-            {
-                result = employee.EditRole((Int64)TempData["employeeid"], RoleId);
-                TempData.Keep("employeeid");
+            {                
+                //result = employee.EditRole((Int64)TempData["employeeid"], RoleId);
+                //TempData.Keep("employeeid");
+                result = employee.EditRole((Int64)TempData["EmpUserId"], RoleId);
+                TempData.Keep("EmpUserId");
             }
             catch(Exception ex)
             {
