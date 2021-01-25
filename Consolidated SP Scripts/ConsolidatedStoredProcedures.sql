@@ -16717,7 +16717,7 @@ BEGIN
 		FROM LeaveReport lr WITH (NOLOCK)
 		INNER JOIN EmployeeLeaveBalance elb WITH (NOLOCK) ON lr.LeaveType = elb.LeaveType
 			AND LR.Employee_Id = elb.Employee_Id
-		WHERE lr.Month <= @month
+		WHERE lr.Month = @month
 			AND lr.Year = @year
 			AND elb.Year = @year
 		GROUP BY elb.Employee_Id

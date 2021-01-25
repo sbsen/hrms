@@ -62,10 +62,10 @@
         <div class="row">
             <div class="col-md-12 text-right m-b-15">
                 <div class="row text-left card-columns">
-                    <div class="col-md-4 text-right" style="position: relative;left: 92px;">
+                    <div class="col-lg-2 text-right p-t-5" style="position: relative;left: 92px;">
                         <label>Date Of Join</label>
                     </div>
-                    <div class="col-md-3 text-right">
+                    <div class="col-lg-3">
                         <div class="form-group">
                             <div class="editor-field">
                                 @Html.TextBoxFor(m => m.FromDate, new { @class = "form-control ", @data = "date-end-date='0d'", @placeholder = "From Date" })
@@ -73,7 +73,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-lg-3">
                         <div class="form-group">
                             <div class="editor-field">
                                 @Html.TextBoxFor(m => m.ToDate, new { @class = "form-control ", @placeholder = "To Date" })
@@ -81,9 +81,31 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-2 text-right">
+                    <div class="col-lg-2 text-right">
                         <button type="button" class="btn-primary btn-sm " id="Filterdata"><span class="fa fa-search"></span> Search </button>
                     </div>
+                    @*<div class="col-md-4 text-right" style="position: relative;left: 92px;">
+                        <label>Date Of Join</label>
+                    </div>*@
+                    @*<div class="col-md-3 text-right">
+                        <div class="form-group">
+                            <div class="editor-field">
+                                @Html.TextBoxFor(m => m.FromDate, new { @class = "form-control ", @data = "date-end-date='0d'", @placeholder = "From Date" })
+                                @Html.ValidationMessageFor(m => m.FromDate)
+                            </div>
+                        </div>
+                    </div>*@
+                    @*<div class="col-md-3">
+                        <div class="form-group">
+                            <div class="editor-field">
+                                @Html.TextBoxFor(m => m.ToDate, new { @class = "form-control ", @placeholder = "To Date" })
+                                @Html.ValidationMessageFor(m => m.ToDate)
+                            </div>
+                        </div>
+                    </div>*@
+                    @*<div class="col-md-2 text-right">
+                        <button type="button" class="btn-primary btn-sm " id="Filterdata"><span class="fa fa-search"></span> Search </button>
+                    </div>*@
                 </div>
 
                 <div class="radio-group optRadio tc">
@@ -126,6 +148,8 @@
                         groupTable.clear();
                         groupTable.rows.add(JSON.parse(data));
                         groupTable.draw();
+                        $('#option-one').prop('checked', true);
+                        ActiveStatus('');
                     },
                 });
             }

@@ -113,6 +113,7 @@
             FilterEmployee();
         })
         $('#activecheckbox').hide();
+        $('#activestatus_filter').val(1);
     });
     function drawActiveEmployees() {
         var activeEmployees = groupTableData.filter(a=>a.Active == true);
