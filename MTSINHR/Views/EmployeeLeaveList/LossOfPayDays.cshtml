@@ -45,7 +45,7 @@
             var id = $(this).val();
             $.ajax({
                 type: "post",
-                url: "/EmployeeLeaveList/GetAllLeaveType",
+                url: '@Url.Content("~/EmployeeLeaveList/GetAllLeaveType")',
                 data:{
                     empid:id
                 },
