@@ -10550,19 +10550,19 @@ BEGIN
 END
 GO
 
-/****** Object:  StoredProcedure [dbo].[MANAGER_LEAVECANCEL]    Script Date: 5/17/2020 12:31:56 AM ******/
+/****** Object:  StoredProcedure [dbo].[MANAGER_LEAVECANCEL]    Script Date: 1/27/2021 5:37:10 PM ******/
 SET ANSI_NULLS ON
 GO
 
 SET QUOTED_IDENTIFIER ON
 GO
 
+
 CREATE PROCEDURE [dbo].[MANAGER_LEAVECANCEL] (
-	@canceledby BIGINT
+	@empLeaveId BIGINT
+	,@canceledby BIGINT
 	,@approval BIGINT
 	,@empid BIGINT
-	,@fromdate DATE
-	,@todate DATE
 	,@leavetype BIGINT
 	,@reason VARCHAR(255)
 	)
@@ -10603,15 +10603,33 @@ BEGIN
 			FROM Employee WITH (NOLOCK)
 			WHERE id = @canceledby
 			)
-	DECLARE @EMAILSP VARCHAR(max) = cast(@empemail AS VARCHAR(255)) + ',' + cast(@employeeid AS VARCHAR(255)) + ',' + cast(@empname AS VARCHAR(255)) + ',' + cast(@dateofjoin AS VARCHAR(255)) + ',' + cast(@fromdate AS VARCHAR(255)) + ',' + cast(@todate AS VARCHAR(255)) + ',' + cast(@leavetype AS VARCHAR(255)) + ',' + cast(@reason AS VARCHAR(255)) + ',' + cast(@approval AS VARCHAR(255)) + ',' + cast(@managerid AS VARCHAR(255)) + ',' + cast(@managername AS VARCHAR(255))
+	DECLARE @fromdate date, @todate date
+
+	SELECT @fromdate = FromDate
+		, @todate = ToDate
+	FROM EMPLOYEE_LEAVE WITH(NOLOCK)
+	WHERE id = @empLeaveId 
+
+	DECLARE @EMAILSP VARCHAR(max) = cast(@empemail AS VARCHAR(255)) 
+								+ ',' + cast(@employeeid AS VARCHAR(255)) 
+								+ ',' + cast(@empname AS VARCHAR(255)) 
+								+ ',' + cast(@dateofjoin AS VARCHAR(255)) 
+								+ ',' + cast(@fromdate AS VARCHAR(255)) 
+								+ ',' + cast(@todate AS VARCHAR(255)) 
+								+ ',' + cast(@leavetype AS VARCHAR(255)) 
+								+ ',' + cast(@reason AS VARCHAR(255)) 
+								+ ',' + cast(@approval AS VARCHAR(255)) 
+								+ ',' + cast(@managerid AS VARCHAR(255)) 
+								+ ',' + cast(@managername AS VARCHAR(255))
 	DECLARE @LEAVE_ID BIGINT = (
 			SELECT TOP 1 id
 			FROM Employee_Leave WITH (NOLOCK)
 			WHERE Employee_Id = @empid
-				AND FromDate = @fromdate
-				AND ToDate = @todate
-				AND Reason = @reason
-				AND LeaveType = @leavetype
+				AND id = @empLeaveId
+				--AND FromDate = @fromdate
+				--AND ToDate = @todate
+				--AND Reason = @reason
+				--AND LeaveType = @leavetype
 			)
 
 	UPDATE Employee_Leave
@@ -10619,10 +10637,11 @@ BEGIN
 		,Approval = @approval
 		,CanceledDate = getdate()
 	WHERE Employee_Id = @empid
-		AND FromDate = @fromdate
-		AND ToDate = @todate
-		AND Reason = @reason
-		AND LeaveType = @leavetype
+		AND id = @empLeaveId
+		--AND FromDate = @fromdate
+		--AND ToDate = @todate
+		--AND Reason = @reason
+		--AND LeaveType = @leavetype
 
 	UPDATE EMPLOYEE_LEAVE_DETAILS
 	SET CanceledBy = @canceledby

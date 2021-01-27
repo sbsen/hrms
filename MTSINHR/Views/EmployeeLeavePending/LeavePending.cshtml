@@ -52,7 +52,9 @@
                             { "mData": "Employee_Id", "sTitle": "Reject", "sClass": "text-center", "bSortable": true, "sWidth": "1%", "orderable": false },
                             { "mData": "primaryid", "sTitle": "id", "bVisible": false },
                             { "mData": "LeaveFromSession", "sTitle": "LeaveFromSession", "bVisible": false },
-                            { "mData": "LeaveToSession", "sTitle": "LeaveToSession", "bVisible": false }],
+                            { "mData": "LeaveToSession", "sTitle": "LeaveToSession", "bVisible": false },
+                            { "mData": "primaryid", "bVisible": false }
+            ],
             "aoColumnDefs": [{
                 "aTargets": [7],
                 "mRender": function (data) {
@@ -191,7 +193,8 @@
                             FromDate: Fromdate.toISOString(),
                             ToDate: Todate.toISOString(),
                             LeaveType: data.id,
-                            Reason: data.Reason
+                            Reason: data.Reason,
+                            id: data.primaryid
                         },
                         success: function (response) {
                             if (response == 1) {

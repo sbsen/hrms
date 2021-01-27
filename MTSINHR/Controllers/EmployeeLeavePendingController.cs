@@ -949,7 +949,7 @@ namespace MTSINHR.Controllers
             string managerid = Session["UserID"].ToString();
             Int64 id = Convert.ToInt64(managerid);
             MTSHRDataLayer.LeavePending_Approve leave_approve = new MTSHRDataLayer.LeavePending_Approve();
-            Int64 result = leave_approve.Cancel_Leave(managerid, le.Approval, le.Employee_Id, le.FromDate, le.ToDate, le.LeaveType, le.Reason);
+            Int64 result = leave_approve.Cancel_Leave(le.id, managerid, le.Approval, le.Employee_Id, le.LeaveType, le.Reason);
             return result;
 
         }
