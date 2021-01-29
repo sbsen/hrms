@@ -348,7 +348,7 @@ namespace MTSINHR.Controllers
                         Int64 length_id = Employee_Code.Length;
                         if (length_id < 5)
                         {
-                            string emp_prev = "E";
+                            string emp_prev = "XC";
                             for (int i = 0; i < 5 - length_id; i++)
                             {
 

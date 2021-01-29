@@ -658,6 +658,7 @@
     <Content Include="Images\company-registration-slider-4.jpg" />
     <Content Include="Images\company3.jpg" />
     <Content Include="Images\dormant-company.jpg" />
+    <Content Include="Images\fav-xc.png" />
     <Content Include="Images\fav.png" />
     <Content Include="Images\Free-Windows-8-Wallpaper-Backgrounds.jpg" />
     <Content Include="Images\home-13-1280x443.jpg" />
@@ -676,6 +677,7 @@
     <Content Include="Images\VOLLMER_Company_01.jpg" />
     <Content Include="Images\xchef.png" />
     <Content Include="Images\xchefX.png" />
+    <Content Include="Images\xtrachef-logo.png" />
     <Content Include="img\loading.gif" />
     <Content Include="img\progressbar.gif" />
     <Content Include="Rotativa\wkhtmltopdf.exe" />
@@ -932,8 +934,10 @@
     <Content Include="Scripts\jquery.min.js" />
     <Content Include="Scripts\jquery.mousewheel.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.min1.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min1.js" />
     <Content Include="Scripts\LoginScript\app.js" />
     <Content Include="Scripts\LoginScript\particles.js" />

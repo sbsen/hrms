@@ -25,7 +25,14 @@
     <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:200,300,400,500,600,700|Open+Sans:300,400,600,700" rel="stylesheet">
 
     <meta charset="utf-8" />
-    <link rel="icon" href="~/Images/fav.png" type="image/png" sizes="16x16">
+    @if (Session["isMtsProject"].ToString() == "true")
+    {
+        <link rel="icon" href="~/Images/fav.png" type="image/png" sizes="16x16">
+    }
+    else
+    {
+        <link rel="icon" href="~/Images/xchefX.png" type="image/png" sizes="16x16">
+    }
     @*<link rel="icon" href="~/Images/xchefX.png" type="image/png" sizes="16x16">*@
     <style>
         .usernamediv {
