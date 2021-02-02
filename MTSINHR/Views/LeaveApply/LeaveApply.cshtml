@@ -303,15 +303,16 @@
             else if (value == '3') {
 
                 var ToSession = "";
-                $('#LeaveToSession').val(ToSession);
                 if ($('#FromDate').val() == $('#ToDate').val()) {
-
+                  
+                    $('#LeaveToSession').val(ToSession);
                     $('#LeaveToSession').prop('disabled', true);
                     $('#ToDate').prop('disabled', false);
                     $('#Managerid').prop('disabled', false);
                 }
                 else {
-
+                    var ToSession = "1";
+                    $('#LeaveToSession').val(ToSession);
                     $('#LeaveToSession').prop('disabled', false);
                 }
             }
@@ -381,7 +382,7 @@
             }
 
             else {
-
+                $('#LeaveToSession').val(1);
                 $("#LeaveToSession").prop('disabled', false);
             }
 
