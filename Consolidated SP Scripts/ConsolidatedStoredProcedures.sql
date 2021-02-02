@@ -10303,12 +10303,14 @@ BEGIN
 
 		DECLARE @LEAVE_ID BIGINT
 			,@ADVANCE_CREDIT DECIMAL(10, 1)
+			,@DAYSCOUNT DECIMAL(10, 1) = 0
 
-		SELECT @ADVANCE_CREDIT = (ISNULL(AdvanceCredit, 0) - isnull(AdvanceAvailed, 0))
+		SELECT @ADVANCE_CREDIT = ABS((ISNULL(AdvanceCredit, 0) - isnull(AdvanceAvailed, 0)))
 		FROM EmployeeLeaveBalance WITH (NOLOCK)
 		WHERE Employee_Id = @empid
 			AND LeaveType = @leavetype
 			AND Year = year(@fromdate)
+
 
 		DECLARE Cur_LeaveId CURSOR STATIC
 		FOR
@@ -10326,7 +10328,7 @@ BEGIN
 
 			WHILE @@FETCH_STATUS = 0
 			BEGIN
-				IF @leavebalance >= 0
+				IF @leavebalance > 0
 				BEGIN
 					UPDATE EMPLOYEE_LEAVE_DETAILS
 					SET ApprovedBy = @approvedby
@@ -10336,8 +10338,15 @@ BEGIN
 					WHERE Employee_Id = @empid
 						AND LeaveId = @primaryid
 						AND Id = @LEAVE_ID
+
+					SELECT @DAYSCOUNT = Numberofdays FROM EMPLOYEE_LEAVE_DETAILS 
+					WHERE Employee_Id = @empid
+						AND LeaveId = @primaryid
+						AND Id = @LEAVE_ID
+						
+				set	@leavebalance= @leavebalance - @DAYSCOUNT
 				END
-				ELSE IF (@leavebalance + @ADVANCE_CREDIT) >= 0
+				ELSE IF @ADVANCE_CREDIT > 0
 				BEGIN
 					UPDATE EMPLOYEE_LEAVE_DETAILS
 					SET ApprovedBy = @approvedby
@@ -10347,6 +10356,13 @@ BEGIN
 					WHERE Employee_Id = @empid
 						AND LeaveId = @primaryid
 						AND Id = @LEAVE_ID
+
+              SELECT @DAYSCOUNT = Numberofdays FROM EMPLOYEE_LEAVE_DETAILS 
+					WHERE Employee_Id = @empid
+						AND LeaveId = @primaryid
+						AND Id = @LEAVE_ID
+		         
+				 set  @ADVANCE_CREDIT =@ADVANCE_CREDIT - @DAYSCOUNT
 				END
 				ELSE
 				BEGIN
@@ -10367,6 +10383,12 @@ BEGIN
 		END
 
 		DEALLOCATE Cur_LeaveId
+
+		 select @leave_availed_advance =ISNULL(SUM(Numberofdays),0) FROM EMPLOYEE_LEAVE_DETAILS WITH (NOLOCK)  
+             WHERE Employee_Id = @empid
+				AND LeaveType = @leavetype
+				AND Year(FROMDATE) = year(@fromdate)
+				and ADVANCECREDIT =1
 
 		IF (@leave_availed_advance > 0)
 		BEGIN
@@ -18282,7 +18304,7 @@ BEGIN
 				,LeaveType
 				)
 			AS (
-				SELECT COUNT(AdvanceCredit)
+				SELECT ISNULL(SUM(Numberofdays),0)
 					,LeaveType
 				FROM EMPLOYEE_LEAVE_DETAILS WITH (NOLOCK)
 				WHERE Employee_Id = @empid
