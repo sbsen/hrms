@@ -68,7 +68,7 @@
                     <div class="col-lg-3">
                         <div class="form-group">
                             <div class="editor-field">
-                                @Html.TextBoxFor(m => m.FromDate, new { @class = "form-control ", @data = "date-end-date='0d'", @placeholder = "From Date" })
+                                @Html.TextBoxFor(m => m.FromDate, new { @class = "form-control ", @data = "date-end-date='0d'", @placeholder = "From Date", @autocomplete = "off" })
                                 @Html.ValidationMessageFor(m => m.FromDate)
                             </div>
                         </div>
@@ -76,13 +76,13 @@
                     <div class="col-lg-3">
                         <div class="form-group">
                             <div class="editor-field">
-                                @Html.TextBoxFor(m => m.ToDate, new { @class = "form-control ", @placeholder = "To Date" })
+                                @Html.TextBoxFor(m => m.ToDate, new { @class = "form-control ", @placeholder = "To Date", @autocomplete = "off" })
                                 @Html.ValidationMessageFor(m => m.ToDate)
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-2 text-right">
-                        <button type="button" class="btn-primary btn-sm " id="Filterdata"><span class="fa fa-search"></span> Search </button>
+                        <button type="button" class="btn-primary btn-sm " id="Filterdata" onclick="getFilteredBankDetails('')"><span class="fa fa-search"></span> Search </button>
                     </div>
                     @*<div class="col-md-4 text-right" style="position: relative;left: 92px;">
                         <label>Date Of Join</label>
@@ -109,11 +109,11 @@
                 </div>
 
                 <div class="radio-group optRadio tc">
-                    <input type="radio" id="option-one" onclick="ActiveStatus('')" checked name="selector">
+                    <input type="radio" id="option-one" onclick="getFilteredBankDetails('')" checked name="selector">
                     <label for="option-one">All</label>
-                    <input type="radio" id="option-two" onclick="ActiveStatus('Active')" name="selector">
+                    <input type="radio" id="option-two" onclick="getFilteredBankDetails('Active')" name="selector">
                     <label for="option-two">Active</label>
-                    <input type="radio" id="option-three" onclick="ActiveStatus('InActive')" name="selector">
+                    <input type="radio" id="option-three" onclick="getFilteredBankDetails('InActive')" name="selector">
                     <label for="option-three">InActive</label>
                 </div>
             </div>
@@ -128,34 +128,54 @@
     var groupTable;
     var groupTableData;
     $(document).ready(function () {
-        LoadDatatable();
-        LoadHolidayTable();     
-        DateRange();
-        $('#Filterdata').on('click', function () {
-           // var from = $('#FromDate').val();
-           // var to = $('#ToDate').val();
-            var StartDate = new Date($('#FromDate').val());
-            var EndDate = new Date($('#ToDate').val());
+        //LoadDatatable();
+        //LoadHolidayTable();     
+        DateRange();        
+        FullBankDetails();
+    });
+    function getFilteredBankDetails(status) {
+        if (($('#FromDate').val().trim() == '' || $('#FromDate').val() == null) && $('#ToDate').val().trim() != '' && $('#ToDate').val() != null) {
+            toastr.warning('Select between dates of Date Of Join');
+        }
+        else if ($('#FromDate').val().trim() != '' && $('#FromDate').val() != null && ($('#ToDate').val().trim() == '' || $('#ToDate').val() == null)) {
+            toastr.warning('Select between dates of Date Of Join');
+        }
+        else {
+            var StartDate = dateFormat($('#FromDate').val());
+            var EndDate = dateFormat($('#ToDate').val());
             {
                 $.ajax({
                     type: "POST",
                     data: {
-                        StartDate: StartDate.toISOString()
-                        , EndDate: EndDate.toISOString()
+                        StartDate: StartDate    //StartDate.toISOString()
+                        , EndDate: EndDate  //.toISOString()
+                        , Status: status == 'Active' ? 1 : status == 'InActive' ? 0 : null
+
                     },
                     url: '@Url.Content("~/BankDetails/FilterBankdetails")',
                     success: function (data) {
-                        groupTable.clear();
-                        groupTable.rows.add(JSON.parse(data));
-                        groupTable.draw();
-                        $('#option-one').prop('checked', true);
-                        ActiveStatus('');
+                        
+                        LoadDatatable(JSON.parse(data));
+                        if (status == 'Active') {
+                            $('#option-two').prop('checked', true);
+                        }
+                        else if (status == 'InActive') {
+                            $('#option-three').prop('checked', true);
+                        }
+                        else {
+                            $('#option-one').prop('checked', true);
+                        }
+
                     },
                 });
             }
-
-        });
-    });
+        }
+            
+        //}
+        //else {
+        //    toastr.warning('Select between dates of Date Of Join');
+        //}
+    }
     function DateRange() {
         var todayDate = new Date();
         var end = new Date().getDate();
@@ -165,6 +185,7 @@
             endDate: '+1m',
 
             autoclose: true
+            
         }).on('changeDate', function () {
 
             $("#ToDate").val(this.value);
@@ -181,7 +202,11 @@
             $('#FromDate').datepicker('setEndDate', new Date($(this).val()));
         });
     }
-    function LoadDatatable() {
+    function LoadDatatable(dt) {
+
+        if ($.fn.DataTable.isDataTable('#getbankdetails')) {
+            $('#getbankdetails').dataTable().fnDestroy();
+        }
 
         groupTable = $("#getbankdetails").DataTable({
             "dom": 'Bfrtip',
@@ -190,7 +215,7 @@
         'excel',
 
             ],
-            "data": "",
+            "data": dt,
             "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
             "iDisplayLength": 10,
             "bFilter": true,
@@ -224,38 +249,29 @@
         });
     }
 
-    function LoadHolidayTable() {
+    function FullBankDetails() {
         $.ajax({
-
             type: "GET",
+            async: false,
             url: '@Url.Content("~/BankDetails/Read")',
             success: function (data) {
-                groupTableData = JSON.parse(data);
-                groupTable.clear();
-                groupTable.rows.add(JSON.parse(data));
-                groupTable.draw();
+                LoadDatatable(JSON.parse(data));
             }
 
         });
 
     }
-
-    function ActiveStatus(status) {
-        
-        if (status == "InActive") {
-            var activeEmployees = groupTableData.filter(a=>a.ACTIVE == false);
-            groupTable.clear();
-            groupTable.rows.add(activeEmployees).draw();
-        } else if (status == "Active") {
-            var activeEmployees = groupTableData.filter(a=>a.ACTIVE == true);
-            groupTable.clear();
-            groupTable.rows.add(activeEmployees).draw();
-        } else {
-            groupTable.clear();
-            groupTable.rows.add(groupTableData).draw();
+    
+    function dateFormat(date) {
+        if (date != null && date.trim() != '') {
+            var d = new Date(date);
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                            "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = d.getDate() + "-" + months[d.getMonth()] + "-" + d.getFullYear();
+            return val;
         }
-        //groupTable.search(status).draw();
-        //groupTable.search('');
-
+        else {
+            return '';
+        }
     }
 </script>

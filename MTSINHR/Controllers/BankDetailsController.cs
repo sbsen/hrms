@@ -48,12 +48,19 @@ namespace MTSINHR.Controllers
             return Json(JsonConvert.SerializeObject(bank_Details.Read()), JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult FilterBankdetails(string StartDate, string EndDate)
+        public JsonResult FilterBankdetails(string StartDate, string EndDate, Int32? Status)
         {
             MTSHRDataLayer.BankDetails employeedetails = new MTSHRDataLayer.BankDetails();
-            return Json(JsonConvert.SerializeObject(employeedetails.FilterBankdetails(StartDate, EndDate)), JsonRequestBehavior.AllowGet);
+            if(StartDate.Trim() == "" || EndDate.Trim() == "")
+            {
+                return Json(JsonConvert.SerializeObject(employeedetails.FilterBankdetails(null, null, Status)), JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(JsonConvert.SerializeObject(employeedetails.FilterBankdetails(Convert.ToDateTime(StartDate), Convert.ToDateTime(EndDate), Status)), JsonRequestBehavior.AllowGet);
+            }
         }
-
+        
     }
 }
 

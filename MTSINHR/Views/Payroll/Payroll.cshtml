@@ -335,6 +335,87 @@
     var payrollID = 0;
     $(document).ready(function () {
 
+        $('.earningInputs').on('change', function () {
+            debugger;
+            if($('#sodexoAmt').val() == '' || $('#others').val() == ''){
+                $('#sodexoAmt').val(0);
+                $('#others').val(0);
+            }
+
+            var count = 0;
+
+            countEarning = 0;
+            for (var i = 0; i < $('.earningInputs').length; i++) {
+                if ($(this).val() != '') {
+                    count = count + 1;
+                    countEarning = countEarning + parseFloat($('#' + $('.earningInputs:visible')[i].id).val());
+                }
+            }
+
+            if (count == 6) {
+                $('#grossEarngs').val(countEarning);
+
+                $.each(pfDeduction, function (i) {
+                    var pf = 0;
+                    if ($('#basicPay').val() >= pfDeduction[i].EPF_BASIC_MAX_SALARY && $('#restrictionPF').is(':checked')) {
+                        pf = $('#basicPay').val() * pfDeduction[i].EPF_EMPLOYEE_CONTRIBUTION_PERCENTAGE / 100;
+                    }
+                    else if ($('#basicPay').val() >= pfDeduction[i].EPF_BASIC_MAX_SALARY && !$('#restrictionPF').is(':checked')) {
+                        pf = 15000 * pfDeduction[i].EPF_EMPLOYEE_CONTRIBUTION_PERCENTAGE / 100;
+                    }
+                    else if (($('#grossEarngs').val() - $('#houseRentAlln').val()) >= 15000) {
+                        pf = 15000 * pfDeduction[i].EPF_EMPLOYEE_CONTRIBUTION_PERCENTAGE / 100;
+                    }
+                    else if (($('#grossEarngs').val() - $('#houseRentAlln').val()) < 15000) {
+                        pf = ($('#grossEarngs').val() - $('#houseRentAlln').val()) * pfDeduction[i].EPF_EMPLOYEE_CONTRIBUTION_PERCENTAGE/100;
+                    }
+                    $('#pfAmt').val(Math.round(pf));
+
+
+
+                    var esi = 0;
+
+                    if ($('#grossEarngs').val() < esiDeduction[i].ESI_BASIC_SALARY) {
+                        esi = $('#grossEarngs').val() * esiDeduction[i].ESI_EMPLOYEE_CONTRIBUTION_PERCENTAGE / 100;
+                    }
+                    else {
+                        esi = 0;
+                    }
+                    $('#esiAmt').val(Math.round(esi));
+
+                });
+                $.each(professionalTaxDeduction, function (i) {
+                    if ($('#grossEarngs').val() * 6 >= professionalTaxDeduction[i].TAX_RANGE_FROM && $('#grossEarngs').val() * 6 <= professionalTaxDeduction[i].TAX_RANGE_TO) {   //Duration cycle is half_yearly(so only multiply by 6)
+                        $('#prfTax').val(Math.round(professionalTaxDeduction[i].PT_AMOUNT / 6));
+                    }
+                });
+
+                $('#netSalary').val(($('#grossEarngs').val()) - ($('#totalDeduction').val()))
+            }
+        });
+
+
+        $('.deductionInputs').on('change', function () {
+            debugger;
+            countDeduction = 0;
+            for (var i = 0; i < $('.deductionInputs').length; i++) {
+                if ($(this).val() != '') {
+                    countDeduction = countDeduction + parseFloat($('#' + $('.deductionInputs')[i].id).val());
+                    if($('#' + $('.deductionInputs')[i].id).val() < 0)
+                        $('#' + $('.deductionInputs')[i].id).val(0);
+                }
+            }
+            $('#totalDeduction').val(countDeduction);
+
+            $('#netSalary').val(($('#grossEarngs').val()) - ($('#totalDeduction').val()))
+
+        });
+
+        $('.payrollInputs').on('focusout',function(){
+            debugger;
+            $('.deductionInputs').trigger('change');
+        })
+
         /// Dropdown On Change
 
         $("#drpdwnEmpName").on('change', function (e) {
@@ -434,84 +515,7 @@
                 toastr.info('All fields are required');
             }
 
-        });
-
-
-    $('.earningInputs').on('change', function () {
-
-        if($('#sodexoAmt').val() == '' || $('#others').val() == ''){
-            $('#sodexoAmt').val(0);
-            $('#others').val(0);
-        }
-
-        var count = 0;
-
-        countEarning = 0;
-        for (var i = 0; i < $('.earningInputs').length; i++) {
-            if ($(this).val() != '') {
-                count = count + 1;
-                countEarning = countEarning + parseFloat($('#' + $('.earningInputs:visible')[i].id).val());
-            }
-        }
-
-        if (count == 6) {
-            $('#grossEarngs').val(countEarning);
-
-                $.each(pfDeduction, function (i) {
-                    var pf = 0;
-                    if ($('#basicPay').val() >= pfDeduction[i].EPF_BASIC_MAX_SALARY && $('#restrictionPF').is(':checked')) {
-                        pf = $('#basicPay').val() * pfDeduction[i].EPF_EMPLOYEE_CONTRIBUTION_PERCENTAGE / 100;
-                    }
-                    else if ($('#basicPay').val() >= pfDeduction[i].EPF_BASIC_MAX_SALARY && !$('#restrictionPF').is(':checked')) {
-                    pf = 15000 * pfDeduction[i].EPF_EMPLOYEE_CONTRIBUTION_PERCENTAGE / 100;
-                }
-                else if (($('#grossEarngs').val() - $('#houseRentAlln').val()) >= 15000) {
-                    pf = 15000 * pfDeduction[i].EPF_EMPLOYEE_CONTRIBUTION_PERCENTAGE / 100;
-                }
-                else if (($('#grossEarngs').val() - $('#houseRentAlln').val()) < 15000) {
-                    pf = ($('#grossEarngs').val() - $('#houseRentAlln').val()) * pfDeduction[i].EPF_EMPLOYEE_CONTRIBUTION_PERCENTAGE/100;
-                }
-                $('#pfAmt').val(Math.round(pf));
-
-
-
-                var esi = 0;
-
-                if ($('#grossEarngs').val() < esiDeduction[i].ESI_BASIC_SALARY) {
-                    esi = $('#grossEarngs').val() * esiDeduction[i].ESI_EMPLOYEE_CONTRIBUTION_PERCENTAGE / 100;
-                }
-                else {
-                    esi = 0;
-                }
-                $('#esiAmt').val(Math.round(esi));
-
-            });
-            $.each(professionalTaxDeduction, function (i) {
-                if ($('#grossEarngs').val() * 6 >= professionalTaxDeduction[i].TAX_RANGE_FROM && $('#grossEarngs').val() * 6 <= professionalTaxDeduction[i].TAX_RANGE_TO) {   //Duration cycle is half_yearly(so only multiply by 6)
-                    $('#prfTax').val(Math.round(professionalTaxDeduction[i].PT_AMOUNT / 6));
-                }
-            });
-
-            $('#netSalary').val(($('#grossEarngs').val()) - ($('#totalDeduction').val()))
-        }
-    });
-
-
-    $('.deductionInputs').on('change', function () {
-
-        countDeduction = 0;
-        for (var i = 0; i < $('.deductionInputs').length; i++) {
-            if ($(this).val() != '') {
-                countDeduction = countDeduction + parseFloat($('#' + $('.deductionInputs')[i].id).val());
-                if($('#' + $('.deductionInputs')[i].id).val() < 0)
-                    $('#' + $('.deductionInputs')[i].id).val(0);
-            }
-        }
-        $('#totalDeduction').val(countDeduction);
-
-        $('#netSalary').val(($('#grossEarngs').val()) - ($('#totalDeduction').val()))
-
-    });
+        });    
 
         $('.moduleID').val('');
         $('.moduleID').val('@HRConstants.ModuleConstants.SalaryComponents');
@@ -523,10 +527,7 @@
         });
 
     });
-
-    $('.payrollInputs').on('focusout',function(){
-        $('.deductionInputs').trigger('change');
-    })
+       
 
     function RevisePayrollDetails(){
 

@@ -8298,7 +8298,7 @@ BEGIN
 END
 GO
 
-/****** Object:  StoredProcedure [dbo].[FILTER_BANKDETAILS]    Script Date: 5/17/2020 12:31:56 AM ******/
+/****** Object:  StoredProcedure [dbo].[FILTER_BANKDETAILS]    Script Date: 2/5/2021 2:03:29 PM ******/
 SET ANSI_NULLS ON
 GO
 
@@ -8306,25 +8306,53 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE PROCEDURE [dbo].[FILTER_BANKDETAILS] (
-	@fromdate DATE
-	,@todate DATE
+	@fromdate DATE NULL
+	,@todate DATE NULL
+	,@status BIT NULL
 	)
 AS
 BEGIN
-	SELECT eb.id
-		,eb.Employee_Id
-		,ISNULL(eb.Bankname, 'Nil') AS Bankname
-		,ISNULL(eb.Branchname, 'Nil') AS Branchname
-		,ISNULL(eb.Accountnumber, 0) AS Accountnumber
-		,ISNULL(eb.Ifsc, 'Nil') AS Ifsc
-		,e.Firstname + ' ' + e.Lastname Name
-		,e.Pancard
-		,MTLOG.ACTIVE
-	FROM Employee AS e WITH (NOLOCK)
-	INNER JOIN Employee_BankDetails eb WITH (NOLOCK) ON e.id = eb.Employee_Id
-	INNER JOIN MTS_LOGIN MTLOG WITH (NOLOCK) ON e.id = MTLOG.USERID
-	WHERE e.Dateofjoin BETWEEN @fromdate
-			AND @todate
+	IF @fromdate IS NULL
+		AND @todate IS NULL
+	BEGIN
+		SELECT eb.id
+			,eb.Employee_Id
+			,ISNULL(eb.Bankname, 'Nil') AS Bankname
+			,ISNULL(eb.Branchname, 'Nil') AS Branchname
+			,ISNULL(eb.Accountnumber, 0) AS Accountnumber
+			,ISNULL(eb.Ifsc, 'Nil') AS Ifsc
+			,e.Firstname + ' ' + e.Lastname Name
+			,e.Pancard
+			,MTLOG.ACTIVE
+		FROM Employee AS e WITH (NOLOCK)
+		INNER JOIN Employee_BankDetails eb WITH (NOLOCK) ON e.id = eb.Employee_Id
+		INNER JOIN MTS_LOGIN MTLOG WITH (NOLOCK) ON e.id = MTLOG.USERID
+		WHERE (
+				@status IS NULL
+				OR MTLOG.ACTIVE = @status
+				)
+	END
+	ELSE
+	BEGIN
+		SELECT eb.id
+			,eb.Employee_Id
+			,ISNULL(eb.Bankname, 'Nil') AS Bankname
+			,ISNULL(eb.Branchname, 'Nil') AS Branchname
+			,ISNULL(eb.Accountnumber, 0) AS Accountnumber
+			,ISNULL(eb.Ifsc, 'Nil') AS Ifsc
+			,e.Firstname + ' ' + e.Lastname Name
+			,e.Pancard
+			,MTLOG.ACTIVE
+		FROM Employee AS e WITH (NOLOCK)
+		INNER JOIN Employee_BankDetails eb WITH (NOLOCK) ON e.id = eb.Employee_Id
+		INNER JOIN MTS_LOGIN MTLOG WITH (NOLOCK) ON e.id = MTLOG.USERID
+		WHERE (
+				@status IS NULL
+				OR MTLOG.ACTIVE = @status
+				)
+			AND e.Dateofjoin BETWEEN @fromdate
+				AND @todate
+	END
 END
 GO
 

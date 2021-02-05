@@ -59,7 +59,7 @@
                     </label>
                 </div>
                 <div class="col-md-3 gap-top10">
-                    <input type="text" id="basicpay" class="inputs"  maxlength="10" onblur="validateandcalculatepayrolldetails()" onkeydown="isNumberanddot(event)" />
+                    <input type="text" id="basicpay" class="inputs validateInput"  maxlength="10" onblur="validateandcalculatepayrolldetails($(this).val())" onkeydown="isNumberanddot(event)" />
                 </div>
                 <div class="col-md-3">
                     <label>
@@ -67,7 +67,7 @@
                     </label>
                 </div>
                 <div class="col-md-3 gap-top10">
-                    <input type="text" id="hra" class="inputs" maxlength="10" onblur="validateandcalculatepayrolldetails()" onkeydown="isNumberanddot(event)" />
+                    <input type="text" id="hra" class="inputs validateInput" maxlength="10" onblur="validateandcalculatepayrolldetails($(this).val())" onkeydown="isNumberanddot(event)" />
                 </div>
             </div>
             <div class="row form-group p-t-10">
@@ -77,7 +77,7 @@
                     </label>
                 </div>
                 <div class="col-md-3 gap-top10">
-                    <input type="text" id="special_allowance" class="inputs" onblur="validateandcalculatepayrolldetails()" maxlength="10" onkeydown="isNumberanddot(event)" />
+                    <input type="text" id="special_allowance validateInput" class="inputs" onblur="validateandcalculatepayrolldetails($(this).val())" maxlength="10" onkeydown="isNumberanddot(event)" />
                 </div>
                 <div class="col-md-3">
                     <label>
@@ -85,7 +85,7 @@
                     </label>
                 </div>
                 <div class="col-md-3 gap-top10">
-                    <input type="text" id="Medical_allowance" class="inputs" onblur="validateandcalculatepayrolldetails()" maxlength="10" onkeydown="isNumberanddot(event)" />
+                    <input type="text" id="Medical_allowance validateInput" class="inputs" onblur="validateandcalculatepayrolldetails($(this).val())" maxlength="10" onkeydown="isNumberanddot(event)" />
                 </div>
             </div>
             <div class="row form-group p-t-10">
@@ -95,7 +95,7 @@
                     </label>
                 </div>
                 <div class="col-md-3 gap-top10">
-                    <input type="text" id="Conveyance" class="inputs" onblur="validateandcalculatepayrolldetails()" maxlength="10" onkeydown="isNumberanddot(event)" />
+                    <input type="text" id="Conveyance" class="inputs validateInput" onblur="validateandcalculatepayrolldetails($(this).val())" maxlength="10" onkeydown="isNumberanddot(event)" />
                 </div>
                 <div class="col-md-3">
                     <label>
@@ -103,7 +103,7 @@
                     </label>
                 </div>
                 <div class="col-md-3 gap-top10">
-                    <input type="text" id="foodallowance" class="inputs" onblur="validateandcalculatepayrolldetails()" maxlength="10" onkeydown="isNumberanddot(event)" />
+                    <input type="text" id="foodallowance" class="inputs validateInput" onblur="validateandcalculatepayrolldetails($(this).val())" maxlength="10" onkeydown="isNumberanddot(event)" />
                 </div>
             </div>
             @*<div class="row form-group p-t-10">
@@ -113,7 +113,7 @@
                     </label>
                 </div>
                 <div class="col-md-3 gap-top10">
-                    <input type="text" id="others2" onblur="validateandcalculatepayrolldetails()" maxlength="10" onkeydown="isNumberanddot(event)" />
+                    <input type="text" id="others2" onblur="validateandcalculatepayrolldetails($(this).val())" maxlength="10" onkeydown="isNumberanddot(event)" />
                 </div>
                 <div class="col-md-3">
                     <label>
@@ -121,7 +121,7 @@
                     </label>
                 </div>
                 <div class="col-md-3 gap-top10">
-                    <input type="text" id="others3" onblur="validateandcalculatepayrolldetails()" maxlength="10" onkeydown="isNumberanddot(event)" />
+                    <input type="text" id="others3" onblur="validateandcalculatepayrolldetails($(this).val())" maxlength="10" onkeydown="isNumberanddot(event)" />
                 </div>
             </div>*@
             <div class="row form-group p-t-10">
@@ -131,7 +131,7 @@
                     </label>
                 </div>
                 <div class="col-md-3 gap-top10">
-                    <input type="text" id="others" class="inputs" onblur="validateandcalculatepayrolldetails()" maxlength="10" onkeydown="isNumberanddot(event)" />
+                    <input type="text" id="others" class="inputs validateInput" onblur="validateandcalculatepayrolldetails($(this).val())" maxlength="10" onkeydown="isNumberanddot(event)" />
                 </div>
                 <div class="col-md-3">
                     <label>
@@ -152,7 +152,7 @@
                     </label>
                 </div>
                 <div class="col-md-3 gap-top10">
-                    <input type="text" id="sudexopass" class="inputs" onblur="validateandcalculatepayrolldetails()" maxlength="10" onkeydown="isNumberanddot(event)" />
+                    <input type="text" id="sudexopass" class="inputs validateInput" onblur="validateandcalculatepayrolldetails($(this).val())" maxlength="10" onkeydown="isNumberanddot(event)" />
                 </div>
                 <div class="col-md-3">
                     <label>
@@ -160,7 +160,7 @@
                     </label>
                 </div>
                 <div class="col-md-3 gap-top10">
-                    <input type="text" id="incometax" class="inputs" onblur="validateandcalculatepayrolldetails()" maxlength="10" onkeydown="isNumberanddot(event)" />
+                    <input type="text" id="incometax" class="inputs validateInput" onblur="validateandcalculatepayrolldetails($(this).val())" maxlength="10" onkeydown="isNumberanddot(event)" />
                 </div>
             </div>
             <div class="row form-group p-t-10">
@@ -196,7 +196,7 @@
                     </label>
                 </div>
                 <div class="col-md-3 gap-top10">
-                    <input type="text" id="othersded" class="inputs" onblur="validateandcalculatepayrolldetails()" maxlength="10" onkeydown="isNumberanddot(event)" />
+                    <input type="text" id="othersded" class="inputs validateInput" onblur="validateandcalculatepayrolldetails($(this).val())" maxlength="10" onkeydown="isNumberanddot(event)" />
                 </div>
             </div>
             @*<div class="row form-group p-t-10">
@@ -206,7 +206,7 @@
                     </label>
                 </div>
                 <div class="col-md-3 gap-top10">
-                    <input type="text" id="othersded2" onblur="validateandcalculatepayrolldetails()" maxlength="10" onkeydown="isNumberanddot(event)" />
+                    <input type="text" id="othersded2" onblur="validateandcalculatepayrolldetails($(this).val())" maxlength="10" onkeydown="isNumberanddot(event)" />
                 </div>
                 <div class="col-md-3">
                     <label>
@@ -214,7 +214,7 @@
                     </label>
                 </div>
                 <div class="col-md-3 gap-top10">
-                    <input type="text" id="othersded3" onblur="validateandcalculatepayrolldetails()" maxlength="10" onkeydown="isNumberanddot(event)" />
+                    <input type="text" id="othersded3" onblur="validateandcalculatepayrolldetails($(this).val())" maxlength="10" onkeydown="isNumberanddot(event)" />
                 </div>
             </div>*@
             <div class="row form-group p-t-10">
@@ -224,7 +224,7 @@
                     </label>
                 </div>
                 <div class="col-md-3 gap-top10">
-                    <input type="text" id="othersded4" onblur="validateandcalculatepayrolldetails()" maxlength="10" onkeydown="isNumberanddot(event)" />
+                    <input type="text" id="othersded4" onblur="validateandcalculatepayrolldetails($(this).val())" maxlength="10" onkeydown="isNumberanddot(event)" />
                 </div>*@
                 <div class="col-md-3">
                     <label>
@@ -245,7 +245,7 @@
                     </label>
                 </div>
                 <div class="col-md-3 gap-top10">
-                    <input type="text" id="incentives" class="inputs" onblur="validateandcalculatepayrolldetails()"  maxlength="10" onkeydown="isNumberanddot(event)" />
+                    <input type="text" id="incentives" class="inputs validateInput" onblur="validateandcalculatepayrolldetails($(this).val())"  maxlength="10" onkeydown="isNumberanddot(event)" />
                 </div>
                 <div class="col-md-3">
                     <label>
@@ -271,7 +271,7 @@
                     </label>
                 </div>
                 <div class="col-md-3 gap-top10">
-                    <input type="text" id="lop_Days" disabled="disabled"  onblur="validateandcalculatepayrolldetails()" maxlength="2" onkeydown="isNumberanddot(event)" />
+                    <input type="text" id="lop_Days" class="validateInput" disabled="disabled"  onblur="validateandcalculatepayrolldetails($(this).val())" maxlength="2" onkeydown="isNumberanddot(event)" />
                 </div>
             </div>
         </div>
@@ -373,7 +373,10 @@
         return true;
     }
 
-    function validateandcalculatepayrolldetails() {
+    function validateandcalculatepayrolldetails(data) {
+        if (!(data.trim() > 0)) {
+            return false;
+        }
         if (!validatelop())
             return false;
         var BasicPay = $('#basicpay').val();

@@ -170,7 +170,7 @@
                         columns: ':visible' //
                     },
 
-                    text: '<img src=@Url.Content("~/Content/images/Excel_14_px.png")> Download', //'<img src="/Content/images/Excel_14_px.png"> Download',
+                    text: '<img src="@Url.Content("~/Content/images/Excel_14_px.png")"> Download', //'<img src="/Content/images/Excel_14_px.png"> Download',
                     filename: 'Payroll_Report_EPF_Summary_' + FromDate + '_' + ToDate,
                     customizeData: function (data) {
                         for (var i = 0; i < data.body.length; i++) {

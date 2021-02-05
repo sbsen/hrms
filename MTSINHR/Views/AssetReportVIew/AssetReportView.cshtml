@@ -166,7 +166,7 @@
           },
           ],
             "createdRow": function (row, data, dataIndex) {
-                if (dateFormat(data.ToDate) >= dateFormat(Date())) {
+                if (new Date(data.ToDate) >= new Date()) {
                     $(row).css('background-color', 'rgb(156, 253, 177)');
                 }
 

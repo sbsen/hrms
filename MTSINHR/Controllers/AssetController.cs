@@ -278,7 +278,7 @@ namespace MTSINHR.Controllers
             List<SelectListItem> Assetlist = new List<SelectListItem>();
             try
             {
-               // var Asset = data_Ass.ReadAssetName();
+                var Asset = data_Ass.ReadAssetName();
                 Assetlist.Add(new SelectListItem() { Value = "", Text = "---- Select Category----" });
                 //for (int i = 0; i < Asset.Tables[0].Rows.Count; i++)
                 //{
