@@ -1209,10 +1209,6 @@
       <Project>{60c51b78-d847-4463-95fd-123d2e8fe1da}</Project>
       <Name>UtilsBlock</Name>
     </ProjectReference>
-    <ProjectReference Include="..\XtraChef.SecretsConfigHelper\XtraChef.SecretsConfigHelper\XtraChef.SecretsConfigHelper.csproj">
-      <Project>{54b9cb5b-c65c-4015-b0f3-615b10a59707}</Project>
-      <Name>XtraChef.SecretsConfigHelper</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\MaritalStatus\MaritalStatus.cshtml" />
