@@ -240,7 +240,7 @@
          , { "mData": "Projected_Annual_gross", "sTitle": "Annual Gross", "sClass": "text-center", "sWidth": "15%", "defaultContent": "<i>Not set</i>" }//6
          , { "mData": "Total_Earnings", "sTitle": "Total Earnings", "sClass": "text-center", "sWidth": "15%", "defaultContent": "<i>Not set</i>" }//7
          , { "mData": "STATUS", "sTitle": "Status", "sClass": "text-center", "sWidth": "15%", "defaultContent": "<i>Not set</i>" }//8
-         , { "mData": "", "sTitle": "Date Submission", "sClass": "text-center", "sWidth": "15%", "defaultContent": "<i>Not set</i>" }//9
+         , { "mData": "SUBMISSION_DATE", "sTitle": "Date Submission", "sClass": "text-center", "sWidth": "15%", "defaultContent": "<i>Not set</i>" }//9
          , { "mData": "IT_Declaration_Enabled", "sTitle": "Enable/Disable", "sClass": "text-center", "sWidth": "15%", "defaultContent": "<i>Not set</i>" }//10
          , { "mData": "id", "sTitle": "View Details", "sClass": "text-center", "sWidth": "15%", "defaultContent": "<i>Not set</i>" }//11
           , { "mData": "", "sTitle": "Multi-Select Enable/Disable", "sClass": "text-center", "sWidth": "15%", "defaultContent": "<i>Not set</i>" }//12
@@ -278,7 +278,7 @@
                      {
                          "aTargets": [11],
                          "mRender": function (data, type, row) {
-                             return '<span onclick="showDetails('+data+')" id="View' + row.Emp_Code + '" class="fa fa-bars"></span>';
+                             return '<span onclick="showDetails(' + data + ')" id="View' + row.Emp_Code + '" class="fa fa-bars spanedit"></span>';
                          }
                      }
                       ,
@@ -296,10 +296,9 @@
     }
 
     function EnableDisableDeclarations(opt) {
-
         var SelectedData = []
         var financialYear = $('#ddlFinYear').val();
-        SelectedData = CurrYear.filter(m => m.Financial_Year = financialYear);
+        SelectedData = CurrYear.filter(m => m.Financial_Year == financialYear);
         var Selectedyear = SelectedData[0].Id;
 
         if (declarationTableDetails.$('.checkboxcls').is(':checked')) {
@@ -340,7 +339,7 @@
             return false;
         }
         var selectedDetails = [];
-        selectedDetails = financialYearDetails.filter(a => a.id = data);
+        selectedDetails = financialYearDetails.filter(a => a.id == data);
         //if (selectedDetails[0].STATUS == 'Submission Pending' || selectedDetails[0].STATUS == 'Proof Submission Pending') {
         //    toastr.warning('Employee Submission/Proof Submission is Pending. Kindly try after Submission');
         //    return false;
@@ -356,7 +355,7 @@
         }
         var SelectedData = []
         var financialYear = $('#ddlFinYear').val();
-        SelectedData = CurrYear.filter(m => m.Financial_Year = financialYear);
+        SelectedData = CurrYear.filter(m => m.Financial_Year == financialYear);
         var Selectedyear = SelectedData[0].Id;
 
         var rowval = row.closest("tr");

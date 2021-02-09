@@ -335,6 +335,8 @@
     var payrollID = 0;
     $(document).ready(function () {
 
+        $('#StartDatepicker').attr('disabled', 'disabled');
+
         $('.earningInputs').on('change', function () {
             debugger;
             if($('#sodexoAmt').val() == '' || $('#others').val() == ''){
@@ -452,7 +454,8 @@
             approverOrInitiatorCall();
             getEmployeeDetails();
             getPayrollDetails();
-            $('#StartDatepicker').datepicker( 'setStartDate' , '' );
+            $('#StartDatepicker').datepicker( 'setStartDate' , dateFormatMonthYear($('#DOJ').val()) );
+            $('#StartDatepicker').attr('disabled', false);
         });
 
 

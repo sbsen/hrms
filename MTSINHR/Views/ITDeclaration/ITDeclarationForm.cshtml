@@ -507,7 +507,7 @@
             $("#ddlFinYear").val(@ViewBag.FinancialYear);
             $.each(CurrYear, function (i, val) {
                 if (val.Id == $("#ddlFinYear").val()) {
-                    finYearStatus = val.status;
+                    finYearStatus = val.STATUS;
                     return false;
                 }
             });
@@ -516,7 +516,7 @@
         }
         else {
             $.each(CurrYear, function (i, val) {
-                if (val.status == true) {
+                if (val.STATUS == true) {
                     finYearStatus = true;
                     $("#ddlFinYear").val(val.Id);
                     return false;
@@ -584,13 +584,13 @@
 
             $.each(CurrYear, function (i, val) {
                 if (val.Id == parseInt($('#ddlFinYear').val())) {
-                    finYearStatus = val.status;
+                    finYearStatus = val.STATUS;
                     return false;
                 }
             });
             var Selectedyear = [];
             var financialYear = $('#ddlFinYear').val();
-            Selectedyear = CurrYear.filter(m => m.Id = financialYear);
+            Selectedyear = CurrYear.filter(m => m.Id == financialYear);
             var lastSubmit = Selectedyear[0].Last_Submission_Date;
             var curr_date = new Date();
             if (curr_date > new Date(lastSubmit) || (tempApprovedOn == true)) {
@@ -667,7 +667,7 @@
 
             var Selectedyear = []
             var financialYear = $('#ddlFinYear').val();
-            Selectedyear = CurrYear.filter(m => m.Id = financialYear);
+            Selectedyear = CurrYear.filter(m => m.Id == financialYear);
             var lastSubmit = Selectedyear[0].Last_Submission_Date;
             var curr_date = new Date();
             if (curr_date > new Date(lastSubmit) || (tempApprovedOn == true)) {
@@ -1094,11 +1094,11 @@
         if ('@ViewBag.DirectITDeclaration' == 'True') {
             validationHomeRent();
         }
-        var StartDate = $('input[name="datefilter"]').val().split("-")[0];
-        var EndDate = $('input[name="datefilter"]').val().split("-")[1];
+        var StartDate = dateFormat($('input[name="datefilter"]').val().split("-")[0]);
+        var EndDate = dateFormat($('input[name="datefilter"]').val().split("-")[1]);
 
         var financialYear = $('#ddlFinYear').val();
-        //Selectedyear = CurrYear.filter(m => m.Id = financialYear);
+        //Selectedyear = CurrYear.filter(m => m.Id == financialYear);
 
         //var StartDate = Selectedyear[0].Financial_Year.split("-")[0];
        // var EndDate = Selectedyear[0].Financial_Year.split("-")[1];
@@ -1233,7 +1233,7 @@
          , { "data": "Rental_Amount", "sTitle": "Rental Amount(₹)", "sClass": "text-right", "sWidth": "15%", "defaultContent": "<i>Not set</i>" }//6
          , { "data": "Actual_amount", "sTitle": "Actual Amount(₹)", "sClass": "text-right", "sWidth": "15%", "defaultContent": "<i>Not set</i>" }//7
           , { "mData": "Id", "sTitle": "Edit", "sWidth": "5%", "sClass": "text-center", "defaultContent": "<i class='fa fa-edit'></i>" }//8
-          , { "mData": "Id", "sTitle": "View Document", "sWidth": "5%", "sClass": "text-center", "defaultContent": "<i class='fa fa-eyw'></i>" }//9
+          , { "mData": "Id", "sTitle": "View Document", "sWidth": "5%", "sClass": "text-center", "defaultContent": "<i class='fa fa-eye'></i>" }//9
         ],
             "aoColumnDefs": [
                {
@@ -1408,7 +1408,7 @@
 
         var Selectedyear = []
         var financialYear = $('#ddlFinYear').val();
-        Selectedyear = CurrYear.filter(m => m.Id = financialYear);
+        Selectedyear = CurrYear.filter(m => m.Id == financialYear);
         var lastSubmit = Selectedyear[0].Last_Submission_Date;
         var curr_date = new Date();
 
@@ -1502,7 +1502,7 @@
                   {
                       "aTargets": [5],
                       "mRender": function (data, type, row) {
-                          return '<span   class="badge" style="background-color:#2d8830ad;" onclick="SubmitSectionAmt(this)">Save</span>'
+                          return '<span   class="badge" style="background-color:#2d8830ad;cursor:pointer" onclick="SubmitSectionAmt(this)">Save</span>'
                       }
                   }
                    ,
@@ -2280,6 +2280,19 @@
                 }
 
             });
+        }
+    }
+
+    function dateFormat(date) {
+        if (date != null && date.trim() != '') {
+            var d = new Date(date);
+            var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+                            "Aug", "Sep", "Oct", "Nov", "Dec"];
+            var val = d.getDate() + "-" + months[d.getMonth()] + "-" + d.getFullYear();
+            return val;
+        }
+        else {
+            return '';
         }
     }
 </script>

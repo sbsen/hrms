@@ -49,6 +49,7 @@
                     <input type="text" id="Month" disabled="disabled" />
                 </div>
             </div>
+            <div class="clearfix"></div>
             <div class="card-header">
                 <span style="text-align: center; display: block;">Earnings</span>
             </div>
@@ -59,7 +60,7 @@
                     </label>
                 </div>
                 <div class="col-md-3 gap-top10">
-                    <input type="text" id="basicpay" class="inputs validateInput"  maxlength="10" onblur="validateandcalculatepayrolldetails($(this).val())" onkeydown="isNumberanddot(event)" />
+                    <input type="text" id="basicpay" class="inputs"  maxlength="10" onchange="validateandcalculatepayrolldetails($(this).val())" onkeydown="isNumberanddot(event)" />
                 </div>
                 <div class="col-md-3">
                     <label>
@@ -67,7 +68,7 @@
                     </label>
                 </div>
                 <div class="col-md-3 gap-top10">
-                    <input type="text" id="hra" class="inputs validateInput" maxlength="10" onblur="validateandcalculatepayrolldetails($(this).val())" onkeydown="isNumberanddot(event)" />
+                    <input type="text" id="hra" class="inputs" maxlength="10" onchange="validateandcalculatepayrolldetails($(this).val())" onkeydown="isNumberanddot(event)" />
                 </div>
             </div>
             <div class="row form-group p-t-10">
@@ -77,7 +78,7 @@
                     </label>
                 </div>
                 <div class="col-md-3 gap-top10">
-                    <input type="text" id="special_allowance validateInput" class="inputs" onblur="validateandcalculatepayrolldetails($(this).val())" maxlength="10" onkeydown="isNumberanddot(event)" />
+                    <input type="text" id="special_allowance" class="inputs" onchange="validateandcalculatepayrolldetails($(this).val())" maxlength="10" onkeydown="isNumberanddot(event)" />
                 </div>
                 <div class="col-md-3">
                     <label>
@@ -85,7 +86,7 @@
                     </label>
                 </div>
                 <div class="col-md-3 gap-top10">
-                    <input type="text" id="Medical_allowance validateInput" class="inputs" onblur="validateandcalculatepayrolldetails($(this).val())" maxlength="10" onkeydown="isNumberanddot(event)" />
+                    <input type="text" id="Medical_allowance" class="inputs" onchange="validateandcalculatepayrolldetails($(this).val())" maxlength="10" onkeydown="isNumberanddot(event)" />
                 </div>
             </div>
             <div class="row form-group p-t-10">
@@ -95,7 +96,7 @@
                     </label>
                 </div>
                 <div class="col-md-3 gap-top10">
-                    <input type="text" id="Conveyance" class="inputs validateInput" onblur="validateandcalculatepayrolldetails($(this).val())" maxlength="10" onkeydown="isNumberanddot(event)" />
+                    <input type="text" id="Conveyance" class="inputs" onchange="validateandcalculatepayrolldetails($(this).val())" maxlength="10" onkeydown="isNumberanddot(event)" />
                 </div>
                 <div class="col-md-3">
                     <label>
@@ -103,7 +104,7 @@
                     </label>
                 </div>
                 <div class="col-md-3 gap-top10">
-                    <input type="text" id="foodallowance" class="inputs validateInput" onblur="validateandcalculatepayrolldetails($(this).val())" maxlength="10" onkeydown="isNumberanddot(event)" />
+                    <input type="text" id="foodallowance" class="inputs" onchange="validateandcalculatepayrolldetails($(this).val())" maxlength="10" onkeydown="isNumberanddot(event)" />
                 </div>
             </div>
             @*<div class="row form-group p-t-10">
@@ -131,7 +132,7 @@
                     </label>
                 </div>
                 <div class="col-md-3 gap-top10">
-                    <input type="text" id="others" class="inputs validateInput" onblur="validateandcalculatepayrolldetails($(this).val())" maxlength="10" onkeydown="isNumberanddot(event)" />
+                    <input type="text" id="others" class="inputs" onchange="validateandcalculatepayrolldetails($(this).val())" maxlength="10" onkeydown="isNumberanddot(event)" />
                 </div>
                 <div class="col-md-3">
                     <label>
@@ -142,6 +143,7 @@
                     <input type="text" id="totalearnings" disabled="disabled" />
                 </div>
             </div>
+            <div class="clearfix"></div>
             <div class="card-header">
                 <span style="text-align: center; display: block;">Deductions</span>
             </div>
@@ -152,7 +154,7 @@
                     </label>
                 </div>
                 <div class="col-md-3 gap-top10">
-                    <input type="text" id="sudexopass" class="inputs validateInput" onblur="validateandcalculatepayrolldetails($(this).val())" maxlength="10" onkeydown="isNumberanddot(event)" />
+                    <input type="text" id="sudexopass" class="inputs" onchange="validateandcalculatepayrolldetails($(this).val())" maxlength="10" onkeydown="isNumberanddot(event)" />
                 </div>
                 <div class="col-md-3">
                     <label>
@@ -160,7 +162,7 @@
                     </label>
                 </div>
                 <div class="col-md-3 gap-top10">
-                    <input type="text" id="incometax" class="inputs validateInput" onblur="validateandcalculatepayrolldetails($(this).val())" maxlength="10" onkeydown="isNumberanddot(event)" />
+                    <input type="text" id="incometax" class="inputs" onchange="validateandcalculatepayrolldetails($(this).val())" maxlength="10" onkeydown="isNumberanddot(event)" />
                 </div>
             </div>
             <div class="row form-group p-t-10">
@@ -196,7 +198,7 @@
                     </label>
                 </div>
                 <div class="col-md-3 gap-top10">
-                    <input type="text" id="othersded" class="inputs validateInput" onblur="validateandcalculatepayrolldetails($(this).val())" maxlength="10" onkeydown="isNumberanddot(event)" />
+                    <input type="text" id="othersded" class="inputs" onchange="validateandcalculatepayrolldetails($(this).val())" maxlength="10" onkeydown="isNumberanddot(event)" />
                 </div>
             </div>
             @*<div class="row form-group p-t-10">
@@ -235,6 +237,7 @@
                     <input type="text" id="total_deduction" disabled="disabled" />
                 </div>
             </div>
+            <div class="clearfix"></div>
             <div class="card-header">
                 <span style="text-align: center; display: block;">Consolidated Details</span>
             </div>
@@ -245,7 +248,7 @@
                     </label>
                 </div>
                 <div class="col-md-3 gap-top10">
-                    <input type="text" id="incentives" class="inputs validateInput" onblur="validateandcalculatepayrolldetails($(this).val())"  maxlength="10" onkeydown="isNumberanddot(event)" />
+                    <input type="text" id="incentives" class="inputs" onchange="validateandcalculatepayrolldetails($(this).val())"  maxlength="10" onkeydown="isNumberanddot(event)" />
                 </div>
                 <div class="col-md-3">
                     <label>
@@ -271,9 +274,10 @@
                     </label>
                 </div>
                 <div class="col-md-3 gap-top10">
-                    <input type="text" id="lop_Days" class="validateInput" disabled="disabled"  onblur="validateandcalculatepayrolldetails($(this).val())" maxlength="2" onkeydown="isNumberanddot(event)" />
+                    <input type="text" id="lop_Days" disabled="disabled"  onchange="validateandcalculatepayrolldetails($(this).val())" maxlength="2" onkeydown="isNumberanddot(event)" />
                 </div>
             </div>
+            <div class="clearfix"></div>
         </div>
         <div class="modal-footer card-footer" style="text-align: center">
             <button type="submit" id="btnLocationMapping" onclick="UpdatePayrollDetails()" class="btn btn-primary btn-sm">
@@ -313,11 +317,11 @@
             $('#btnLocationMapping').show();
             $('.inputs').removeAttr('disabled');
         }
-           
+
     });
 
     function UpdatePayrollDetails() {
-        
+
         validatelop();
         $.ajax({
             type: 'POST',
@@ -374,72 +378,77 @@
     }
 
     function validateandcalculatepayrolldetails(data) {
-        if (!(data.trim() > 0)) {
-            return false;
-        }
+        //if (!(parseInt(data.trim()) > 0)) {
+        //    return false;
+        //}
+
         if (!validatelop())
             return false;
-        var BasicPay = $('#basicpay').val();
-        if (BasicPay == '') {
+        var BasicPay = $('#basicpay').val().trim() == '' ? 0 : $('#basicpay').val();
+        if (BasicPay == 0) {
             $('#basicpay').val(0);
-            event.preventDefault();
-            return false;
+            //event.preventDefault();
+            //return false;
         }
-        var HouseAllowance = $('#hra').val();
-        if (HouseAllowance == '') {
+        var HouseAllowance = $('#hra').val().trim() == '' ? 0 : $('#hra').val();
+        if (HouseAllowance == 0) {
             $('#hra').val(0);
-            event.preventDefault();
-            return false;
+            //event.preventDefault();
+            //return false;
         }
-        var SpecialAllowance = $('#special_allowance').val();
-        if (SpecialAllowance == '') {
+        var SpecialAllowance = $('#special_allowance').val().trim() == '' ? 0 : $('#special_allowance').val();
+        if (SpecialAllowance == 0) {
             $('#special_allowance').val(0);
-            event.preventDefault();
-            return false;
+            //event.preventDefault();
+            //return false;
         }
-        var Medical_allowance = $('#Medical_allowance').val();
-        if (Medical_allowance == '') {
+        var Medical_allowance = $('#Medical_allowance').val().trim() == '' ? 0 : $('#Medical_allowance').val();
+        if (Medical_allowance == 0) {
             $('#Medical_allowance').val(0);
-            event.preventDefault();
-            return false;
+            //event.preventDefault();
+            //return false;
         }
-        var Conveyance = $('#Conveyance').val();
-        if (Conveyance == '') {
+        var Food_allowance = $('#foodallowance').val().trim() == '' ? 0 : $('#foodallowance').val();
+        if (Food_allowance == 0) {
+            $('#foodallowance').val(0);
+        }
+        var Conveyance = $('#Conveyance').val().trim() == '' ? 0 : $('#Conveyance').val();
+        if (Conveyance == 0) {
             $('#Conveyance').val(0);
-            event.preventDefault();
-            return false;
+            //event.preventDefault();
+            //return false;
         }
-        var Others = $('#others').val();
-        if (Others == '') {
+        var Others = $('#others').val().trim() == '' ? 0 : $('#others').val();
+        if (Others == 0) {
             $('#others').val(0);
         }
-       
+
         var TotalEarnings = $('#totalearnings').val();
-        var SudexoPass = $('#sudexopass').val();
-        if (SudexoPass == '') {
+        var SudexoPass = $('#sudexopass').val().trim() == '' ? 0 : $('#sudexopass').val();
+        if (SudexoPass == 0) {
             $('#sudexopass').val(0);
         }
-        var IncomeTax = $('#incometax').val();
-        if (IncomeTax == '') {
+        var IncomeTax = $('#incometax').val().trim() == '' ? 0 : $('#incometax').val();
+        if (IncomeTax == 0) {
             $('#incometax').val(0);
         }
-        var pfrestriction = $('#EmpPfrestriction').val();
-        
-        var OthersDeductions = $('#othersded').val();
-        if (OthersDeductions == '') {
+        var pfrestriction = $('#EmpPfrestriction').val() == 'true' ? 1 : 0;
+
+        var OthersDeductions = $('#othersded').val().trim() == '' ? 0 : $('#othersded').val();
+        if (OthersDeductions == 0) {
             $('#othersded').val(0);
         }
-        
+
         var TotalDeductions = $('#total_deduction').val();
-        var Incentives = $('#incentives').val();
-        if (Incentives == '') {
+        var Incentives = $('#incentives').val().trim() == '' ? 0 : $('#incentives').val();
+        if (Incentives == 0) {
             $('#incentives').val(0);
         }
         var NetSalary = $('#Net_Salary').val();
         var TotalDays = $('#Total_Days').val();
         var LopDays = $('#lop_Days').val();
 
-        var earnings = (parseFloat(BasicPay) + parseFloat(HouseAllowance) + parseFloat(SpecialAllowance) + parseFloat(Medical_allowance) + parseFloat(Conveyance) + parseFloat(Others));
+        var earnings = (parseFloat(BasicPay) + parseFloat(HouseAllowance) + parseFloat(SpecialAllowance) + parseFloat(Medical_allowance) + parseFloat(Food_allowance) + parseFloat(Conveyance) + parseFloat(Others));
         $('#totalearnings').val(Math.round(earnings));
 
         var calculated_pf = get_pf(parseFloat(BasicPay), parseFloat(HouseAllowance), parseFloat(earnings), parseInt(pfrestriction));
@@ -456,7 +465,7 @@
 
 
 
-        
+
         var deductions = (parseFloat(SudexoPass) + parseFloat(IncomeTax) + parseFloat(Professional_Tax) + parseFloat(EmployeeEsi) + parseFloat(Employee_PF) + parseFloat(OthersDeductions))
         $('#total_deduction').val(Math.round(deductions));
         var grant_total = (parseFloat(earnings) - parseFloat(deductions)) + parseFloat(Incentives);
@@ -494,7 +503,7 @@
         if (earnings < esiDeduction[0].ESI_BASIC_SALARY) {
             esi = Math.round((earnings * esiDeduction[0].ESI_EMPLOYEE_CONTRIBUTION_PERCENTAGE) / 100);
         }
-       
+
         return esi;
     }
     function validatelop() {
