@@ -53,6 +53,19 @@ namespace MTSHRDataLayer
             }
             return dt;
         }
-        
+
+        public DataTable GetEmployeeEmail()
+        {
+            DataTable dt = null;
+            try
+            {
+                dt = DataAccess.ExecuteDataTable("GET_EMPLOYEE_EMAIL_ID");
+            }
+            catch(Exception ex)
+            {
+                ex.Data.Clear();
+            }
+            return dt;
+        }
     }
 }

@@ -243,6 +243,13 @@ namespace MTSINHR.Controllers
             DataSet err_attendance = new DataSet();
             DataTable ErrorTable = new DataTable();
             ErrorTable.Columns.Add("Error");
+            MTSHRDataLayer.AttendanceLog emp_details = new MTSHRDataLayer.AttendanceLog();
+            DataTable result_EmailId = emp_details.GetEmployeeEmail();
+            List<string> EmailIdList = new List<string>();
+            for(Int32 i = 0; i < result_EmailId.Rows.Count; i++)
+            {
+                EmailIdList.Add(result_EmailId.Rows[i]["Employee_Email_Id"].ToString());
+            }
             //for(int rowno = 0; rowno < AttendanceLogtable.Rows.Count; rowno++)
             //{
             //    string error_msg = "";
@@ -290,181 +297,24 @@ namespace MTSINHR.Controllers
                     string Out_DateTime = (AttendanceLogtable.Rows[rowno]["out DateTime"]).ToString().Trim();
                     string In_DateTime = (AttendanceLogtable.Rows[rowno]["In DateTime"]).ToString().Trim();
 
-
-                    if (In_DateTime != null && In_DateTime != "")
-                    {
-                        if (In_DateTime.Contains("/")) {
-                            In_DateTime=In_DateTime.Replace("/", "-");
-                            Out_DateTime = Out_DateTime.Replace("/", "-");
-                            AttendanceLogtable.Rows[rowno]["In DateTime"] = In_DateTime;
-                            AttendanceLogtable.Rows[rowno]["out DateTime"] = Out_DateTime;
-
-                        }
-
-
-                        DateTime In_time = ParseRequestDate(In_DateTime);
-                            //DateTime.ParseExact(, formatStrings, CultureInfo.InvariantCulture);
-
-
-                        currentMonth = In_time.ToString("M/yyyy", CultureInfo.InvariantCulture);
-                         
-                        if (currentMonth != choosenMonth)
-                        {
-                            //ErrorList.Add("Choosen Month and the Excel Month not Matched");
-                            if (error_msg == "")
-                            {
-                                error_msg = "1";
-                            }
-                            else
-                            {
-                                error_msg = error_msg + ",1";
-                            }
-                            ErrorTable.Rows.Add("Choosen Month and the Excel Month not Matched");
-                            AttendanceLogtable.Rows[rowno]["ERROR_MESSAGE"] = error_msg;
-
-                        }
-
-                    }
-
-                    if (Employee_Code == null || Employee_Code == "")
-                    {
-                        
-                        //ErrorList.Add("Employee Code in row " + rowno + "is empty");
-                        ErrorTable.Rows.Add("Employee Code in row " + rowno + "is empty");
-                        if (error_msg == "")
-                        {
-                            error_msg = "3";
-                        }
-                        else
-                        {
-                            error_msg = error_msg + ",3";
-                        }
-
-                    }
-
-                    else
-                    {
-
-                        Int64 length_id = Employee_Code.Length;
-                        if (length_id < 5)
-                        {
-                            string emp_prev = "XC";
-                            for (int i = 0; i < 5 - length_id; i++)
-                            {
-
-                                if (i != 0)
-                                {
-                                    emp_prev += "0";
-                                }
-                                                              
-                            }
-                            AttendanceLogtable.Rows[rowno]["Employee Code"] = emp_prev + Employee_Code;
-                            Employee_Code = emp_prev + Employee_Code;
-
-                        }
-                    }
-
-
                     if (Employee_Name == null || Employee_Name == "")
                     {
-                        //ErrorList.Add("Employee Name in row " + rowno + "is empty");
+
+                        //ErrorList.Add("Employee Code in row " + rowno + "is empty");
                         ErrorTable.Rows.Add("Employee Name in row " + rowno + "is empty");
                         if (error_msg == "")
                         {
-                            error_msg = "4";
+                            error_msg = "8";    //error_msg = "4";
                         }
                         else
                         {
-                            error_msg = error_msg + ",4";
+                            error_msg = error_msg + ",8";   //error_msg = error_msg + ",4";
                         }
-                    }
-                    if (Status_Code.ToUpper() != "A"|| Status_Code != "WO")
-                    {
-                        if (Punch_Records == ""
-                           || Duration == "" || Out_DateTime == ""
-                           || In_Device_Name == "" || Out_Device_Name == ""|| In_DateTime=="")
-                        {
-                            //ErrorList.Add("Required fields in row " + rowno + "is empty");
-                            ErrorTable.Rows.Add("Required fields in row " + rowno + "is empty");
-                            if (error_msg == "")
-                            {
-                                error_msg = "5";
-                            }
-                            else
-                            {
-                                error_msg = error_msg + ",5";
-                            }
-                        }
-
-
-                    }
-
-                    if (In_DateTime != null || In_DateTime != "")
-                    {
-                        if (Status_Code == "" || Punch_Records == ""
-                            && Duration == "" || Out_DateTime == ""
-                            && In_Device_Name == "" || Out_Device_Name == "")
-                        {
-                            //ErrorList.Add("Required fields in row " + rowno + "is empty");
-                            ErrorTable.Rows.Add("Required fields in row " + rowno + "is empty");
-                            if (error_msg == "")
-                            {
-                                error_msg = "5";
-                            }
-                            else
-                            {
-                                error_msg = error_msg + ",5";
-                            }
-                        }
-
-
 
                     }
                     else
                     {
-                        if ( Punch_Records != ""
-                            || Duration != "" || Out_DateTime != ""
-                            || In_Device_Name != "" || Out_Device_Name != "")
-                        {
-                            //ErrorList.Add("Required fields in row " + rowno + "is empty");
-                            ErrorTable.Rows.Add("Required fields in row " + rowno + "is empty");
-                            if (error_msg == "")
-                            {
-                                error_msg = "5";
-                            }
-                            else
-                            {
-                                error_msg = error_msg + ",5";
-                            }
-                        }
-                    }
-
-                    if (Employee_Code != "" && In_DateTime != "")
-                    {
-
-                        string checkDuplicate = Employee_Code + In_DateTime;
-                        if (Namelist.Contains(checkDuplicate))
-                        {
-                            ErrorTable.Rows.Add("Employee Details in row " + rowno + "is DuplicateCopy");
-                            if (error_msg == "")
-                            {
-                                error_msg = "2";
-                            }
-                            else
-                            {
-                                error_msg = error_msg + ",2";
-                            }
-                        }
-                        else
-                        {
-                            Namelist.Add(checkDuplicate);
-                        }
-                    }
-
-
-                    if (Employee_Code != "")
-                    {
-                        if (CheckEmpId.Contains(Employee_Code) && !ValidEmpId.Contains(Employee_Code))
+                        if (!(EmailIdList.Contains(Employee_Name)))
                         {
                             ErrorTable.Rows.Add(rowno + " is an Invalid Employee");
                             if (error_msg == "")
@@ -476,49 +326,164 @@ namespace MTSINHR.Controllers
                                 error_msg = error_msg + ",6";
                             }
                         }
-                        //else if (CheckEmpId.Contains(Employee_Code) && !ValidEmpId.Contains(Employee_Code + Employee_Name))
-                        //{
-                        //    ErrorTable.Rows.Add(rowno + " is an Invalid Employee (Mismatching Id with Name)");
-                        //    if (error_msg == "")
-                        //    {
-                        //        error_msg = "7";
-                        //    }
-                        //    else
-                        //    {
-                        //        error_msg = error_msg + ",7";
-                        //    }
-                        //}
                         else
                         {
-                            CheckEmpId.Add(Employee_Code);
-                            DataSet result = MTSHRDataLayer.AttendanceLog.CheckEmpID(Employee_Code, Employee_Name);
-
-                            if (Convert.ToBoolean(result.Tables[0].Rows[0]["Column1"].ToString()) == true)
+                            if (In_DateTime != null && In_DateTime != "")
                             {
-                                ValidEmpId.Add(Employee_Code);
+                                if (In_DateTime.Contains("/"))
+                                {
+                                    In_DateTime = In_DateTime.Replace("/", "-");
+                                    Out_DateTime = Out_DateTime.Replace("/", "-");
+                                    AttendanceLogtable.Rows[rowno]["In DateTime"] = In_DateTime;
+                                    AttendanceLogtable.Rows[rowno]["out DateTime"] = Out_DateTime;
+
+                                }
+
+
+                                DateTime In_time = ParseRequestDate(In_DateTime);
+                                //DateTime.ParseExact(, formatStrings, CultureInfo.InvariantCulture);
+
+
+                                currentMonth = In_time.ToString("M/yyyy", CultureInfo.InvariantCulture);
+
+                                if (currentMonth != choosenMonth)
+                                {
+                                    //ErrorList.Add("Choosen Month and the Excel Month not Matched");
+                                    if (error_msg == "")
+                                    {
+                                        error_msg = "1";
+                                    }
+                                    else
+                                    {
+                                        error_msg = error_msg + ",1";
+                                    }
+                                    ErrorTable.Rows.Add("Choosen Month and the Excel Month not Matched");
+                                    AttendanceLogtable.Rows[rowno]["ERROR_MESSAGE"] = error_msg;
+
+                                }
+
+                            }
+
+                            #region Employee Code
+                            //if (Employee_Code == null || Employee_Code == "")
+                            //{
+                            //    //ErrorList.Add("Employee Name in row " + rowno + "is empty");
+                            //    ErrorTable.Rows.Add("Employee Code in row " + rowno + "is empty");
+                            //    if (error_msg == "")
+                            //    {
+                            //        error_msg = "3";
+                            //    }
+                            //    else
+                            //    {
+                            //        error_msg = error_msg + ",3";
+                            //    }
+                            //}
+                            //else
+                            //{
+                            //    Int64 length_id = Employee_Code.Length;
+                            //    //if (length_id < 5)
+                            //    //{
+                            //    //    string emp_prev = "XC";
+                            //    //    for (int i = 0; i < 5 - length_id; i++)
+                            //    //    {
+
+                            //    //        if (i != 0)
+                            //    //        {
+                            //    //            emp_prev += "0";
+                            //    //        }
+
+                            //    //    }
+                            //    //    AttendanceLogtable.Rows[rowno]["Employee Code"] = emp_prev + Employee_Code;
+                            //    //    Employee_Code = emp_prev + Employee_Code;
+
+                            //    //}
+                            //}
+                            #endregion Employee Code
+
+                            if (Status_Code.ToUpper() != "A" || Status_Code != "WO")
+                            {
+                                if (Punch_Records == ""
+                                   || Duration == "" || Out_DateTime == ""
+                                   || In_Device_Name == "" || Out_Device_Name == "" || In_DateTime == "")
+                                {
+                                    //ErrorList.Add("Required fields in row " + rowno + "is empty");
+                                    ErrorTable.Rows.Add("Required fields in row " + rowno + "is empty");
+                                    if (error_msg == "")
+                                    {
+                                        error_msg = "5";
+                                    }
+                                    else
+                                    {
+                                        error_msg = error_msg + ",5";
+                                    }
+                                }
+
+
+                            }
+
+                            if (In_DateTime != null || In_DateTime != "")
+                            {
+                                if (Status_Code == "" || Punch_Records == ""
+                                    && Duration == "" || Out_DateTime == ""
+                                    && In_Device_Name == "" || Out_Device_Name == "")
+                                {
+                                    //ErrorList.Add("Required fields in row " + rowno + "is empty");
+                                    ErrorTable.Rows.Add("Required fields in row " + rowno + "is empty");
+                                    if (error_msg == "")
+                                    {
+                                        error_msg = "5";
+                                    }
+                                    else
+                                    {
+                                        error_msg = error_msg + ",5";
+                                    }
+                                }
+
+
+
                             }
                             else
                             {
-                                ErrorTable.Rows.Add(rowno + " is an Invalid Employee");
-                                if (error_msg == "")
+                                if (Punch_Records != ""
+                                    || Duration != "" || Out_DateTime != ""
+                                    || In_Device_Name != "" || Out_Device_Name != "")
                                 {
-                                    error_msg = "6";
-                                }
-                                else
-                                {
-                                    error_msg = error_msg + ",6";
+                                    //ErrorList.Add("Required fields in row " + rowno + "is empty");
+                                    ErrorTable.Rows.Add("Required fields in row " + rowno + "is empty");
+                                    if (error_msg == "")
+                                    {
+                                        error_msg = "5";
+                                    }
+                                    else
+                                    {
+                                        error_msg = error_msg + ",5";
+                                    }
                                 }
                             }
 
-                            // check EmpId and Emp Name (Mismatching Id with Name)
-                            //if (Convert.ToInt32(result.Tables[1].Rows.Count) > 0)
-                            //{
-                            //    ValidEmpIdName.Add(Employee_Code + Employee_Name);
-                            //}
-                        }
-                    }
+                            if (Employee_Name != "" && In_DateTime != "")
+                            {
 
-                    
+                                string checkDuplicate = Employee_Name + In_DateTime;
+                                if (Namelist.Contains(checkDuplicate))
+                                {
+                                    ErrorTable.Rows.Add("Employee Details in row " + rowno + "is DuplicateCopy");
+                                    if (error_msg == "")
+                                    {
+                                        error_msg = "2";
+                                    }
+                                    else
+                                    {
+                                        error_msg = error_msg + ",2";
+                                    }
+                                }
+                                else
+                                {
+                                    Namelist.Add(checkDuplicate);
+                                }
+                            }
+                        }
+                    }   
 
                     int b = ErrorTable.Rows.Count;
                     AttendanceLogtable.Rows[rowno]["ERROR_MESSAGE"] = error_msg;

@@ -281,6 +281,12 @@
                         else 
                             msgs = msgs + ", Mismatching Employee Code with Employee Name";
                     }
+                    if (value == 8) {
+                        if (msgs == '')
+                            msgs = "Employee Email is empty";
+                        else
+                            msgs = msgs + ", Employee Email id is empty";
+                    }
                 });
                 return msgs;
             }

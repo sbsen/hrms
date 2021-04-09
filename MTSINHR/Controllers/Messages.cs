@@ -69,7 +69,8 @@ namespace MTSINHR.Controllers
             string SessionRoleID = Session["RoleId"].ToString();
             int RoleId = Convert.ToInt32(SessionRoleID);
             MTSHRDataLayer.Messages data_posts = new MTSHRDataLayer.Messages();
-            var result = JsonConvert.SerializeObject(data_posts.ReadMessages(RoleId), new IsoDateTimeConverter() { DateTimeFormat = "dd/MMM/yyyy" });
+            DataTable dt = data_posts.ReadMessages(RoleId);
+            var result = JsonConvert.SerializeObject(dt, new IsoDateTimeConverter() { DateTimeFormat = "dd/MMM/yyyy" });
             return Json(result, JsonRequestBehavior.AllowGet);
         }
         [HttpPost]
